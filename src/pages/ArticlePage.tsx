@@ -1,10 +1,51 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { articles } from '../data/articles';
 import { Link as LinkIcon, Clock, ChevronDown } from 'lucide-react';
+import { clsx } from 'clsx';
+import { motion } from 'motion/react';
+
+const TOC_ITEMS = [
+  { id: 'introduction', title: 'Introduction' },
+  { id: 'key-takeaways', title: 'Key Takeaways' },
+  { id: 'deep-dive', title: 'Deep Dive' },
+  { id: 'future-outlook', title: 'Future Outlook' },
+  { id: 'conclusion', title: 'Conclusion' },
+];
 
 export default function ArticlePage() {
   const { id } = useParams();
   const article = articles.find(a => a.id === id) || articles[0]; // Fallback to first for demo
+  const [activeId, setActiveId] = useState(TOC_ITEMS[0].id);
+
+  useEffect(() => {
+    const visibleSections = new Set<string>();
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            visibleSections.add(entry.target.id);
+          } else {
+            visibleSections.delete(entry.target.id);
+          }
+        });
+        
+        const firstVisible = TOC_ITEMS.find(item => visibleSections.has(item.id));
+        if (firstVisible) {
+          setActiveId(firstVisible.id);
+        }
+      },
+      { rootMargin: '-100px 0px -60% 0px' }
+    );
+
+    TOC_ITEMS.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto border-x border-zinc-200 min-h-screen bg-white">
@@ -74,28 +115,43 @@ export default function ArticlePage() {
       </div>
 
       {/* Article Body Layout */}
-      <div className="flex flex-col md:flex-row gap-16 p-6 sm:p-10 lg:p-16 relative">
+      <div className="flex flex-col md:flex-row relative border-b border-zinc-200">
         {/* Sidebar TOC */}
-        <div className="hidden md:block w-56 shrink-0">
+        <div className="hidden md:block w-64 lg:w-72 shrink-0 border-r border-zinc-200 py-8 sm:py-12 lg:py-16 pl-6 sm:pl-10 lg:pl-16 pr-8 lg:pr-12">
           <div className="sticky top-24">
-            <ul className="text-[14.5px] font-sans border-l border-zinc-200">
-              <li><a href="#what-is-vite" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">What is Vite+?</a></li>
-              <li><a href="#performance" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Performance & Scale</a></li>
-              <li><a href="#getting-started" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Getting Started</a></li>
-              <li><a href="#macos-linux" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">macOS / Linux</a></li>
-              <li><a href="#windows" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Windows (PowerShell)</a></li>
-              <li><a href="#ci" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">CI</a></li>
-              <li><a href="#using-vite" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Using Vite+</a></li>
-              <li><a href="#vite-task" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Vite Task</a></li>
-              <li><a href="#migrating" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Migrating a Project to Vite+</a></li>
-              <li><a href="#mit-license" className="block pl-4 py-2 text-zinc-900 font-medium transition-colors border-l -ml-[1px] border-black">MIT License</a></li>
-              <li><a href="#next-steps" className="block pl-4 py-2 text-zinc-500 hover:text-zinc-900 transition-colors border-l -ml-[1px] border-transparent">Next Steps</a></li>
-            </ul>
+            <div className="relative border-l border-zinc-200">
+              <ul className="text-[14.5px] font-sans">
+                {TOC_ITEMS.map((item) => {
+                  const isActive = activeId === item.id;
+                  return (
+                    <li key={item.id} className="relative">
+                      <a 
+                        href={`#${item.id}`} 
+                        className={clsx(
+                          "block pl-4 py-2 transition-colors",
+                          isActive ? "text-zinc-900 font-medium" : "text-zinc-500 hover:text-zinc-900"
+                        )}
+                      >
+                        {item.title}
+                      </a>
+                      {isActive && (
+                        <motion.div
+                          layoutId="toc-highlighter"
+                          className="absolute left-0 top-0 bottom-0 w-[2px] bg-zinc-900 -ml-[1px]"
+                          initial={false}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-grow prose prose-zinc prose-lg max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
+        <div className="flex-grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
           <p className="lead text-xl text-zinc-600 mb-10">
             The tech landscape is evolving faster than ever. In this comprehensive overview, we break down the most significant developments and what they mean for the future of the industry. <em>Stay informed.</em>
           </p>
@@ -149,21 +205,21 @@ async function fetchInsights() {
       </div>
 
       {/* Newsletter Section embedded in article */}
-      <div className="mx-6 sm:mx-10 lg:mx-16 mb-16 bg-zinc-900 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+      <div className="w-full bg-zinc-950 py-16 px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
         <div className="md:w-1/2">
-          <h3 className="text-3xl font-medium tracking-tight mb-4">Never miss an update</h3>
-          <p className="text-zinc-400 text-lg">Join 50,000+ developers getting our weekly tech insights.</p>
+          <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Never miss an update</h3>
+          <p className="text-zinc-400 font-mono text-xs uppercase tracking-widest">Join 50,000+ developers getting our weekly tech insights.</p>
         </div>
         <div className="w-full md:w-1/2">
-          <form className="flex flex-col sm:flex-row gap-3">
+          <form className="flex gap-0 border border-zinc-700">
             <input 
               type="email" 
-              placeholder="Enter your email" 
-              className="bg-zinc-800 border border-zinc-700 px-4 py-3 flex-grow text-white focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent transition-all"
+              placeholder="YOUR EMAIL ADDRESS" 
+              className="bg-zinc-900 border-none rounded-none px-4 py-4 flex-grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500"
             />
             <button 
               type="submit" 
-              className="bg-white text-zinc-900 px-8 py-3 font-bold hover:bg-zinc-200 transition-colors whitespace-nowrap"
+              className="bg-white text-zinc-900 px-8 py-4 rounded-none font-mono text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors border-l border-zinc-700 whitespace-nowrap"
             >
               Subscribe
             </button>

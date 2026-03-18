@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { articles } from '../data/articles';
 import { clsx } from 'clsx';
+import { Logo } from '../components/Logo';
 
 const CATEGORIES = ['All', 'AI & ML', 'Web Dev', 'Hardware', 'Industry'];
 
@@ -26,13 +27,11 @@ export default function Home() {
         <div className="lg:col-span-2 border-b lg:border-b-0 lg:border-r border-zinc-200 flex flex-col group cursor-pointer hover:bg-zinc-50 transition-colors">
           <Link to={`/article/${featuredArticle.id}`} className="flex flex-col h-full">
             <div className="p-6 md:p-8 flex-grow">
-              <div className="rounded-none overflow-hidden mb-8 aspect-[16/9] bg-zinc-100 relative border border-zinc-200">
-                <img 
-                  src={featuredArticle.imageUrl} 
-                  alt={featuredArticle.title}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+              <div className="rounded-none overflow-hidden mb-8 aspect-[16/9] bg-zinc-100 relative border border-zinc-200 flex items-center justify-center">
+                <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/tech/1200/800')] opacity-10 mix-blend-luminosity bg-cover bg-center"></div>
+                <div className="bg-white border border-zinc-200 p-8 z-10 shadow-2xl scale-125">
+                  <Logo disableLink={true} />
+                </div>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
                 <span>// {featuredArticle.category}</span>

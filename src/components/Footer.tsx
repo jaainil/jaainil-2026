@@ -1,4 +1,5 @@
 import { Github, DiscIcon as Discord } from 'lucide-react';
+import { Logo } from './Logo';
 
 export default function Footer() {
   return (
@@ -31,10 +32,10 @@ export default function Footer() {
         </div>
 
         {/* Banner Section */}
-        <div className="w-full h-32 bg-zinc-950 border-b border-zinc-800 flex items-center justify-center relative overflow-hidden">
+        <div className="w-full h-40 bg-zinc-950 border-b border-zinc-800 flex items-center justify-center relative overflow-hidden">
            <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/tech/1200/400')] opacity-10 mix-blend-luminosity bg-cover bg-center"></div>
-           <div className="bg-zinc-900 border border-zinc-800 p-4 z-10">
-             <span className="text-white font-bold text-2xl tracking-tighter">VOID(<span className="font-sans">0</span>)</span>
+           <div className="bg-white border border-zinc-200 p-6 z-10 shadow-2xl">
+             <Logo />
            </div>
         </div>
 
@@ -79,7 +80,7 @@ export default function Footer() {
         </div>
 
         <div className="py-8 px-6 md:px-8 border-t border-zinc-800 text-[11px] font-mono uppercase tracking-widest text-zinc-500 flex justify-between items-center">
-          <p>© 2026 VOID(0) MEDIA. ALL RIGHTS RESERVED.</p>
+          <p>© 2026 SHRAVONIX MEDIA. ALL RIGHTS RESERVED.</p>
         </div>
       </div>
     </footer>
