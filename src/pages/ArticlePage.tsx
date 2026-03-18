@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { articles } from '../data/articles';
 import { Link as LinkIcon, Clock, ChevronDown, Twitter, Linkedin } from 'lucide-react';
