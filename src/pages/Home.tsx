@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { articles } from '../data/articles';
-import { clsx } from 'clsx';
+import { cn } from '../lib/utils';
 import { Logo } from '../components/Logo';
 
 const CATEGORIES = ['All', 'AI & ML', 'Web Dev', 'Hardware', 'Industry'];
@@ -64,7 +64,7 @@ export default function Home() {
         
         <div className="flex flex-col">
           {secondaryFeatured.map((article, index) => (
-            <Link key={article.id} to={`/article/${article.id}`} className={clsx(
+            <Link key={article.id} to={`/article/${article.id}`} className={cn(
               "group flex flex-col flex-1 hover:bg-zinc-50 transition-colors",
               index === 0 ? "border-b border-zinc-200" : ""
             )}>
@@ -100,7 +100,7 @@ export default function Home() {
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={clsx(
+                className={cn(
                   "px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors",
                   index !== 0 ? "border-l border-zinc-200" : "",
                   activeCategory === category 
@@ -128,7 +128,7 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-zinc-200">
         {filteredArticles.map((article, index) => (
-          <Link key={article.id} to={`/article/${article.id}`} className={clsx(
+          <Link key={article.id} to={`/article/${article.id}`} className={cn(
             "group flex flex-col h-full border-b border-zinc-200 hover:bg-zinc-50 transition-colors",
             index % 2 === 0 ? "md:border-r" : "md:border-r-0",
             (index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"
