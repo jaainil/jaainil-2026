@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { articles } from '../data/articles';
-import { Link as LinkIcon, Clock, ChevronDown } from 'lucide-react';
+import { Link as LinkIcon, Clock, ChevronDown, Twitter, Linkedin } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'motion/react';
 
@@ -111,13 +111,28 @@ export default function ArticlePage() {
             <Clock className="w-4 h-4" />
             <span>{article.readTime}</span>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <a
+              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 border border-zinc-200 hover:bg-zinc-50 transition-colors text-zinc-700"
+            >
+              <Twitter className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Share</span>
+            </a>
+            <a
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 border border-zinc-200 hover:bg-zinc-50 transition-colors text-zinc-700"
+            >
+              <Linkedin className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Share</span>
+            </a>
             <button className="flex items-center gap-2 px-4 py-2.5 border border-zinc-200 hover:bg-zinc-50 transition-colors text-zinc-700">
               <LinkIcon className="w-3.5 h-3.5" />
-              Copy Link
-            </button>
-            <button className="px-2.5 py-2.5 border-y border-r border-zinc-200 hover:bg-zinc-50 transition-colors text-zinc-700">
-              <ChevronDown className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Copy Link</span>
             </button>
           </div>
         </div>
