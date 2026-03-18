@@ -27,11 +27,13 @@ export default function Home() {
         <div className="lg:col-span-2 border-b lg:border-b-0 lg:border-r border-zinc-200 flex flex-col group cursor-pointer hover:bg-zinc-50 transition-colors">
           <Link to={`/article/${featuredArticle.id}`} className="flex flex-col h-full">
             <div className="p-6 md:p-8 grow">
-              <div className="rounded-none overflow-hidden mb-8 aspect-video bg-zinc-100 relative border border-zinc-200 flex items-center justify-center">
-                <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/tech/1200/800')] opacity-10 mix-blend-luminosity bg-cover bg-center"></div>
-                <div className="bg-white border border-zinc-200 p-4 sm:p-6 md:p-8 z-10 shadow-2xl scale-75 sm:scale-100 md:scale-125">
-                  <Logo disableLink={true} />
-                </div>
+              <div className="rounded-none overflow-hidden mb-8 aspect-video bg-zinc-100 relative border border-zinc-200">
+                <img 
+                  src={featuredArticle.imageUrl} 
+                  alt={featuredArticle.title}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
                 <span>// {featuredArticle.category}</span>
