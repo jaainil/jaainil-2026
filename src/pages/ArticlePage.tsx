@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { articles } from '../data/articles';
-import { Link as LinkIcon, Clock, ChevronDown, Twitter, Linkedin } from 'lucide-react';
+import { Link as LinkIcon, Clock, ChevronDown, Twitter, Linkedin, ArrowUp } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'motion/react';
 
@@ -17,6 +17,20 @@ export default function ArticlePage() {
   const { id } = useParams();
   const article = articles.find(a => a.id === id) || articles[0]; // Fallback to first for demo
   const [activeId, setActiveId] = useState(TOC_ITEMS[0].id);
+  const [toast, setToast] = useState<string | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const toastTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  const showToast = (message: string) => {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    setToast(message);
+    toastTimeout.current = setTimeout(() => setToast(null), 2000);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    showToast('Link copied!');
+  };
 
   const relatedArticles = articles
     .filter(a => a.id !== article.id)
@@ -55,6 +69,18 @@ export default function ArticlePage() {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 500);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="max-w-7xl mx-auto border-x border-zinc-200 min-h-screen bg-white">
@@ -130,7 +156,10 @@ export default function ArticlePage() {
               <Linkedin className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Share</span>
             </a>
-            <button className="flex items-center gap-2 px-4 py-2.5 border border-zinc-200 hover:bg-zinc-50 transition-colors text-zinc-700">
+            <button 
+              onClick={copyLink}
+              className="flex items-center gap-2 px-4 py-2.5 border border-zinc-200 hover:bg-zinc-50 transition-colors text-zinc-700"
+            >
               <LinkIcon className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Copy Link</span>
             </button>
@@ -299,6 +328,23 @@ async function fetchInsights() {
           </form>
         </div>
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 bg-zinc-900 text-white px-4 py-3 text-xs font-mono uppercase tracking-widest shadow-lg z-50 animate-in fade-in slide-in-from-bottom-2">
+          {toast}
+        </div>
+      )}
+
+      {/* Back to Top */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 w-12 h-12 bg-zinc-900 text-white flex items-center justify-center shadow-lg hover:bg-zinc-800 transition-colors z-50"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }
