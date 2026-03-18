@@ -9,7 +9,7 @@ export default function Footer() {
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 border-b border-zinc-800">
           <div className="py-12 md:py-16 border-b md:border-b-0 md:border-r border-zinc-800 px-6 md:px-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4 tracking-tight">
               Stay ahead of the curve<br />in the tech world.
             </h2>
           </div>
