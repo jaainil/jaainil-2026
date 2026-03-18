@@ -19,6 +19,7 @@ export default function Footer() {
               <input 
                 type="email" 
                 placeholder="YOUR EMAIL ADDRESS" 
+                autoComplete="off"
                 className="bg-zinc-800 border-none rounded-none px-4 py-3 grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500"
               />
               <button 

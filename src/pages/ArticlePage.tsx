@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { articles } from '../data/articles';
-import { Link as LinkIcon, Clock, ChevronDown, Twitter, Linkedin, ArrowUp } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Link as LinkIcon, Clock, Twitter, Linkedin, ArrowUp } from 'lucide-react';
 import { motion } from 'motion/react';
+import { articles } from '../data/articles';
+import { cn } from '../lib/utils';
+import { useToast } from '../hooks/useToast';
 
 const TOC_ITEMS = [
   { id: 'introduction', title: 'Introduction' },
@@ -15,21 +16,14 @@ const TOC_ITEMS = [
 
 export default function ArticlePage() {
   const { id } = useParams();
-  const article = articles.find(a => a.id === id) || articles[0]; // Fallback to first for demo
+  const { addToast } = useToast();
+  const article = articles.find(a => a.id === id) || articles[0];
   const [activeId, setActiveId] = useState(TOC_ITEMS[0].id);
-  const [toast, setToast] = useState<string | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const toastTimeout = useRef<ReturnType<typeof setTimeout>>();
-
-  const showToast = (message: string) => {
-    if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    setToast(message);
-    toastTimeout.current = setTimeout(() => setToast(null), 2000);
-  };
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    showToast('Link copied!');
+    addToast('Link copied!', 2000);
   };
 
   const relatedArticles = articles
@@ -74,7 +68,7 @@ export default function ArticlePage() {
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 500);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -84,7 +78,6 @@ export default function ArticlePage() {
 
   return (
     <div className="max-w-7xl mx-auto border-x border-zinc-200 min-h-screen bg-white">
-      {/* Article Header */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-10 lg:p-16">
         <div className="flex flex-col justify-between">
           <div>
@@ -113,7 +106,6 @@ export default function ArticlePage() {
         </div>
       </div>
 
-      {/* Meta Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-6 sm:px-10 lg:px-16 py-4 border-y border-zinc-200">
         <div className="flex items-center gap-4">
           <div className="flex gap-1.5">
@@ -167,9 +159,7 @@ export default function ArticlePage() {
         </div>
       </div>
 
-      {/* Article Body Layout */}
       <div className="flex flex-col md:flex-row relative border-b border-zinc-200">
-        {/* Sidebar TOC */}
         <div className="hidden md:block w-64 lg:w-72 shrink-0 border-r border-zinc-200 py-8 sm:py-12 lg:py-16 pl-6 sm:pl-10 lg:pl-16 pr-8 lg:pr-12">
           <div className="sticky top-24">
             <div className="relative border-l border-zinc-200">
@@ -180,7 +170,7 @@ export default function ArticlePage() {
                     <li key={item.id} className="relative">
                       <a 
                         href={`#${item.id}`} 
-                        className={clsx(
+                        className={cn(
                           "block pl-4 py-2 transition-colors",
                           isActive ? "text-zinc-900 font-medium" : "text-zinc-500 hover:text-zinc-900"
                         )}
@@ -203,7 +193,6 @@ export default function ArticlePage() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
           <p className="lead text-xl text-zinc-600 mb-10">
             The tech landscape is evolving faster than ever. In this comprehensive overview, we break down the most significant developments and what they mean for the future of the industry. <em>Stay informed.</em>
@@ -257,14 +246,13 @@ async function fetchInsights() {
         </div>
       </div>
 
-      {/* Related Posts */}
       <div className="border-b border-zinc-200">
         <div className="px-6 sm:px-10 lg:px-16 py-12 border-b border-zinc-200">
           <h2 className="text-2xl font-display font-bold tracking-tight text-zinc-900">Related Articles</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
           {relatedArticles.map((relatedArticle, index) => (
-            <Link key={relatedArticle.id} to={`/article/${relatedArticle.id}`} className={clsx(
+            <Link key={relatedArticle.id} to={`/article/${relatedArticle.id}`} className={cn(
               "group flex flex-col h-full hover:bg-zinc-50 transition-colors",
               index !== 2 ? "md:border-r border-zinc-200" : "",
               index !== 0 ? "border-t md:border-t-0 border-zinc-200" : ""
@@ -285,7 +273,7 @@ async function fetchInsights() {
                   {relatedArticle.title}
                 </h3>
               </div>
-              <div className="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
+              <div className="border-t border-zinc-200 p-4 px-6 md:p-8 flex items-center justify-between mt-auto">
                 <div className="flex -space-x-2">
                   {relatedArticle.authors.map((author, i) => (
                     <img 
@@ -306,17 +294,17 @@ async function fetchInsights() {
         </div>
       </div>
 
-      {/* Newsletter Section embedded in article */}
       <div className="w-full bg-zinc-950 py-16 px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
         <div className="md:w-1/2">
           <h3 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4">Never miss an update</h3>
           <p className="text-zinc-400 font-mono text-xs uppercase tracking-widest">Join 50,000+ developers getting our weekly tech insights.</p>
         </div>
         <div className="w-full md:w-1/2">
-          <form className="flex flex-col sm:flex-row gap-0 border border-zinc-700">
+          <form className="flex flex-col sm:flex-row gap-0 border border-zinc-700" onSubmit={(e) => e.preventDefault()}>
             <input 
               type="email" 
               placeholder="YOUR EMAIL ADDRESS" 
+              autoComplete="off"
               className="bg-zinc-900 border-none rounded-none px-4 py-4 grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500 w-full"
             />
             <button 
@@ -329,18 +317,11 @@ async function fetchInsights() {
         </div>
       </div>
 
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 right-6 bg-zinc-900 text-white px-4 py-3 text-xs font-mono uppercase tracking-widest shadow-lg z-50 animate-in fade-in slide-in-from-bottom-2">
-          {toast}
-        </div>
-      )}
-
-      {/* Back to Top */}
       {showBackToTop && (
         <button
           onClick={scrollToTop}
           className="fixed bottom-6 right-6 w-12 h-12 bg-zinc-900 text-white flex items-center justify-center shadow-lg hover:bg-zinc-800 transition-colors z-50"
+          aria-label="Back to top"
         >
           <ArrowUp className="w-5 h-5" />
         </button>
