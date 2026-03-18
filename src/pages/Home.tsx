@@ -26,8 +26,8 @@ export default function Home() {
       <div className="border-b border-zinc-200 grid grid-cols-1 lg:grid-cols-3 mb-16">
         <div className="lg:col-span-2 border-b lg:border-b-0 lg:border-r border-zinc-200 flex flex-col group cursor-pointer hover:bg-zinc-50 transition-colors">
           <Link to={`/article/${featuredArticle.id}`} className="flex flex-col h-full">
-            <div className="p-6 md:p-8 flex-grow">
-              <div className="rounded-none overflow-hidden mb-8 aspect-[16/9] bg-zinc-100 relative border border-zinc-200 flex items-center justify-center">
+            <div className="p-6 md:p-8 grow">
+              <div className="rounded-none overflow-hidden mb-8 aspect-video bg-zinc-100 relative border border-zinc-200 flex items-center justify-center">
                 <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/tech/1200/800')] opacity-10 mix-blend-luminosity bg-cover bg-center"></div>
                 <div className="bg-white border border-zinc-200 p-4 sm:p-6 md:p-8 z-10 shadow-2xl scale-75 sm:scale-100 md:scale-125">
                   <Logo disableLink={true} />
@@ -66,8 +66,8 @@ export default function Home() {
               "group flex flex-col flex-1 hover:bg-zinc-50 transition-colors",
               index === 0 ? "border-b border-zinc-200" : ""
             )}>
-              <div className="p-6 md:p-8 flex-grow">
-                <div className="rounded-none overflow-hidden mb-6 aspect-[16/9] bg-zinc-100 relative border border-zinc-200">
+              <div className="p-6 md:p-8 grow">
+                <div className="rounded-none overflow-hidden mb-6 aspect-video bg-zinc-100 relative border border-zinc-200">
                   <img 
                     src={article.imageUrl} 
                     alt={article.title}
@@ -131,8 +131,8 @@ export default function Home() {
             index % 2 === 0 ? "md:border-r" : "md:border-r-0",
             (index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"
           )}>
-            <div className="p-6 md:p-8 flex-grow">
-              <div className="aspect-[16/9] rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+            <div className="p-6 md:p-8 grow">
+              <div className="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
                 <img 
                   src={article.imageUrl} 
                   alt={article.title}

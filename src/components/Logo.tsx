@@ -17,7 +17,7 @@ export function Logo({ className = "", disableLink = false }: { className?: stri
         
         {/* Cyan Line with Gap */}
         <div className="flex items-center gap-1.5 mt-1.5">
-          <div className="h-1 sm:h-1.5 bg-[#06B6D4] flex-grow rounded-full"></div>
+          <div className="h-1 sm:h-1.5 bg-[#06B6D4] grow rounded-full"></div>
           <div className="h-1 sm:h-1.5 w-6 sm:w-8 bg-[#06B6D4] rounded-full"></div>
         </div>
         
