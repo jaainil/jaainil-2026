@@ -18,6 +18,15 @@ export default function ArticlePage() {
   const article = articles.find(a => a.id === id) || articles[0]; // Fallback to first for demo
   const [activeId, setActiveId] = useState(TOC_ITEMS[0].id);
 
+  const relatedArticles = articles
+    .filter(a => a.id !== article.id)
+    .sort((a, b) => (a.category === article.category ? -1 : 1))
+    .slice(0, 3);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   useEffect(() => {
     const visibleSections = new Set<string>();
     
@@ -97,7 +106,7 @@ export default function ArticlePage() {
           </div>
         </div>
         
-        <div className="flex items-center gap-6 text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             <span>{article.readTime}</span>
@@ -204,6 +213,55 @@ async function fetchInsights() {
         </div>
       </div>
 
+      {/* Related Posts */}
+      <div className="border-b border-zinc-200">
+        <div className="px-6 sm:px-10 lg:px-16 py-12 border-b border-zinc-200">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900">Related Articles</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+          {relatedArticles.map((relatedArticle, index) => (
+            <Link key={relatedArticle.id} to={`/article/${relatedArticle.id}`} className={clsx(
+              "group flex flex-col h-full hover:bg-zinc-50 transition-colors",
+              index !== 2 ? "md:border-r border-zinc-200" : "",
+              index !== 0 ? "border-t md:border-t-0 border-zinc-200" : ""
+            )}>
+              <div className="p-6 md:p-8 flex-grow">
+                <div className="aspect-[16/9] rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+                  <img 
+                    src={relatedArticle.imageUrl} 
+                    alt={relatedArticle.title}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
+                  <span>// {relatedArticle.category}</span>
+                </div>
+                <h3 className="text-xl font-bold tracking-tight text-zinc-900 mb-4">
+                  {relatedArticle.title}
+                </h3>
+              </div>
+              <div className="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
+                <div className="flex -space-x-2">
+                  {relatedArticle.authors.map((author, i) => (
+                    <img 
+                      key={i} 
+                      src={author.avatarUrl} 
+                      alt={author.name} 
+                      className="w-6 h-6 rounded-none border border-zinc-200"
+                      referrerPolicy="no-referrer"
+                    />
+                  ))}
+                </div>
+                <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+                  {relatedArticle.date}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Newsletter Section embedded in article */}
       <div className="w-full bg-zinc-950 py-16 px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
         <div className="md:w-1/2">
@@ -211,15 +269,15 @@ async function fetchInsights() {
           <p className="text-zinc-400 font-mono text-xs uppercase tracking-widest">Join 50,000+ developers getting our weekly tech insights.</p>
         </div>
         <div className="w-full md:w-1/2">
-          <form className="flex gap-0 border border-zinc-700">
+          <form className="flex flex-col sm:flex-row gap-0 border border-zinc-700">
             <input 
               type="email" 
               placeholder="YOUR EMAIL ADDRESS" 
-              className="bg-zinc-900 border-none rounded-none px-4 py-4 flex-grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500"
+              className="bg-zinc-900 border-none rounded-none px-4 py-4 flex-grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500 w-full"
             />
             <button 
               type="submit" 
-              className="bg-white text-zinc-900 px-8 py-4 rounded-none font-mono text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors border-l border-zinc-700 whitespace-nowrap"
+              className="bg-white text-zinc-900 px-8 py-4 rounded-none font-mono text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors border-t sm:border-t-0 sm:border-l border-zinc-700 whitespace-nowrap w-full sm:w-auto"
             >
               Subscribe
             </button>

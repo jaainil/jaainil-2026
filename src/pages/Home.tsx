@@ -29,7 +29,7 @@ export default function Home() {
             <div className="p-6 md:p-8 flex-grow">
               <div className="rounded-none overflow-hidden mb-8 aspect-[16/9] bg-zinc-100 relative border border-zinc-200 flex items-center justify-center">
                 <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/tech/1200/800')] opacity-10 mix-blend-luminosity bg-cover bg-center"></div>
-                <div className="bg-white border border-zinc-200 p-8 z-10 shadow-2xl scale-125">
+                <div className="bg-white border border-zinc-200 p-4 sm:p-6 md:p-8 z-10 shadow-2xl scale-75 sm:scale-100 md:scale-125">
                   <Logo disableLink={true} />
                 </div>
               </div>
