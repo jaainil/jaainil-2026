@@ -146,7 +146,7 @@ export default function ArticlePage() {
                       {isActive && (
                         <motion.div
                           layoutId="toc-highlighter"
-                          className="absolute left-0 top-0 bottom-0 w-[2px] bg-zinc-900 -ml-[1px]"
+                          className="absolute left-0 top-0 bottom-0 w-[2px] bg-zinc-900 -ml-px"
                           initial={false}
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
@@ -160,7 +160,7 @@ export default function ArticlePage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
+        <div className="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
           <p className="lead text-xl text-zinc-600 mb-10">
             The tech landscape is evolving faster than ever. In this comprehensive overview, we break down the most significant developments and what they mean for the future of the industry. <em>Stay informed.</em>
           </p>
@@ -225,8 +225,8 @@ async function fetchInsights() {
               index !== 2 ? "md:border-r border-zinc-200" : "",
               index !== 0 ? "border-t md:border-t-0 border-zinc-200" : ""
             )}>
-              <div className="p-6 md:p-8 flex-grow">
-                <div className="aspect-[16/9] rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+              <div className="p-6 md:p-8 grow">
+                <div className="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
                   <img 
                     src={relatedArticle.imageUrl} 
                     alt={relatedArticle.title}
@@ -273,7 +273,7 @@ async function fetchInsights() {
             <input 
               type="email" 
               placeholder="YOUR EMAIL ADDRESS" 
-              className="bg-zinc-900 border-none rounded-none px-4 py-4 flex-grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500 w-full"
+              className="bg-zinc-900 border-none rounded-none px-4 py-4 grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500 w-full"
             />
             <button 
               type="submit" 
