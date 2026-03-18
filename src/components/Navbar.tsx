@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Github, DiscIcon as Discord, ChevronDown, ArrowUpRight } from 'lucide-react';
+import { Logo } from './Logo';
 
 export default function Navbar() {
   return (
@@ -7,9 +8,9 @@ export default function Navbar() {
       <div className="w-full">
         <div className="flex justify-between items-stretch h-16">
           <div className="flex items-stretch">
-            <Link to="/" className="flex items-center px-6 md:px-8 border-r border-zinc-200 hover:bg-zinc-50 transition-colors">
-              <span className="font-bold text-xl tracking-tighter text-zinc-900">VOID(<span className="font-sans">0</span>)</span>
-            </Link>
+            <div className="flex items-center px-6 md:px-8 border-r border-zinc-200 hover:bg-zinc-50 transition-colors">
+              <Logo className="scale-75 origin-left" />
+            </div>
             <nav className="hidden md:flex text-[11px] font-mono uppercase tracking-widest text-zinc-600">
               <Link to="#" className="flex items-center gap-1 px-6 border-r border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">Open Source <ChevronDown className="w-3 h-3 text-zinc-400" /></Link>
               <Link to="/" className="flex items-center px-6 border-r border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">Blog</Link>
