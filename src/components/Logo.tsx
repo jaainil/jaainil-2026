@@ -11,7 +11,7 @@ export function Logo({ className = "", disableLink = false }: { className?: stri
       
       {/* Text & Tagline */}
       <div className="flex flex-col justify-center pt-1">
-        <span className="text-2xl sm:text-3xl font-bold text-[#2563EB] tracking-wide leading-none font-sans">
+        <span className="text-2xl sm:text-3xl font-bold text-[#2563EB] tracking-wide leading-none font-display">
           SHRAVONIX
         </span>
         

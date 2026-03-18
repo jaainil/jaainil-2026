@@ -67,7 +67,7 @@ export default function ArticlePage() {
               <span>{article.category}</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-zinc-900 leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight text-zinc-900 leading-[1.1]">
               {article.title}
             </h1>
           </div>
@@ -160,7 +160,7 @@ export default function ArticlePage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
+        <div className="flex-grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
           <p className="lead text-xl text-zinc-600 mb-10">
             The tech landscape is evolving faster than ever. In this comprehensive overview, we break down the most significant developments and what they mean for the future of the industry. <em>Stay informed.</em>
           </p>
@@ -216,7 +216,7 @@ async function fetchInsights() {
       {/* Related Posts */}
       <div className="border-b border-zinc-200">
         <div className="px-6 sm:px-10 lg:px-16 py-12 border-b border-zinc-200">
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900">Related Articles</h2>
+          <h2 className="text-2xl font-display font-bold tracking-tight text-zinc-900">Related Articles</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
           {relatedArticles.map((relatedArticle, index) => (
@@ -237,7 +237,7 @@ async function fetchInsights() {
                 <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
                   <span>// {relatedArticle.category}</span>
                 </div>
-                <h3 className="text-xl font-bold tracking-tight text-zinc-900 mb-4">
+                <h3 className="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
                   {relatedArticle.title}
                 </h3>
               </div>
@@ -265,7 +265,7 @@ async function fetchInsights() {
       {/* Newsletter Section embedded in article */}
       <div className="w-full bg-zinc-950 py-16 px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
         <div className="md:w-1/2">
-          <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Never miss an update</h3>
+          <h3 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4">Never miss an update</h3>
           <p className="text-zinc-400 font-mono text-xs uppercase tracking-widest">Join 50,000+ developers getting our weekly tech insights.</p>
         </div>
         <div className="w-full md:w-1/2">

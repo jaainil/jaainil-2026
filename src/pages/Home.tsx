@@ -36,7 +36,7 @@ export default function Home() {
               <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
                 <span>// {featuredArticle.category}</span>
               </div>
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-zinc-900 mb-6">
+              <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight text-zinc-900 mb-6">
                 {featuredArticle.title}
               </h1>
             </div>
@@ -78,7 +78,7 @@ export default function Home() {
                 <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
                   <span>// {article.category}</span>
                 </div>
-                <h3 className="text-xl font-bold tracking-tight text-zinc-900 mb-4">
+                <h3 className="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
                   {article.title}
                 </h3>
                 <div className="mt-auto pt-4 text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
@@ -143,7 +143,7 @@ export default function Home() {
               <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
                 <span>// {article.category}</span>
               </div>
-              <h3 className="text-xl font-bold tracking-tight text-zinc-900 mb-4">
+              <h3 className="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
                 {article.title}
               </h3>
             </div>
