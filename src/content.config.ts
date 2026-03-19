@@ -1,9 +1,11 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { z } from 'astro/zod';
+import { glob } from 'astro/loaders';
 
 const articles = defineCollection({
-  type: 'data',
+  loader: glob({ pattern: '**/index.mdx', base: './src/content/articles' }),
   schema: z.object({
-    id: z.string(),
     title: z.string(),
     category: z.string(),
     date: z.string(),
@@ -12,11 +14,14 @@ const articles = defineCollection({
       avatarUrl: z.string(),
     })),
     imageUrl: z.string(),
+    imageAlt: z.string().optional(),
     readTime: z.string(),
     description: z.string().optional(),
     tags: z.array(z.string()).optional(),
   }),
 });
+
+export type Article = CollectionEntry<'articles'>;
 
 export const collections = {
   articles,

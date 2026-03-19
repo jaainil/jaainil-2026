@@ -4,7 +4,10 @@ import { getCollection } from 'astro:content';
 import type { Article } from '../types';
 
 const allArticles = await getCollection('articles');
-const articles: Article[] = allArticles.map((a: { data: Article }) => a.data).sort((a: Article, b: Article) => 
+const articles: Article[] = allArticles.map((a) => ({
+  id: a.id,
+  ...a.data,
+})).sort((a: Article, b: Article) =>
   new Date(b.date).getTime() - new Date(a.date).getTime()
 );
 
@@ -38,7 +41,7 @@ const CATEGORIES = ['All', 'AI & ML', 'Web Dev', 'Hardware', 'Industry'];
           </div>
           <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center gap-4 text-xs font-mono text-zinc-500">
             <div class="flex -space-x-2">
-              {featuredArticle.authors.map((author: { name: string; avatarUrl: string }, i: number) => (
+              {featuredArticle.authors.map((author: { name: string; avatarUrl: string }) => (
                 <img 
                   src={author.avatarUrl} 
                   alt={author.name} 
@@ -129,7 +132,7 @@ const CATEGORIES = ['All', 'AI & ML', 'Web Dev', 'Hardware', 'Industry'];
           </div>
           <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
             <div class="flex -space-x-2">
-              {article.authors.map((author: { name: string; avatarUrl: string }, i: number) => (
+              {article.authors.map((author: { name: string; avatarUrl: string }) => (
                 <img 
                   src={author.avatarUrl} 
                   alt={author.name} 

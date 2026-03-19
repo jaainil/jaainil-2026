@@ -1,0 +1,46 @@
+---
+title: "Rust in the Linux Kernel: One Year Later"
+category: "Web Dev"
+date: "JAN 22, 2026"
+authors:
+  - name: "Linus Torvalds"
+    avatarUrl: "https://picsum.photos/seed/linus/40/40"
+imageUrl: "./cover.jpg"
+imageAlt: "Linux kernel with Rust"
+readTime: "7 MIN READ"
+description: "Reflecting on one year of Rust programming language integration into the Linux kernel development."
+tags:
+  - "Rust"
+  - "Linux"
+  - "Systems Programming"
+  - "Open Source"
+---
+
+![Rust in Linux](https://picsum.photos/seed/linux/1200/600)
+
+One year ago, the Linux kernel community made history by accepting the first Rust code into the mainline kernel. Now, we take stock of what's been accomplished and what lies ahead.
+
+## The Beginning
+
+The decision to introduce Rust into the kernel was met with both excitement and skepticism. Would the memory safety guarantees translate into real-world benefits? Could Rust coexist peacefully with decades of C code?
+
+## Progress Made
+
+Over the past year:
+
+- **12 new Rust drivers** merged into mainline
+- **4 subsystem maintainers** actively reviewing Rust patches
+- **Significant bug reduction** in Rust-written components
+- **Improved tooling** for kernel development
+
+## Challenges
+
+Working with Rust in a kernel environment presents unique challenges:
+
+1. **No standard library** - Everything must be written for `no_std`
+2. **Embedded development** - No heap allocation by default
+3. **Abstraction boundaries** - Bridging Rust and C safely
+
+## Conclusion
+
+The experiment has been a success. Rust is now a first-class citizen in the Linux kernel, with growing adoption across multiple subsystems.

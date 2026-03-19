@@ -11,6 +11,9 @@ export interface Article {
   authors: Author[];
   imageUrl: string;
   readTime: string;
+  imageAlt?: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface TocItem {
