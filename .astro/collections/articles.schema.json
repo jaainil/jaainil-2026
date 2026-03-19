@@ -1,70 +1,62 @@
 {
-  "$ref": "#/definitions/articles",
-  "definitions": {
-    "articles": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "category": {
-          "type": "string"
-        },
-        "date": {
-          "type": "string"
-        },
-        "authors": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "avatarUrl": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "avatarUrl"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "imageUrl": {
-          "type": "string"
-        },
-        "readTime": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "authors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "avatarUrl": {
             "type": "string"
           }
         },
-        "$schema": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "category",
-        "date",
-        "authors",
-        "imageUrl",
-        "readTime"
-      ],
-      "additionalProperties": false
+        "required": [
+          "name",
+          "avatarUrl"
+        ]
+      }
+    },
+    "imageUrl": {
+      "type": "string"
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "readTime": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "$schema": {
+      "type": "string"
     }
   },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "required": [
+    "title",
+    "category",
+    "date",
+    "authors",
+    "imageUrl",
+    "readTime"
+  ]
 }

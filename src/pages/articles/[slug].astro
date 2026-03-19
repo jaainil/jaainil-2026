@@ -1,64 +1,56 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import ArticleInteractive from '../../components/react/ArticleInteractive';
 import AnimatedToc from '../../components/react/AnimatedToc';
-import type { Article } from '../../types/index';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
-  return articles.map((article: { data: Article }) => ({
-    params: { slug: article.data.id },
-    props: { article: article.data },
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { article },
   }));
 }
 
-interface Props {
-  article: Article;
-}
-
 const { article } = Astro.props;
+const { Content, headings } = await render(article);
 
 const allArticles = await getCollection('articles');
-const articles: Article[] = allArticles.map((a: { data: Article }) => a.data);
-const relatedArticles: Article[] = articles
+const relatedArticles = allArticles
   .filter((a) => a.id !== article.id)
-  .sort((a, b) => (a.category === article.category ? -1 : 1))
+  .sort((a) => (a.data.category === article.data.category ? -1 : 1))
   .slice(0, 3);
 
-const TOC_ITEMS = [
-  { id: 'introduction', title: 'Introduction' },
-  { id: 'key-takeaways', title: 'Key Takeaways' },
-  { id: 'deep-dive', title: 'Deep Dive' },
-  { id: 'future-outlook', title: 'Future Outlook' },
-  { id: 'conclusion', title: 'Conclusion' },
-];
+const TOC_ITEMS = headings.map((h) => ({
+  id: h.slug,
+  title: h.text,
+}));
 ---
 
-<BaseLayout title={`${article.title} - TechPulse`}>
+<BaseLayout title={`${article.data.title} - TechPulse`}>
   <div class="max-w-7xl mx-auto border-x border-zinc-200 min-h-screen bg-white">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-10 lg:p-16">
       <div class="flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider mb-6">
             <span>//</span>
-            <span>{article.category}</span>
+            <span>{article.data.category}</span>
           </div>
           
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight text-zinc-900 leading-[1.1]">
-            {article.title}
+            {article.data.title}
           </h1>
         </div>
         
         <div class="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider mt-12 lg:mt-0">
-          {article.date}
+          {article.data.date}
         </div>
       </div>
       
       <div class="w-full h-full min-h-[300px] lg:min-h-[400px] bg-zinc-100">
         <img 
-          src={article.imageUrl} 
-          alt={article.title}
+          src={article.data.imageUrl} 
+          alt={article.data.imageAlt || article.data.title}
           class="w-full h-full object-cover"
         />
       </div>
@@ -67,7 +59,7 @@ const TOC_ITEMS = [
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-6 sm:px-10 lg:px-16 py-4 border-y border-zinc-200">
       <div class="flex items-center gap-4">
         <div class="flex gap-1.5">
-          {article.authors.map((author: { name: string; avatarUrl: string }, i: number) => (
+          {article.data.authors.map((author) => (
             <img 
               src={author.avatarUrl} 
               alt={author.name} 
@@ -76,7 +68,7 @@ const TOC_ITEMS = [
           ))}
         </div>
         <div class="text-xs font-mono font-medium text-zinc-600 uppercase tracking-wider leading-relaxed max-w-md">
-          {article.authors.map((a: { name: string }) => a.name).join(', ')}
+          {article.data.authors.map((a) => a.name).join(', ')}
         </div>
       </div>
       
@@ -85,9 +77,9 @@ const TOC_ITEMS = [
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{article.readTime}</span>
+          <span>{article.data.readTime}</span>
         </div>
-        <ArticleInteractive client:only="react" articleTitle={article.title} />
+        <ArticleInteractive client:only="react" articleTitle={article.data.title} />
       </div>
     </div>
 
@@ -99,55 +91,7 @@ const TOC_ITEMS = [
       </div>
 
       <div class="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
-        <p class="lead text-xl text-zinc-600 mb-10">
-          The tech landscape is evolving faster than ever. In this comprehensive overview, we break down the most significant developments and what they mean for the future of the industry. <em>Stay informed.</em>
-        </p>
-
-        <h2 id="introduction">Introduction</h2>
-        <p>
-          As we move further into 2026, the convergence of artificial intelligence, advanced hardware, and new web paradigms is creating unprecedented opportunities and challenges. Companies are racing to adapt to a reality where AI is no longer just a feature, but the foundation of new products.
-        </p>
-        <p>This shift requires a fundamental rethinking of how we build, deploy, and scale applications:</p>
-        <ul>
-          <li><strong>AI-First Architecture:</strong> Designing systems with machine learning models at their core.</li>
-          <li><strong>Edge Computing:</strong> Pushing processing closer to the user for lower latency.</li>
-          <li><strong>Security by Default:</strong> Implementing zero-trust frameworks across all layers.</li>
-        </ul>
-
-        <h2 id="key-takeaways">Key Takeaways</h2>
-        <p>
-          Our analysis of recent industry trends reveals several critical insights that developers and tech leaders need to understand:
-        </p>
-        <blockquote>
-          "The companies that succeed in the next decade won't just use AI; they will be fundamentally restructured around it." — TechWire Analysis
-        </blockquote>
-
-        <h2 id="deep-dive">Deep Dive</h2>
-        <p>
-          Let's look at the numbers. Recent benchmarks show a massive improvement in processing efficiency for large language models, reducing the cost of inference by over 60% compared to last year. This democratization of AI capabilities means smaller teams can now build features that previously required massive engineering organizations.
-        </p>
-        
-        <pre><code>{`// Example of a modern API integration
-async function fetchInsights() {
-  const response = await fetch('https://api.techwire.dev/v1/insights', {
-    headers: {
-      'Authorization': \`Bearer \${process.env.API_KEY}\`,
-      'Content-Type': 'application/json'
-    }
-  });
-  
-  return response.json();
-}`}</code></pre>
-
-        <h2 id="future-outlook">Future Outlook</h2>
-        <p>
-          Looking ahead, we expect to see continued consolidation in the tooling space. Developers are tired of configuring complex build pipelines and are migrating towards unified, zero-config toolchains that "just work."
-        </p>
-
-        <h2 id="conclusion">Conclusion</h2>
-        <p>
-          The pace of innovation isn't slowing down. To stay competitive, teams must remain agile, continuously evaluate their tech stacks, and be willing to adopt new paradigms when they offer clear advantages.
-        </p>
+        <Content />
       </div>
     </div>
 
@@ -156,26 +100,26 @@ async function fetchInsights() {
         <h2 class="text-2xl font-display font-bold tracking-tight text-zinc-900">Related Articles</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
-        {relatedArticles.map((relatedArticle: Article, index: number) => (
+        {relatedArticles.map((relatedArticle, index) => (
           <a href={`/articles/${relatedArticle.id}`} class={`group flex flex-col h-full hover:bg-zinc-50 transition-colors ${index !== 2 ? "md:border-r border-zinc-200" : ""} ${index !== 0 ? "border-t md:border-t-0 border-zinc-200" : ""}`}>
             <div class="p-6 md:p-8 grow">
               <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
                 <img 
-                  src={relatedArticle.imageUrl} 
-                  alt={relatedArticle.title}
+                  src={relatedArticle.data.imageUrl} 
+                  alt={relatedArticle.data.title}
                   class="w-full h-full object-cover"
                 />
               </div>
               <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
-                <span>// {relatedArticle.category}</span>
+                <span>// {relatedArticle.data.category}</span>
               </div>
               <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
-                {relatedArticle.title}
+                {relatedArticle.data.title}
               </h3>
             </div>
             <div class="border-t border-zinc-200 p-4 px-6 md:p-8 flex items-center justify-between mt-auto">
               <div class="flex -space-x-2">
-                {relatedArticle.authors.map((author: { name: string; avatarUrl: string }, i: number) => (
+                {relatedArticle.data.authors.map((author) => (
                   <img 
                     src={author.avatarUrl} 
                     alt={author.name} 
@@ -184,7 +128,7 @@ async function fetchInsights() {
                 ))}
               </div>
               <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
-                {relatedArticle.date}
+                {relatedArticle.data.date}
               </div>
             </div>
           </a>
