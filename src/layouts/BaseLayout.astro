@@ -17,8 +17,8 @@ interface Props {
 }
 
 const {
-  title = 'TechPulse - Your Deep Dive Into Technology',
-  description = 'In-depth technical analysis covering AI, browsers, frameworks, operating systems, and hardware. Nerdy insights for developers and tech enthusiasts.',
+  title = 'Shravonix - Tech News & Deep Dives',
+  description = 'In-depth technical analysis on AI models, browser engines, web frameworks, Linux kernel, and hardware. Nerdy insights for developers and tech enthusiasts who want deep technical content.',
   image = 'https://shravonix.com/og.jpg',
   articleData = null
 } = Astro.props;
@@ -26,14 +26,14 @@ const url = new URL(Astro.url.pathname, Astro.site);
 const currentUrl = url.toString();
 
 const siteSchema = {
-  '@context': 'https://schema.org',
+  '@context': 'http://schema.org',
   '@type': 'WebSite',
-  name: 'TechPulse',
+  name: 'Shravonix',
   description: description,
   url: 'https://shravonix.com',
   publisher: {
     '@type': 'Organization',
-    name: 'TechPulse',
+    name: 'Shravonix',
     url: 'https://shravonix.com',
     logo: {
       '@type': 'ImageObject',
@@ -43,7 +43,7 @@ const siteSchema = {
 };
 
 const articleSchema = articleData ? {
-  '@context': 'https://schema.org',
+  '@context': 'http://schema.org',
   '@type': 'Article',
   headline: articleData.title,
   description: articleData.description,
@@ -62,7 +62,7 @@ const articleSchema = articleData ? {
   },
   publisher: {
     '@type': 'Organization',
-    name: 'TechPulse',
+    name: 'Shravonix',
     url: 'https://shravonix.com',
     logo: {
       '@type': 'ImageObject',
@@ -93,6 +93,9 @@ const articleSchema = articleData ? {
         image: image,
         site: '@techpulse',
         card: 'summary_large_image'
+      }}
+      extend={{
+        link: [{ rel: "canonical", href: currentUrl }]
       }}
     />
     {articleSchema && <Schema item={articleSchema} />}
