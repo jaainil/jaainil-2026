@@ -16,6 +16,11 @@
       "sourceType": "github",
       "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
     },
+    "json-ld-schemas": {
+      "source": "canatufkansu/claude-skills",
+      "sourceType": "github",
+      "computedHash": "1dd9ab16f59d4f699b303590800814534e99d83824fb40aa8f1505cab4f67f31"
+    },
     "seo-audit": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
