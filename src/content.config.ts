@@ -18,7 +18,6 @@ const articles = defineCollection({
     })),
     imageUrl: z.string(),
     imageAlt: z.string().optional(),
-    readTime: z.string(),
     description: z.string().optional(),
     tags: z.array(z.string()).optional(),
   }),
