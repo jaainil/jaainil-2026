@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import ArticleInteractive from '../../components/react/ArticleInteractive';
+import AnimatedToc from '../../components/react/AnimatedToc';
 import type { Article } from '../../types/index';
 
 export async function getStaticPaths() {
@@ -93,20 +94,7 @@ const TOC_ITEMS = [
     <div class="flex flex-col md:flex-row relative border-b border-zinc-200">
       <div class="hidden md:block w-64 lg:w-72 shrink-0 border-r border-zinc-200 py-8 sm:py-12 lg:py-16 pl-6 sm:pl-10 lg:pl-16 pr-8 lg:pr-12">
         <div class="sticky top-24">
-          <div class="relative border-l border-zinc-200">
-            <ul class="text-[14.5px] font-sans">
-              {TOC_ITEMS.map((item) => (
-                <li class="relative">
-                  <a 
-                    href={`#${item.id}`} 
-                    class="block pl-4 py-2 transition-colors text-zinc-500 hover:text-zinc-900"
-                  >
-                    {item.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <AnimatedToc items={TOC_ITEMS} client:idle />
         </div>
       </div>
 
