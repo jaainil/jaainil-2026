@@ -6,7 +6,7 @@ export default config({
   },
   collections: {
     articles: collection({
-      label: 'Articles',
+      label: 'Posts',
       slugField: 'title',
       path: 'src/content/articles/*/',
       format: {
@@ -16,16 +16,15 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         category: fields.text({ label: 'Category' }),
-        date: fields.text({ label: 'Date' }),
+        date: fields.date({ label: 'Date' }),
         authors: fields.array(
           fields.object({
             name: fields.text({ label: 'Name' }),
             avatarUrl: fields.text({ label: 'Avatar URL' }),
           })
         ),
-        imageUrl: fields.text({ label: 'Cover Image' }),
+        imageUrl: fields.image({ label: 'Cover Image', directory: 'public/images/articles', publicPath: '/images/articles/' }),
         imageAlt: fields.text({ label: 'Image Alt Text', multiline: false }),
-        readTime: fields.text({ label: 'Read Time' }),
         description: fields.text({ label: 'Description', multiline: true }),
         tags: fields.array(fields.text({ label: 'Tag' })),
         content: fields.mdx({ label: 'Content' }),
