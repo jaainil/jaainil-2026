@@ -15,15 +15,3 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
-@layer base {
-  .font-sans {
-    font-family: var(--font-sans);
-  }
-  .font-display {
-    font-family: var(--font-display);
-  }
-  .font-mono {
-    font-family: var(--font-mono);
-  }
-}
