@@ -5,21 +5,71 @@ import '@fontsource-variable/jetbrains-mono';
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { SEO } from 'astro-seo';
+import { Seo } from 'astro-seo-meta';
+import { Schema } from 'astro-seo-schema';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  articleData?: any;
 }
 
-const { 
-  title = 'TechPulse', 
-  description = 'The world\'s best tech news and blog platform.',
-  image = 'https://shravonix.com/og.jpg'
+const {
+  title = 'TechPulse - Your Deep Dive Into Technology',
+  description = 'In-depth technical analysis covering AI, browsers, frameworks, operating systems, and hardware. Nerdy insights for developers and tech enthusiasts.',
+  image = 'https://shravonix.com/og.jpg',
+  articleData = null
 } = Astro.props;
 const url = new URL(Astro.url.pathname, Astro.site);
+const currentUrl = url.toString();
+
+const siteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'TechPulse',
+  description: description,
+  url: 'https://shravonix.com',
+  publisher: {
+    '@type': 'Organization',
+    name: 'TechPulse',
+    url: 'https://shravonix.com',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://shravonix.com/og.jpg'
+    }
+  }
+};
+
+const articleSchema = articleData ? {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: articleData.title,
+  description: articleData.description,
+  image: [image],
+  author: articleData.authors?.map((author: any) => ({
+    '@type': 'Person',
+    name: author.name,
+    image: author.avatarUrl
+  })),
+  datePublished: articleData.date,
+  dateModified: articleData.date,
+  url: currentUrl,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': currentUrl
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'TechPulse',
+    url: 'https://shravonix.com',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://shravonix.com/og.jpg'
+    }
+  }
+} : null;
 ---
 
 <!DOCTYPE html>
@@ -27,25 +77,26 @@ const url = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <SEO
+    <Seo
       title={title}
       description={description}
-      openGraph={{
-        basic: {
-          title: title,
-          type: 'website',
-          image: image,
-        },
-        optional: {
-          description: description,
-          siteName: 'TechPulse',
-        },
+      icon="/favicon.ico"
+      themeColor="#000000"
+      colorScheme="dark"
+      robots="index, follow"
+      facebook={{
+        image: image,
+        url: currentUrl,
+        type: articleData ? 'article' : 'website'
       }}
       twitter={{
-        card: 'summary_large_image',
-        creator: '@techpulse',
+        image: image,
+        site: '@techpulse',
+        card: 'summary_large_image'
       }}
     />
+    {articleSchema && <Schema item={articleSchema} />}
+    <Schema item={siteSchema} />
   </head>
   <body>
     <div class="min-h-screen bg-zinc-50 text-zinc-900 font-sans">
