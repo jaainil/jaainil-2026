@@ -17,16 +17,14 @@ export default config({
         title: fields.slug({ name: { label: 'Title' } }),
         category: fields.text({ label: 'Category' }),
         date: fields.date({ label: 'Date' }),
-        authors: fields.array(
-          fields.object({
-            name: fields.text({ label: 'Name' }),
-            avatarUrl: fields.text({ label: 'Avatar URL' }),
-          })
-        ),
+        authors: fields.array(fields.object({
+          name: fields.text({ label: 'Name' }),
+          avatarUrl: fields.text({ label: 'Avatar URL' }),
+        }), { label: 'Authors' }),
         imageUrl: fields.image({ label: 'Cover Image', directory: 'public/images/articles', publicPath: '/images/articles/' }),
         imageAlt: fields.text({ label: 'Image Alt Text', multiline: false }),
         description: fields.text({ label: 'Description', multiline: true }),
-        tags: fields.array(fields.text({ label: 'Tag' })),
+        tags: fields.array(fields.text({ label: 'Tag' }), { label: 'Tags' }),
         content: fields.mdx({ label: 'Content' }),
       },
     }),
