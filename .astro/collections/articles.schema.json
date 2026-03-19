@@ -1,62 +1,7 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "title": {
-      "type": "string"
-    },
-    "category": {
-      "type": "string"
-    },
-    "date": {
-      "type": "string"
-    },
-    "authors": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "avatarUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "avatarUrl"
-        ]
-      }
-    },
-    "imageUrl": {
-      "type": "string"
-    },
-    "imageAlt": {
-      "type": "string"
-    },
-    "readTime": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "tags": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "$schema": {
-      "type": "string"
-    }
+  "$ref": "#/definitions/articles",
+  "definitions": {
+    "articles": {}
   },
-  "required": [
-    "title",
-    "category",
-    "date",
-    "authors",
-    "imageUrl",
-    "readTime"
-  ]
+  "$schema": "http://json-schema.org/draft-07/schema#"
 }

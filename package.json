@@ -11,11 +11,14 @@
     "check": "astro check"
   },
   "dependencies": {
+    "@astrojs/markdoc": "^1.0.2",
     "@astrojs/mdx": "^5.0.2",
     "@astrojs/react": "^5.0.1",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/space-grotesk": "^5.2.10",
+    "@keystatic/astro": "^5.0.6",
+    "@keystatic/core": "^0.5.48",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.0.7",
