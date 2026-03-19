@@ -6,11 +6,10 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import readingTime from 'astro-reading-time';
 import astroLLMsGenerator from 'astro-llms-generate';
-import vercel from '@astrojs/vercel';
+import robotsTxt from 'astro-robots-txt';
 
 export default defineConfig({
   output: 'static',
-  adapter: vercel(),
   site: 'https://shravonix.com',
   integrations: [
     react(),
@@ -24,6 +23,7 @@ export default defineConfig({
         'https://shravonix.com/llms-full.txt',
       ],
     }),
+    robotsTxt(),
     astroLLMsGenerator({
       title: 'Shravonix Documentation',
       description: 'Complete documentation and content for AI understanding',
