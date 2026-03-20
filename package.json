@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
-    "@astrojs/vercel": "^10.0.2",
+    "@astrojs/vercel": "^8.2.11",
     "@types/node": "^22.19.15",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
