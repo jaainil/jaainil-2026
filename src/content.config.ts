@@ -8,7 +8,7 @@ const articles = defineCollection({
     pattern: '**/index.mdx', 
     base: './src/content/articles',
   }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     category: z.string(),
     date: z.string(),
@@ -16,7 +16,7 @@ const articles = defineCollection({
       name: z.string(),
       avatarUrl: z.string(),
     })),
-    imageUrl: z.string(),
+    imageUrl: image(),
     imageAlt: z.string().optional(),
     description: z.string().optional(),
     tags: z.array(z.string()).optional(),

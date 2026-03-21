@@ -15,6 +15,8 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 
+const resolvedImageUrl = (article.data.imageUrl as any).src ?? article.data.imageUrl;
+
 const allArticles = await getCollection('articles');
 const relatedArticles = allArticles
   .filter((a) => a.id !== article.id)
@@ -53,7 +55,7 @@ const TOC_ITEMS = headings.map((h) => ({
       
       <div class="w-full h-full min-h-[300px] lg:min-h-[400px] bg-zinc-100">
         <img 
-          src={article.data.imageUrl} 
+          src={resolvedImageUrl} 
           alt={article.data.imageAlt || article.data.title}
           class="w-full h-full object-cover"
         />
