@@ -5,27 +5,19 @@ import type { Article } from '../../types';
 
 const allArticles = await getCollection('articles');
 const articles: Article[] = allArticles.map((a) => {
-  const { imageUrl, ...rest } = a.data;
+  const { imageUrl, date, ...rest } = a.data;
   return {
     id: a.id,
     ...rest,
     imageUrl: (imageUrl as any).src ?? imageUrl,
+    date: date.toISOString().split('T')[0],
   } as Article;
 }).sort((a: Article, b: Article) =>
   new Date(b.date).getTime() - new Date(a.date).getTime()
 );
 
-// Derive all unique categories dynamically from articles
-const rawCategories = [...new Set(articles.map((a) => a.category))].sort();
-const CATEGORIES = ['All', ...rawCategories];
-
-// Read active category from query param
-const url = new URL(Astro.request.url);
-const activeCategory = url.searchParams.get('category') ?? 'All';
-
-const filteredArticles = activeCategory === 'All'
-  ? articles
-  : articles.filter((a) => a.category === activeCategory);
+// Fixed category order
+const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
 ---
 
 <BaseLayout title="Article Index — Shravonix" description="Browse every article published on Shravonix, filtered by category.">
@@ -40,8 +32,8 @@ const filteredArticles = activeCategory === 'All'
             Article Index
           </h1>
         </div>
-        <p class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest pb-1 hidden md:block">
-          {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
+        <p id="article-count" class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest pb-1 hidden md:block">
+          {articles.length} article{articles.length !== 1 ? 's' : ''}
         </p>
       </div>
     </div>
@@ -51,12 +43,12 @@ const filteredArticles = activeCategory === 'All'
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border border-zinc-200">
           {CATEGORIES.map((category: string, index: number) => (
-            <a
-              href={category === 'All' ? '/articles' : `/articles?category=${encodeURIComponent(category)}`}
-              class={`px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors ${index !== 0 ? "border-l border-zinc-200" : ""} ${activeCategory === category ? "bg-zinc-900 text-white" : "bg-white text-zinc-600 hover:bg-zinc-50"}`}
+            <button
+              data-category={category}
+              class={`category-btn px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors ${index !== 0 ? "border-l border-zinc-200" : ""} bg-white text-zinc-600 hover:bg-zinc-50`}
             >
               {category}
-            </a>
+            </button>
           ))}
         </div>
 
@@ -65,6 +57,7 @@ const filteredArticles = activeCategory === 'All'
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
+            id="search-input"
             type="text"
             placeholder="SEARCH ARTICLES..."
             class="w-full pl-10 pr-4 py-3 rounded-none bg-white border-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-400 outline-none"
@@ -74,57 +67,157 @@ const filteredArticles = activeCategory === 'All'
     </div>
 
     <!-- Articles Grid -->
-    {filteredArticles.length > 0 ? (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-zinc-200">
-        {filteredArticles.map((article: Article, index: number) => (
-          <a
-            href={`/articles/${article.id}`}
-            class={`group flex flex-col h-full border-b border-zinc-200 hover:bg-zinc-50 transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
-          >
-            <div class="p-6 md:p-8 grow">
-              <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+    <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-zinc-200">
+      {articles.map((article: Article) => (
+        <a
+          href={`/articles/${article.id}`}
+          data-category={article.category}
+          data-title={article.title.toLowerCase()}
+          data-description={(article.description ?? '').toLowerCase()}
+          class="article-card group flex flex-col h-full border-b border-zinc-200 hover:bg-zinc-50 transition-colors"
+        >
+          <div class="p-6 md:p-8 grow">
+            <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+              <img
+                src={article.imageUrl}
+                alt={article.title}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
+              <span>// {article.category}</span>
+            </div>
+            <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
+              {article.title}
+            </h3>
+            {article.description && (
+              <p class="text-sm text-zinc-500 font-sans leading-relaxed line-clamp-2">
+                {article.description}
+              </p>
+            )}
+          </div>
+          <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
+            <div class="flex -space-x-2">
+              {article.authors.map((author: { name: string; avatarUrl: string }) => (
                 <img
-                  src={article.imageUrl}
-                  alt={article.title}
-                  class="w-full h-full object-cover"
+                  src={author.avatarUrl}
+                  alt={author.name}
+                  class="w-6 h-6 rounded-none border border-zinc-200"
                   loading="lazy"
                 />
-              </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
-                <span>// {article.category}</span>
-              </div>
-              <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
-                {article.title}
-              </h3>
-              {article.description && (
-                <p class="text-sm text-zinc-500 font-sans leading-relaxed line-clamp-2">
-                  {article.description}
-                </p>
-              )}
+              ))}
             </div>
-            <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
-              <div class="flex -space-x-2">
-                {article.authors.map((author: { name: string; avatarUrl: string }) => (
-                  <img
-                    src={author.avatarUrl}
-                    alt={author.name}
-                    class="w-6 h-6 rounded-none border border-zinc-200"
-                    loading="lazy"
-                  />
-                ))}
-              </div>
-              <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
-                {article.date}
-              </div>
+            <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+              {article.date}
             </div>
-          </a>
-        ))}
-      </div>
-    ) : (
-      <div class="px-6 md:px-8 py-24 text-center border-b border-zinc-200">
-        <p class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">No articles found in this category.</p>
-      </div>
-    )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden px-6 md:px-8 py-24 text-center border-b border-zinc-200">
+      <p class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">No articles found.</p>
+    </div>
 
   </div>
 </BaseLayout>
+
+<script>
+  const ACTIVE_CLASS = ['bg-zinc-900', 'text-white'];
+  const INACTIVE_CLASS = ['bg-white', 'text-zinc-600', 'hover:bg-zinc-50'];
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.category-btn');
+  const cards = document.querySelectorAll<HTMLAnchorElement>('.article-card');
+  const grid = document.getElementById('articles-grid')!;
+  const emptyState = document.getElementById('empty-state')!;
+  const countEl = document.getElementById('article-count')!;
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+
+  let activeCategory = 'All';
+  let searchQuery = '';
+
+  function applyFilters() {
+    let visible = 0;
+    cards.forEach((card, i) => {
+      const category = card.dataset.category ?? '';
+      const title = card.dataset.title ?? '';
+      const description = card.dataset.description ?? '';
+
+      const matchesCategory = activeCategory === 'All' || category.toLowerCase() === activeCategory.toLowerCase();
+      const matchesSearch = searchQuery === '' || title.includes(searchQuery) || description.includes(searchQuery);
+
+      if (matchesCategory && matchesSearch) {
+        card.style.display = '';
+        visible++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update count
+    countEl.textContent = `${visible} article${visible !== 1 ? 's' : ''}`;
+
+    // Show/hide empty state
+    if (visible === 0) {
+      grid.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+    } else {
+      grid.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+    }
+
+    // Fix border classes for visible cards
+    const visibleCards = Array.from(cards).filter(c => c.style.display !== 'none');
+    visibleCards.forEach((card, i) => {
+      card.classList.remove('md:border-r', 'md:border-r-0', 'lg:border-r', 'lg:border-r-0');
+      card.classList.add(i % 2 === 0 ? 'md:border-r' : 'md:border-r-0');
+      card.classList.add((i + 1) % 3 !== 0 ? 'lg:border-r' : 'lg:border-r-0');
+    });
+  }
+
+  function setActiveButton(category: string) {
+    buttons.forEach((btn) => {
+      if (btn.dataset.category === category) {
+        btn.classList.remove(...INACTIVE_CLASS);
+        btn.classList.add(...ACTIVE_CLASS);
+      } else {
+        btn.classList.remove(...ACTIVE_CLASS);
+        btn.classList.add(...INACTIVE_CLASS);
+      }
+    });
+  }
+
+  // Init from URL query param
+  const params = new URLSearchParams(window.location.search);
+  const initialCategory = params.get('category') ?? 'All';
+  activeCategory = initialCategory;
+  setActiveButton(activeCategory);
+  applyFilters();
+
+  // Category button clicks
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.category ?? 'All';
+      setActiveButton(activeCategory);
+
+      // Update URL without reload
+      const url = new URL(window.location.href);
+      if (activeCategory === 'All') {
+        url.searchParams.delete('category');
+      } else {
+        url.searchParams.set('category', activeCategory);
+      }
+      history.replaceState(null, '', url.toString());
+
+      applyFilters();
+    });
+  });
+
+  // Search input
+  searchInput.addEventListener('input', () => {
+    searchQuery = searchInput.value.toLowerCase().trim();
+    applyFilters();
+  });
+</script>
