@@ -18,8 +18,9 @@ const articles = defineCollection({
     })),
     imageUrl: image(),
     imageAlt: z.string().optional(),
-    description: z.string().optional(),
+    description: z.string(),
     tags: z.array(z.string()).optional(),
+    updatedDate: z.string().or(z.date()).transform((val) => new Date(val)).optional(),
   }),
 });
 
