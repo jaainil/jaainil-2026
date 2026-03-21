@@ -3,13 +3,15 @@ export interface Author {
   avatarUrl: string;
 }
 
+import type { ImageMetadata } from 'astro';
+
 export interface Article {
   id: string;
   title: string;
   category: string;
   date: string;
   authors: Author[];
-  imageUrl: string;
+  imageUrl: ImageMetadata;
   readTime?: string;
   imageAlt?: string;
   description?: string;
