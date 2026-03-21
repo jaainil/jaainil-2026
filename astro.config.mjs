@@ -7,12 +7,10 @@ import sitemap from '@astrojs/sitemap';
 import readingTime from 'astro-reading-time';
 import astroLLMsGenerator from 'astro-llms-generate';
 import robotsTxt from 'astro-robots-txt';
-import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   output: 'static',
   site: 'https://shravonix.com',
-  adapter: vercel(),
   integrations: [
     react(),
     readingTime(),
