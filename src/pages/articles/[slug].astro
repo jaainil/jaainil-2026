@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image } from 'astro-lqip/components';
 import ArticleInteractive from '../../components/react/ArticleInteractive';
 import AnimatedToc from '../../components/react/AnimatedToc';
+import { SocialShareButtons } from '../../components/react/SocialShareButtons';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -26,17 +27,36 @@ const TOC_ITEMS = headings.map((h) => ({
   id: h.slug,
   title: h.text,
 }));
+
+const articleUrl = `https://shravonix.com/articles/${article.id}`;
+const ogImage = article.data.imageUrl ? `https://shravonix.com${article.data.imageUrl}` : 'https://shravonix.com/og.jpg';
 ---
 
 <BaseLayout 
   title={`${article.data.title} - Shravonix`}
   description={article.data.description}
+  image={ogImage}
   articleData={article.data}
 >
-  <div class="max-w-7xl mx-auto border-x min-h-screen" style="border-color: var(--color-border); background-color: var(--color-surface);">
+  <div class="max-w-7xl mx-auto border-x min-h-screen relative" style="border-color: var(--color-border); background-color: var(--color-surface);">
+    
+    <!-- Reading Progress Bar -->
+    <div id="reading-progress" class="fixed top-0 left-0 right-0 h-1 z-[60] transition-all duration-100" style="width: 0%; background: var(--color-accent-bg);"></div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-10 lg:p-16">
       <div class="flex flex-col justify-between">
         <div>
+          <!-- Breadcrumb -->
+          <nav class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest mb-6" style="color: var(--color-text-muted);">
+            <a href="/" class="hover:underline">Home</a>
+            <span>/</span>
+            <a href="/articles" class="hover:underline">Articles</a>
+            <span>/</span>
+            <a href={`/articles?category=${encodeURIComponent(article.data.category)}`} class="hover:underline">{article.data.category}</a>
+            <span>/</span>
+            <span style="color: var(--color-text-primary);">{article.data.title}</span>
+          </nav>
+          
           <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider mb-6" style="color: var(--color-text-muted);">
             <span>//</span>
             <span>{article.data.category}</span>
@@ -62,6 +82,9 @@ const TOC_ITEMS = headings.map((h) => ({
           format="webp"
           quality={85}
           loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          lqip="color"
         />
       </div>
     </div>
@@ -91,6 +114,9 @@ const TOC_ITEMS = headings.map((h) => ({
           <span>{article.data.date}</span>
         </div>
         <ArticleInteractive client:only="react" articleTitle={article.data.title} />
+        <div class="border-l pl-4" style="border-color: var(--color-border);">
+          <SocialShareButtons client:only="react" articleTitle={article.data.title} articleUrl={articleUrl} />
+        </div>
       </div>
     </div>
 
@@ -101,7 +127,7 @@ const TOC_ITEMS = headings.map((h) => ({
         </div>
       </div>
 
-      <div class="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none dark:prose-invert">
+      <div id="article-content" class="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none dark:prose-invert">
         <Content />
       </div>
     </div>
@@ -129,6 +155,8 @@ const TOC_ITEMS = headings.map((h) => ({
                   height={225}
                   format="webp"
                   quality={80}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
@@ -146,6 +174,7 @@ const TOC_ITEMS = headings.map((h) => ({
                     alt={author.name} 
                     class="w-6 h-6 rounded-none border"
                     style="border-color: var(--color-border);"
+                    loading="lazy"
                   />
                 ))}
               </div>
@@ -182,5 +211,60 @@ const TOC_ITEMS = headings.map((h) => ({
         </form>
       </div>
     </div>
+
+    <!-- Back to Top Button -->
+    <button
+      id="back-to-top"
+      aria-label="Back to top"
+      class="fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center border z-50 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none"
+      style="border-color: var(--color-border); background: var(--color-surface); color: var(--color-text-muted);"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      </svg>
+    </button>
   </div>
 </BaseLayout>
+
+<script>
+  const progressBar = document.getElementById('reading-progress') as HTMLElement | null;
+  const articleContent = document.getElementById('article-content') as HTMLElement | null;
+  const backToTopBtn = document.getElementById('back-to-top') as HTMLButtonElement | null;
+
+  function updateProgress() {
+    if (!progressBar || !articleContent) return;
+    const wh = window.innerHeight;
+    const dh = document.documentElement.scrollHeight;
+    const st = window.scrollY;
+    const ct = articleContent.offsetTop;
+    const cb = ct + articleContent.offsetHeight;
+    const sd = cb - ct - wh;
+    let p = 0;
+    if (sd > 0) { p = (st - ct + wh / 2) / dh; }
+    p = Math.max(0, Math.min(1, p));
+    progressBar.style.width = (p * 100).toFixed(2) + '%';
+  }
+
+  function updateBackToTop() {
+    if (!backToTopBtn) return;
+    if (window.scrollY > 500) {
+      backToTopBtn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+    } else {
+      backToTopBtn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+    }
+  }
+
+  backToTopBtn?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(() => {
+      updateProgress();
+      updateBackToTop();
+    });
+  });
+
+  updateProgress();
+  updateBackToTop();
+</script>
