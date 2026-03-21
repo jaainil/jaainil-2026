@@ -21,7 +21,14 @@ const allArticles = await getCollection('articles');
 const relatedArticles = allArticles
   .filter((a) => a.id !== article.id)
   .sort((a) => (a.data.category === article.data.category ? -1 : 1))
-  .slice(0, 3);
+  .slice(0, 3)
+  .map((article) => ({
+    ...article,
+    data: {
+      ...article.data,
+      imageUrl: (article.data.imageUrl as any).src ?? article.data.imageUrl,
+    },
+  }));
 
 const TOC_ITEMS = headings.map((h) => ({
   id: h.slug,
