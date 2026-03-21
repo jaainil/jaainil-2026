@@ -1,10 +1,48 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Light theme tokens */
+:root {
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-text-primary: #09090b;
+  --color-text-secondary: #71717a;
+  --color-text-muted: #a1a1aa;
+  --color-hover: #f4f4f5;
+  --color-accent-bg: #09090b;
+  --color-accent-text: #ffffff;
+  --color-image-bg: #f4f4f5;
+  /* Footer is always dark */
+  --color-footer-bg: #18181b;
+  --color-footer-surface: #09090b;
+  --color-footer-border: #27272a;
+  --color-footer-text: #a1a1aa;
+  --color-footer-heading: #ffffff;
+}
+
+/* Dark theme tokens */
+.dark {
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-border: #27272a;
+  --color-border-strong: #3f3f46;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-hover: #27272a;
+  --color-accent-bg: #fafafa;
+  --color-accent-text: #09090b;
+  --color-image-bg: #27272a;
 }
 
 @utility hide-scrollbar {

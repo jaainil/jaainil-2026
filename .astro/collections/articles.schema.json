@@ -9,7 +9,15 @@
       "type": "string"
     },
     "date": {
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ]
     },
     "authors": {
       "type": "array",

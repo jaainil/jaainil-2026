@@ -77,6 +77,15 @@ const articleSchema = articleData ? {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script is:inline>
+      (function() {
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <Seo
       title={title}
       description={description}
@@ -101,9 +110,9 @@ const articleSchema = articleData ? {
     {articleSchema && <Schema item={articleSchema} />}
     <Schema item={siteSchema} />
   </head>
-  <body>
-    <div class="min-h-screen bg-zinc-50 text-zinc-900 font-sans">
-      <div class="max-w-7xl mx-auto bg-white min-h-screen flex flex-col border-x border-zinc-200">
+  <body style="background-color: var(--color-bg); color: var(--color-text-primary);" class="font-sans transition-colors duration-200">
+    <div class="min-h-screen" style="background-color: var(--color-bg);">
+      <div class="max-w-7xl mx-auto min-h-screen flex flex-col border-x" style="background-color: var(--color-surface); border-color: var(--color-border);">
         <Navbar />
         <main class="grow">
           <slot />
