@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 
-const resolvedImageUrl = (article.data.imageUrl as any).src ?? article.data.imageUrl;
+const resolvedImageUrl = (article.data.imageUrl as any).src ?? `/${article.data.imageUrl}`;
 
 const allArticles = await getCollection('articles');
 const relatedArticles = allArticles
@@ -26,7 +26,7 @@ const relatedArticles = allArticles
     ...article,
     data: {
       ...article.data,
-      imageUrl: (article.data.imageUrl as any).src ?? article.data.imageUrl,
+      imageUrl: (article.data.imageUrl as any).src ?? `/${article.data.imageUrl}`,
     },
   }));
 
@@ -41,26 +41,26 @@ const TOC_ITEMS = headings.map((h) => ({
   description={article.data.description}
   articleData={article.data}
 >
-  <div class="max-w-7xl mx-auto border-x border-zinc-200 min-h-screen bg-white">
+  <div class="max-w-7xl mx-auto border-x min-h-screen" style="border-color: var(--color-border); background-color: var(--color-surface);">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-10 lg:p-16">
       <div class="flex flex-col justify-between">
         <div>
-          <div class="flex items-center gap-2 text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider mb-6">
+          <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider mb-6" style="color: var(--color-text-muted);">
             <span>//</span>
             <span>{article.data.category}</span>
           </div>
           
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight text-zinc-900 leading-[1.1]">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-medium tracking-tight leading-[1.1]" style="color: var(--color-text-primary);">
             {article.data.title}
           </h1>
         </div>
         
-        <div class="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider mt-12 lg:mt-0">
+        <div class="text-xs font-mono font-semibold uppercase tracking-wider mt-12 lg:mt-0" style="color: var(--color-text-muted);">
           {article.data.date}
         </div>
       </div>
       
-      <div class="w-full h-full min-h-[300px] lg:min-h-[400px] bg-zinc-100">
+      <div class="w-full h-full min-h-[300px] lg:min-h-[400px]" style="background-color: var(--color-image-bg);">
         <img 
           src={resolvedImageUrl} 
           alt={article.data.imageAlt || article.data.title}
@@ -69,78 +69,86 @@ const TOC_ITEMS = headings.map((h) => ({
       </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-6 sm:px-10 lg:px-16 py-4 border-y border-zinc-200">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-6 sm:px-10 lg:px-16 py-4 border-y" style="border-color: var(--color-border);">
       <div class="flex items-center gap-4">
         <div class="flex gap-1.5">
           {article.data.authors.map((author) => (
             <img 
               src={author.avatarUrl} 
               alt={author.name} 
-              class="w-9 h-9 object-cover bg-zinc-100"
+              class="w-9 h-9 object-cover"
+              style="background-color: var(--color-image-bg);"
             />
           ))}
         </div>
-        <div class="text-xs font-mono font-medium text-zinc-600 uppercase tracking-wider leading-relaxed max-w-md">
+        <div class="text-xs font-mono font-medium uppercase tracking-wider leading-relaxed max-w-md" style="color: var(--color-text-secondary);">
           {article.data.authors.map((a) => a.name).join(', ')}
         </div>
       </div>
       
-        <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{article.data.date}</span>
+      <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-mono font-medium uppercase tracking-wider" style="color: var(--color-text-muted);">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{article.data.date}</span>
         </div>
         <ArticleInteractive client:only="react" articleTitle={article.data.title} />
       </div>
     </div>
 
-    <div class="flex flex-col md:flex-row relative border-b border-zinc-200">
-      <div class="hidden md:block w-64 lg:w-72 shrink-0 border-r border-zinc-200 py-8 sm:py-12 lg:py-16 pl-6 sm:pl-10 lg:pl-16 pr-8 lg:pr-12">
+    <div class="flex flex-col md:flex-row relative border-b" style="border-color: var(--color-border);">
+      <div class="hidden md:block w-64 lg:w-72 shrink-0 border-r py-8 sm:py-12 lg:py-16 pl-6 sm:pl-10 lg:pl-16 pr-8 lg:pr-12" style="border-color: var(--color-border);">
         <div class="sticky top-24">
           <AnimatedToc items={TOC_ITEMS} client:idle />
         </div>
       </div>
 
-      <div class="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-zinc prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none">
+      <div class="grow py-8 sm:py-12 lg:py-16 px-6 sm:px-10 lg:px-16 md:pl-8 lg:pl-12 prose prose-lg max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-a:text-blue-600 hover:prose-a:text-blue-700 prose-img:rounded-none dark:prose-invert">
         <Content />
       </div>
     </div>
 
-    <div class="border-b border-zinc-200">
-      <div class="px-6 sm:px-10 lg:px-16 py-12 border-b border-zinc-200">
-        <h2 class="text-2xl font-display font-bold tracking-tight text-zinc-900">Related Articles</h2>
+    <div class="border-b" style="border-color: var(--color-border);">
+      <div class="px-6 sm:px-10 lg:px-16 py-12 border-b" style="border-color: var(--color-border);">
+        <h2 class="text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">Related Articles</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
         {relatedArticles.map((relatedArticle, index) => (
-          <a href={`/articles/${relatedArticle.id}`} class={`group flex flex-col h-full hover:bg-zinc-50 transition-colors ${index !== 2 ? "md:border-r border-zinc-200" : ""} ${index !== 0 ? "border-t md:border-t-0 border-zinc-200" : ""}`}>
+          <a
+            href={`/articles/${relatedArticle.id}`}
+            class={`group flex flex-col h-full transition-colors ${index !== 2 ? "md:border-r" : ""} ${index !== 0 ? "border-t md:border-t-0" : ""}`}
+            style="border-color: var(--color-border);"
+            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+            onmouseleave="this.style.backgroundColor=''"
+          >
             <div class="p-6 md:p-8 grow">
-              <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
                 <img 
                   src={relatedArticle.data.imageUrl} 
                   alt={relatedArticle.data.title}
                   class="w-full h-full object-cover"
                 />
               </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
+              <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                 <span>// {relatedArticle.data.category}</span>
               </div>
-              <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
+              <h3 class="text-xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
                 {relatedArticle.data.title}
               </h3>
             </div>
-            <div class="border-t border-zinc-200 p-4 px-6 md:p-8 flex items-center justify-between mt-auto">
+            <div class="border-t p-4 px-6 md:p-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
               <div class="flex -space-x-2">
                 {relatedArticle.data.authors.map((author) => (
                   <img 
                     src={author.avatarUrl} 
                     alt={author.name} 
-                    class="w-6 h-6 rounded-none border border-zinc-200"
+                    class="w-6 h-6 rounded-none border"
+                    style="border-color: var(--color-border);"
                   />
                 ))}
               </div>
-              <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+              <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
                 {relatedArticle.data.date}
               </div>
             </div>
@@ -149,22 +157,24 @@ const TOC_ITEMS = headings.map((h) => ({
       </div>
     </div>
 
-    <div class="w-full bg-zinc-950 py-16 px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+    <div class="w-full py-16 px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-8" style="background-color: var(--color-footer-bg); color: var(--color-footer-heading);">
       <div class="md:w-1/2">
         <h3 class="text-3xl md:text-4xl font-display font-bold tracking-tight mb-4">Never miss an update</h3>
-        <p class="text-zinc-400 font-mono text-xs uppercase tracking-widest">Join 50,000+ developers getting our weekly tech insights.</p>
+        <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--color-footer-text);">Join 50,000+ developers getting our weekly tech insights.</p>
       </div>
       <div class="w-full md:w-1/2">
-        <form class="flex flex-col sm:flex-row gap-0 border border-zinc-700">
+        <form class="flex flex-col sm:flex-row gap-0 border" style="border-color: var(--color-footer-border);">
           <input 
             type="email" 
             placeholder="YOUR EMAIL ADDRESS" 
             autocomplete="off"
-            class="bg-zinc-900 border-none rounded-none px-4 py-4 grow text-white focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-500 w-full"
+            class="border-none rounded-none px-4 py-4 grow focus:outline-none focus:ring-0 text-xs font-mono uppercase tracking-widest w-full"
+            style="background-color: var(--color-footer-surface); color: var(--color-footer-heading);"
           />
           <button 
             type="submit" 
-            class="bg-white text-zinc-900 px-8 py-4 rounded-none font-mono text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors border-t sm:border-t-0 sm:border-l border-zinc-700 whitespace-nowrap w-full sm:w-auto"
+            class="px-8 py-4 rounded-none font-mono text-xs font-bold uppercase tracking-widest transition-colors border-t sm:border-t-0 sm:border-l whitespace-nowrap w-full sm:w-auto"
+            style="background-color: var(--color-footer-heading); color: var(--color-footer-bg); border-color: var(--color-footer-border);"
           >
             Subscribe
           </button>
