@@ -35,21 +35,21 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
   <div class="w-full pb-16">
 
     <!-- Page heading with correct top padding -->
-    <div class="border-b border-zinc-200 px-6 md:px-8 py-8">
-      <p class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest mb-2">// Latest</p>
-      <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight text-zinc-900">
+    <div class="border-b px-6 md:px-8 py-8" style="border-color: var(--color-border);">
+      <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Latest</p>
+      <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
         Tech Deep Dives
       </h1>
     </div>
 
     <!-- Featured Articles Hero -->
     {featuredArticle && (
-      <div class="border-b border-zinc-200 grid grid-cols-1 lg:grid-cols-3">
+      <div class="border-b grid grid-cols-1 lg:grid-cols-3" style="border-color: var(--color-border);">
         <!-- Primary featured -->
-        <div class="lg:col-span-2 border-b lg:border-b-0 lg:border-r border-zinc-200 flex flex-col group cursor-pointer hover:bg-zinc-50 transition-colors">
-          <a href={`/articles/${featuredArticle.id}`} class="flex flex-col h-full">
+        <div class="lg:col-span-2 border-b lg:border-b-0 lg:border-r flex flex-col group cursor-pointer transition-colors" style="border-color: var(--color-border);">
+          <a href={`/articles/${featuredArticle.id}`} class="flex flex-col h-full" onmouseenter="this.parentElement.style.backgroundColor='var(--color-hover)'" onmouseleave="this.parentElement.style.backgroundColor=''">
             <div class="p-6 md:p-8 grow">
-              <div class="rounded-none overflow-hidden mb-8 aspect-video bg-zinc-100 relative border border-zinc-200">
+              <div class="rounded-none overflow-hidden mb-8 aspect-video relative border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
                 <img
                   src={featuredArticle.imageUrl}
                   alt={featuredArticle.imageAlt ?? featuredArticle.title}
@@ -57,30 +57,31 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                   loading="eager"
                 />
               </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
+              <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-4" style="color: var(--color-text-muted);">
                 <span>// {featuredArticle.category}</span>
               </div>
-              <h2 class="text-3xl md:text-5xl font-display font-bold tracking-tight text-zinc-900 mb-4">
+              <h2 class="text-3xl md:text-5xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
                 {featuredArticle.title}
               </h2>
               {featuredArticle.description && (
-                <p class="text-sm text-zinc-500 font-sans leading-relaxed line-clamp-3">
+                <p class="text-sm font-sans leading-relaxed line-clamp-3" style="color: var(--color-text-secondary);">
                   {featuredArticle.description}
                 </p>
               )}
             </div>
-            <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center gap-4 text-xs font-mono text-zinc-500">
+            <div class="border-t p-4 px-6 md:px-8 flex items-center gap-4 text-xs font-mono" style="border-color: var(--color-border); color: var(--color-text-muted);">
               <div class="flex -space-x-2">
                 {featuredArticle.authors.map((author: { name: string; avatarUrl: string }) => (
                   <img
                     src={author.avatarUrl}
                     alt={author.name}
-                    class="w-8 h-8 rounded-none border border-zinc-200"
+                    class="w-8 h-8 rounded-none border"
+                    style="border-color: var(--color-border);"
                     loading="lazy"
                   />
                 ))}
               </div>
-              <span class="text-zinc-900 font-medium">
+              <span class="font-medium" style="color: var(--color-text-primary);">
                 {featuredArticle.authors.map((a: { name: string }) => a.name).join(', ')}
               </span>
               <span class="ml-auto uppercase tracking-widest">{featuredArticle.date}</span>
@@ -93,10 +94,13 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
           {secondaryFeatured.map((article: Article, index: number) => (
             <a
               href={`/articles/${article.id}`}
-              class={`group flex flex-col flex-1 hover:bg-zinc-50 transition-colors ${index === 0 ? "border-b border-zinc-200" : ""}`}
+              class={`group flex flex-col flex-1 transition-colors ${index === 0 ? "border-b" : ""}`}
+              style={`border-color: var(--color-border);`}
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor=''"
             >
               <div class="p-6 md:p-8 grow">
-                <div class="rounded-none overflow-hidden mb-6 aspect-video bg-zinc-100 relative border border-zinc-200">
+                <div class="rounded-none overflow-hidden mb-6 aspect-video relative border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
                   <img
                     src={article.imageUrl}
                     alt={article.imageAlt ?? article.title}
@@ -104,13 +108,13 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                     loading="lazy"
                   />
                 </div>
-                <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
+                <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                   <span>// {article.category}</span>
                 </div>
-                <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-3">
+                <h3 class="text-xl font-display font-bold tracking-tight mb-3" style="color: var(--color-text-primary);">
                   {article.title}
                 </h3>
-                <div class="mt-auto pt-4 text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+                <div class="mt-auto pt-4 text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
                   {article.date}
                 </div>
               </div>
@@ -121,33 +125,38 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
     )}
 
     <!-- Category Filter Bar -->
-    <div class="px-6 md:px-8 py-6 border-b border-zinc-200">
+    <div class="px-6 md:px-8 py-6 border-b" style="border-color: var(--color-border);">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border border-zinc-200">
+        <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border" style="border-color: var(--color-border);">
           <a
             href="/"
-            class="px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors bg-zinc-900 text-white"
+            class="px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors"
+            style="background-color: var(--color-accent-bg); color: var(--color-accent-text);"
           >
             All
           </a>
           {SITE_CATEGORIES.map((category: string) => (
             <a
               href={`/articles?category=${encodeURIComponent(category)}`}
-              class="px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors border-l border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
+              class="px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors border-l"
+              style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-secondary);"
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor='var(--color-surface)'"
             >
               {category}
             </a>
           ))}
         </div>
 
-        <div class="relative w-full md:w-64 border border-zinc-200">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative w-full md:w-64 border" style="border-color: var(--color-border);">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
             type="text"
             placeholder="SEARCH ARTICLES..."
-            class="w-full pl-10 pr-4 py-3 rounded-none bg-white border-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-400 outline-none"
+            class="w-full pl-10 pr-4 py-3 rounded-none border-none focus:ring-0 text-xs font-mono uppercase tracking-widest outline-none"
+            style="background-color: var(--color-surface); color: var(--color-text-primary);"
           />
         </div>
       </div>
@@ -155,14 +164,17 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
 
     <!-- More Articles Grid (remaining after featured 3) -->
     {gridArticles.length > 0 && (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-zinc-200">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b" style="border-color: var(--color-border);">
         {gridArticles.map((article: Article, index: number) => (
           <a
             href={`/articles/${article.id}`}
-            class={`group flex flex-col h-full border-b border-zinc-200 hover:bg-zinc-50 transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
+            class={`group flex flex-col h-full border-b transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
+            style="border-color: var(--color-border);"
+            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+            onmouseleave="this.style.backgroundColor=''"
           >
             <div class="p-6 md:p-8 grow">
-              <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
                 <img
                   src={article.imageUrl}
                   alt={article.imageAlt ?? article.title}
@@ -170,25 +182,26 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                   loading="lazy"
                 />
               </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
+              <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                 <span>// {article.category}</span>
               </div>
-              <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
+              <h3 class="text-xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
                 {article.title}
               </h3>
             </div>
-            <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
+            <div class="border-t p-4 px-6 md:px-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
               <div class="flex -space-x-2">
                 {article.authors.map((author: { name: string; avatarUrl: string }) => (
                   <img
                     src={author.avatarUrl}
                     alt={author.name}
-                    class="w-6 h-6 rounded-none border border-zinc-200"
+                    class="w-6 h-6 rounded-none border"
+                    style="border-color: var(--color-border);"
                     loading="lazy"
                   />
                 ))}
               </div>
-              <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+              <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
                 {article.date}
               </div>
             </div>
@@ -199,18 +212,21 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
 
     <!-- Category Sections — dynamically rendered per category that has articles -->
     {categoryArticles.map((section) => (
-      <section class="border-b border-zinc-200">
+      <section class="border-b" style="border-color: var(--color-border);">
         <!-- Section Header -->
-        <div class="px-6 md:px-8 py-5 border-b border-zinc-200 flex items-center justify-between">
+        <div class="px-6 md:px-8 py-5 border-b flex items-center justify-between" style="border-color: var(--color-border);">
           <div class="flex items-center gap-3">
-            <span class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">//</span>
-            <h2 class="text-sm font-mono font-bold uppercase tracking-widest text-zinc-900">
+            <span class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">//</span>
+            <h2 class="text-sm font-mono font-bold uppercase tracking-widest" style="color: var(--color-text-primary);">
               {section.name}
             </h2>
           </div>
           <a
             href={`/articles?category=${encodeURIComponent(section.name)}`}
-            class="text-[11px] font-mono uppercase tracking-widest text-zinc-400 hover:text-zinc-900 transition-colors flex items-center gap-1"
+            class="text-[11px] font-mono uppercase tracking-widest transition-colors flex items-center gap-1"
+            style="color: var(--color-text-muted);"
+            onmouseenter="this.style.color='var(--color-text-primary)'"
+            onmouseleave="this.style.color='var(--color-text-muted)'"
           >
             View All
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,10 +240,13 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
           {section.articles.map((article: Article, index: number) => (
             <a
               href={`/articles/${article.id}`}
-              class={`group flex flex-col h-full hover:bg-zinc-50 transition-colors ${index !== section.articles.length - 1 ? "border-b md:border-b-0 md:border-r border-zinc-200" : ""}`}
+              class={`group flex flex-col h-full transition-colors ${index !== section.articles.length - 1 ? "border-b md:border-b-0 md:border-r" : ""}`}
+              style="border-color: var(--color-border);"
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor=''"
             >
               <div class="p-6 md:p-8 grow">
-                <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+                <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
                   <img
                     src={article.imageUrl}
                     alt={article.imageAlt ?? article.title}
@@ -235,30 +254,31 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                     loading="lazy"
                   />
                 </div>
-                <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
+                <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                   <span>// {article.category}</span>
                 </div>
-                <h3 class="text-lg font-display font-bold tracking-tight text-zinc-900 mb-3">
+                <h3 class="text-lg font-display font-bold tracking-tight mb-3" style="color: var(--color-text-primary);">
                   {article.title}
                 </h3>
                 {article.description && (
-                  <p class="text-sm text-zinc-500 font-sans leading-relaxed line-clamp-2">
+                  <p class="text-sm font-sans leading-relaxed line-clamp-2" style="color: var(--color-text-secondary);">
                     {article.description}
                   </p>
                 )}
               </div>
-              <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
+              <div class="border-t p-4 px-6 md:px-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
                 <div class="flex -space-x-2">
                   {article.authors.map((author: { name: string; avatarUrl: string }) => (
                     <img
                       src={author.avatarUrl}
                       alt={author.name}
-                      class="w-6 h-6 rounded-none border border-zinc-200"
+                      class="w-6 h-6 rounded-none border"
+                      style="border-color: var(--color-border);"
                       loading="lazy"
                     />
                   ))}
                 </div>
-                <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+                <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
                   {article.date}
                 </div>
               </div>
@@ -269,10 +289,13 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
     ))}
 
     <!-- View All Articles CTA -->
-    <div class="px-6 md:px-8 py-10 flex justify-center border-b border-zinc-200">
+    <div class="px-6 md:px-8 py-10 flex justify-center border-b" style="border-color: var(--color-border);">
       <a
         href="/articles"
-        class="flex items-center gap-2 px-8 py-3 border border-zinc-900 text-xs font-mono uppercase tracking-widest text-zinc-900 hover:bg-zinc-900 hover:text-white transition-colors"
+        class="flex items-center gap-2 px-8 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
+        style="border-color: var(--color-text-primary); color: var(--color-text-primary);"
+        onmouseenter="this.style.backgroundColor='var(--color-text-primary)';this.style.color='var(--color-surface)'"
+        onmouseleave="this.style.backgroundColor='';this.style.color='var(--color-text-primary)'"
       >
         Browse All Articles
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
