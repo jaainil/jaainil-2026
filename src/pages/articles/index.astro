@@ -25,60 +25,65 @@ const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
   <div class="w-full pb-16">
 
     <!-- Page Header -->
-    <div class="border-b border-zinc-200 px-6 md:px-8 py-10">
+    <div class="border-b px-6 md:px-8 py-10" style="border-color: var(--color-border);">
       <div class="flex items-end justify-between gap-4">
         <div>
-          <p class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest mb-2">// Archive</p>
-          <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight text-zinc-900">
+          <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Archive</p>
+          <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
             Article Index
           </h1>
         </div>
-        <p id="article-count" class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest pb-1 hidden md:block">
+        <p id="article-count" class="text-[11px] font-mono uppercase tracking-widest pb-1 hidden md:block">
           {articles.length} article{articles.length !== 1 ? 's' : ''}
         </p>
       </div>
     </div>
 
     <!-- Category Filter + Search -->
-    <div class="px-6 md:px-8 py-6 border-b border-zinc-200">
+    <div class="px-6 md:px-8 py-6 border-b" style="border-color: var(--color-border);">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border border-zinc-200">
+        <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border" style="border-color: var(--color-border);">
           {CATEGORIES.map((category: string, index: number) => (
             <button
               data-category={category}
-              class={`category-btn px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors ${index !== 0 ? "border-l border-zinc-200" : ""} bg-white text-zinc-600 hover:bg-zinc-50`}
+              class={`category-btn px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors${index !== 0 ? " border-l" : ""}`}
+              style={`background-color: ${index === 0 ? "var(--color-accent-bg)" : "var(--color-surface)"}; color: ${index === 0 ? "var(--color-accent-text)" : "var(--color-text-secondary)"}; border-color: var(--color-border);`}
             >
               {category}
             </button>
           ))}
         </div>
 
-        <div class="relative w-full md:w-64 border border-zinc-200">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative w-full md:w-64 border" style="border-color: var(--color-border);">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
             id="search-input"
             type="text"
             placeholder="SEARCH ARTICLES..."
-            class="w-full pl-10 pr-4 py-3 rounded-none bg-white border-none focus:ring-0 text-xs font-mono uppercase tracking-widest placeholder:text-zinc-400 outline-none"
+            class="w-full pl-10 pr-4 py-3 rounded-none border-none focus:ring-0 text-xs font-mono uppercase tracking-widest outline-none"
+            style="background-color: var(--color-surface); color: var(--color-text-primary);"
           />
         </div>
       </div>
     </div>
 
     <!-- Articles Grid -->
-    <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b border-zinc-200">
-      {articles.map((article: Article) => (
+    <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b" style="border-color: var(--color-border);">
+      {articles.map((article: Article, index: number) => (
         <a
           href={`/articles/${article.id}`}
           data-category={article.category}
           data-title={article.title.toLowerCase()}
           data-description={(article.description ?? '').toLowerCase()}
-          class="article-card group flex flex-col h-full border-b border-zinc-200 hover:bg-zinc-50 transition-colors"
+          class={`article-card group flex flex-col h-full border-b transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
+          style="border-color: var(--color-border);"
+          onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+          onmouseleave="this.style.backgroundColor=''"
         >
           <div class="p-6 md:p-8 grow">
-            <div class="aspect-video rounded-none overflow-hidden bg-zinc-100 mb-6 border border-zinc-200">
+            <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
               <Image
                 src={article.imageUrl}
                 alt={article.title}
@@ -90,30 +95,31 @@ const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
                 loading="lazy"
               />
             </div>
-            <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
-              <span>// {article.category}</span>
+            <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3">
+              <span style="color: var(--color-text-muted);">// {article.category}</span>
             </div>
-            <h3 class="text-xl font-display font-bold tracking-tight text-zinc-900 mb-4">
+            <h3 class="text-xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
               {article.title}
             </h3>
             {article.description && (
-              <p class="text-sm text-zinc-500 font-sans leading-relaxed line-clamp-2">
+              <p class="text-sm font-sans leading-relaxed line-clamp-2" style="color: var(--color-text-secondary);">
                 {article.description}
               </p>
             )}
           </div>
-          <div class="border-t border-zinc-200 p-4 px-6 md:px-8 flex items-center justify-between mt-auto">
+          <div class="border-t p-4 px-6 md:px-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
             <div class="flex -space-x-2">
               {article.authors.map((author: { name: string; avatarUrl: string }) => (
                 <img
                   src={author.avatarUrl}
                   alt={author.name}
-                  class="w-6 h-6 rounded-none border border-zinc-200"
+                  class="w-6 h-6 rounded-none border"
+                  style="border-color: var(--color-border);"
                   loading="lazy"
                 />
               ))}
             </div>
-            <div class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
+            <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
               {article.date}
             </div>
           </div>
@@ -122,17 +128,14 @@ const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
     </div>
 
     <!-- Empty state -->
-    <div id="empty-state" class="hidden px-6 md:px-8 py-24 text-center border-b border-zinc-200">
-      <p class="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">No articles found.</p>
+    <div id="empty-state" class="hidden px-6 md:px-8 py-24 text-center border-b" style="border-color: var(--color-border);">
+      <p class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">No articles found.</p>
     </div>
 
   </div>
 </BaseLayout>
 
 <script>
-  const ACTIVE_CLASS = ['bg-zinc-900', 'text-white'];
-  const INACTIVE_CLASS = ['bg-white', 'text-zinc-600', 'hover:bg-zinc-50'];
-
   const buttons = document.querySelectorAll<HTMLButtonElement>('.category-btn');
   const cards = document.querySelectorAll<HTMLAnchorElement>('.article-card');
   const grid = document.getElementById('articles-grid')!;
@@ -161,10 +164,8 @@ const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
       }
     });
 
-    // Update count
     countEl.textContent = `${visible} article${visible !== 1 ? 's' : ''}`;
 
-    // Show/hide empty state
     if (visible === 0) {
       grid.classList.add('hidden');
       emptyState.classList.remove('hidden');
@@ -172,42 +173,27 @@ const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
       grid.classList.remove('hidden');
       emptyState.classList.add('hidden');
     }
-
-    // Fix border classes for visible cards
-    const visibleCards = Array.from(cards).filter(c => c.style.display !== 'none');
-    visibleCards.forEach((card, i) => {
-      card.classList.remove('md:border-r', 'md:border-r-0', 'lg:border-r', 'lg:border-r-0');
-      card.classList.add(i % 2 === 0 ? 'md:border-r' : 'md:border-r-0');
-      card.classList.add((i + 1) % 3 !== 0 ? 'lg:border-r' : 'lg:border-r-0');
-    });
   }
 
   function setActiveButton(category: string) {
     buttons.forEach((btn) => {
-      if (btn.dataset.category === category) {
-        btn.classList.remove(...INACTIVE_CLASS);
-        btn.classList.add(...ACTIVE_CLASS);
-      } else {
-        btn.classList.remove(...ACTIVE_CLASS);
-        btn.classList.add(...INACTIVE_CLASS);
-      }
+      const isActive = btn.dataset.category === category;
+      btn.style.backgroundColor = isActive ? 'var(--color-accent-bg)' : 'var(--color-surface)';
+      btn.style.color = isActive ? 'var(--color-accent-text)' : 'var(--color-text-secondary)';
     });
   }
 
-  // Init from URL query param
   const params = new URLSearchParams(window.location.search);
   const initialCategory = params.get('category') ?? 'All';
   activeCategory = initialCategory;
   setActiveButton(activeCategory);
   applyFilters();
 
-  // Category button clicks
   buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
       activeCategory = btn.dataset.category ?? 'All';
       setActiveButton(activeCategory);
 
-      // Update URL without reload
       const url = new URL(window.location.href);
       if (activeCategory === 'All') {
         url.searchParams.delete('category');
@@ -220,7 +206,6 @@ const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
     });
   });
 
-  // Search input
   searchInput.addEventListener('input', () => {
     searchQuery = searchInput.value.toLowerCase().trim();
     applyFilters();
