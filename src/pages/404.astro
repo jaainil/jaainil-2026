@@ -5,7 +5,7 @@ import { Image } from 'astro:assets';
 
 const allArticles = await getCollection('articles');
 const featuredArticles = allArticles
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
   .slice(0, 6);
 ---
 
@@ -114,7 +114,7 @@ const featuredArticles = allArticles
                 ))}
               </div>
               <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                {article.data.date.toISOString().split('T')[0]}
+                {article.data.publishedAt.toISOString().split('T')[0]}
               </div>
             </div>
           </a>

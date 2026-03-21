@@ -68,10 +68,8 @@ const articleSchema = articleData ? {
     image: author.avatarUrl,
     url: SITE_URL,
   })),
-  datePublished: articleData.date instanceof Date ? articleData.date.toISOString() : articleData.date,
-  dateModified: articleData.updatedDate instanceof Date
-    ? articleData.updatedDate.toISOString()
-    : (articleData.date instanceof Date ? articleData.date.toISOString() : articleData.date),
+  datePublished: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
+  dateModified: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
   url: currentUrl,
   mainEntityOfPage: {
     '@type': 'WebPage',
