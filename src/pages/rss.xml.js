@@ -6,7 +6,11 @@ export async function GET(context) {
   
   // Sort articles newest-first for RSS readers
   const sortedArticles = [...articles].sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime()
+    (a, b) => {
+      const dateA = a.data.publishedAt || a.data.date;
+      const dateB = b.data.publishedAt || b.data.date;
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    }
   );
 
   return rss({
@@ -15,7 +19,7 @@ export async function GET(context) {
     site: context.site,
     items: sortedArticles.map((article) => ({
       title: article.data.title,
-      pubDate: article.data.date,
+      pubDate: article.data.publishedAt || article.data.date,
       description: article.data.description,
       link: `/articles/${article.id}/`,
       author: article.data.authors.map(a => a.name).join(', '),
