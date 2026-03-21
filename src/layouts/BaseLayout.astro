@@ -25,50 +25,61 @@ const {
 const url = new URL(Astro.url.pathname, Astro.site);
 const currentUrl = url.toString();
 
+const SITE_URL = 'https://shravonix.com';
+const LOGO_URL = `${SITE_URL}/shravonix.png`;
+const OG_FALLBACK = `${SITE_URL}/og.jpg`;
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${SITE_URL}/#organization`,
+  name: 'Shravonix',
+  url: SITE_URL,
+  logo: {
+    '@type': 'ImageObject',
+    url: LOGO_URL,
+  },
+  sameAs: [
+    'https://twitter.com/shravonix',
+  ],
+};
+
 const siteSchema = {
-  '@context': 'http://schema.org',
+  '@context': 'https://schema.org',
   '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
   name: 'Shravonix',
   description: description,
-  url: 'https://shravonix.com',
+  url: SITE_URL,
   publisher: {
-    '@type': 'Organization',
-    name: 'Shravonix',
-    url: 'https://shravonix.com',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://shravonix.com/og.jpg'
-    }
-  }
+    '@id': `${SITE_URL}/#organization`,
+  },
 };
 
 const articleSchema = articleData ? {
-  '@context': 'http://schema.org',
+  '@context': 'https://schema.org',
   '@type': 'Article',
   headline: articleData.title,
   description: articleData.description,
-  image: [image],
+  image: [image || OG_FALLBACK],
   author: articleData.authors?.map((author: any) => ({
     '@type': 'Person',
     name: author.name,
-    image: author.avatarUrl
+    image: author.avatarUrl,
+    url: SITE_URL,
   })),
-  datePublished: articleData.date,
-  dateModified: articleData.date,
+  datePublished: articleData.date instanceof Date ? articleData.date.toISOString() : articleData.date,
+  dateModified: articleData.updatedDate instanceof Date
+    ? articleData.updatedDate.toISOString()
+    : (articleData.date instanceof Date ? articleData.date.toISOString() : articleData.date),
   url: currentUrl,
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': currentUrl
+    '@id': currentUrl,
   },
   publisher: {
-    '@type': 'Organization',
-    name: 'Shravonix',
-    url: 'https://shravonix.com',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://shravonix.com/og.jpg'
-    }
-  }
+    '@id': `${SITE_URL}/#organization`,
+  },
 } : null;
 ---
 
@@ -86,7 +97,10 @@ const articleSchema = articleData ? {
         }
       })();
     </script>
+    <link rel="canonical" href={currentUrl} />
     <link rel="alternate" type="application/rss+xml" title="Shravonix - Tech News & Deep Dives" href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/shravonix.png" />
     <Seo
       title={title}
       description={description}
@@ -104,12 +118,11 @@ const articleSchema = articleData ? {
         site: '@shravonix',
         card: 'summary_large_image'
       }}
-      link={[
-        { rel: "canonical", href: currentUrl }
-      ]}
     />
-    {articleSchema && <Schema item={articleSchema} />}
-    <Schema item={siteSchema} />
+    {articleSchema && <Schema item={articleSchema as any} />}
+    <Schema item={organizationSchema as any} />
+    <Schema item={siteSchema as any} />
+    <slot name="head" />
   </head>
   <body style="background-color: var(--color-bg); color: var(--color-text-primary);" class="font-sans transition-colors duration-200">
     <div class="min-h-screen" style="background-color: var(--color-bg);">

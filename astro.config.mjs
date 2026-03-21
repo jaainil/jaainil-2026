@@ -22,6 +22,34 @@ export default defineConfig({
         'https://shravonix.com/llms-small.txt',
         'https://shravonix.com/llms-full.txt',
       ],
+      serialize(item) {
+        // Homepage — highest priority, frequent changes
+        if (item.url === 'https://shravonix.com/' || item.url === 'https://shravonix.com') {
+          item.changefreq = 'daily';
+          item.priority = 1.0;
+          item.lastmod = new Date().toISOString();
+          return item;
+        }
+        // Articles listing page
+        if (item.url === 'https://shravonix.com/articles' || item.url === 'https://shravonix.com/articles/') {
+          item.changefreq = 'daily';
+          item.priority = 0.9;
+          item.lastmod = new Date().toISOString();
+          return item;
+        }
+        // Individual article pages
+        if (/shravonix\.com\/articles\/.+/.test(item.url)) {
+          item.changefreq = 'monthly';
+          item.priority = 0.8;
+          item.lastmod = new Date().toISOString();
+          return item;
+        }
+        // About and other static pages
+        item.changefreq = 'monthly';
+        item.priority = 0.5;
+        item.lastmod = new Date().toISOString();
+        return item;
+      },
     }),
     robotsTxt(),
     astroLLMsGenerator({
