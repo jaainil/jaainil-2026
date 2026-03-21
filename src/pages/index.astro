@@ -5,17 +5,17 @@ import { Image } from 'astro-lqip/components';
 import type { Article } from '../types';
 
 const allArticles = await getCollection('articles');
-const articles: Article[] = allArticles.map((a) => {
-  const { imageUrl, date, ...rest } = a.data;
-  return {
-    id: a.id,
-    ...rest,
-    imageUrl,
-    date: date.toISOString().split('T')[0],
-  } as Article;
-}).sort((a: Article, b: Article) =>
-  new Date(b.date).getTime() - new Date(a.date).getTime()
-);
+const articles: Article[] = allArticles
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .map((a) => {
+    const { imageUrl, publishedAt, ...rest } = a.data;
+    return {
+      id: a.id,
+      ...rest,
+      imageUrl,
+      publishedAt: publishedAt.toISOString().split('T')[0],
+    } as Article;
+  });
 
 const featuredArticle = articles[0];
 const secondaryFeatured = articles.slice(1, 3);
@@ -93,7 +93,7 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
               <span class="font-medium" style="color: var(--color-text-primary);">
                 {featuredArticle.authors.map((a: { name: string }) => a.name).join(', ')}
               </span>
-              <span class="ml-auto uppercase tracking-widest">{featuredArticle.date}</span>
+              <span class="ml-auto uppercase tracking-widest">{featuredArticle.publishedAt}</span>
             </div>
           </a>
         </div>
@@ -129,7 +129,7 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                   {article.title}
                 </h3>
                 <div class="mt-auto pt-4 text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                  {article.date}
+                  {article.publishedAt}
                 </div>
               </div>
             </a>
@@ -198,12 +198,12 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                   height={338}
                   format="webp"
                   quality={80}
-                     loading="lazy"
-                     lqip="color"
-                   />
-                </div>
-                <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
-                  <span>// {article.category}</span>
+                  loading="lazy"
+                  lqip="color"
+                />
+              </div>
+              <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
+                <span>// {article.category}</span>
               </div>
               <h3 class="text-xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
                 {article.title}
@@ -222,7 +222,7 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                 ))}
               </div>
               <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                {article.date}
+                {article.publishedAt}
               </div>
             </div>
           </a>
@@ -316,7 +316,7 @@ const categoryArticles = SITE_CATEGORIES.map((cat) => ({
                   ))}
                 </div>
                 <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                  {article.date}
+                  {article.publishedAt}
                 </div>
               </div>
             </a>

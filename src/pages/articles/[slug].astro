@@ -85,7 +85,7 @@ const breadcrumbSchema = {
         </div>
         
         <div class="text-xs font-mono font-semibold uppercase tracking-wider mt-12 lg:mt-0" style="color: var(--color-text-muted);">
-          {article.data.date}
+          {article.data.publishedAt.toISOString().split('T')[0]}
         </div>
       </div>
       
@@ -128,7 +128,7 @@ const breadcrumbSchema = {
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{article.data.date}</span>
+          <span>{article.data.publishedAt.toISOString().split('T')[0]}</span>
         </div>
         <ArticleInteractive client:only="react" articleTitle={article.data.title} />
       </div>
@@ -193,7 +193,7 @@ const breadcrumbSchema = {
                 ))}
               </div>
               <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                {relatedArticle.data.date}
+                {relatedArticle.data.publishedAt.toISOString().split('T')[0]}
               </div>
             </div>
           </a>

@@ -9,7 +9,7 @@ export interface Article {
   id: string;
   title: string;
   category: string;
-  date: string;
+  publishedAt: string;
   authors: Author[];
   imageUrl: ImageMetadata;
   readTime?: string;

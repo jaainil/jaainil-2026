@@ -11,7 +11,7 @@ const articles = defineCollection({
   schema: ({ image }) => z.object({
     title: z.string(),
     category: z.string(),
-    date: z.string().or(z.date()).transform((val) => new Date(val)),
+    publishedAt: z.string().or(z.date()).transform((val) => new Date(val)),
     authors: z.array(z.object({
       name: z.string(),
       avatarUrl: z.string(),
@@ -20,7 +20,6 @@ const articles = defineCollection({
     imageAlt: z.string().optional(),
     description: z.string(),
     tags: z.array(z.string()).optional(),
-    updatedDate: z.string().or(z.date()).transform((val) => new Date(val)).optional(),
   }),
 });
 
