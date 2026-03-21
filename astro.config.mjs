@@ -7,6 +7,7 @@ import sitemap from '@astrojs/sitemap';
 import readingTime from 'astro-reading-time';
 import astroLLMsGenerator from 'astro-llms-generate';
 import robotsTxt from 'astro-robots-txt';
+import compressor from 'astro-compressor';
 
 export default defineConfig({
   output: 'static',
@@ -59,6 +60,8 @@ export default defineConfig({
       excludePatterns: [],
       i18n: false,
     }),
+    compressor(),
+    (await import('@playform/compress')).default(),
   ],
   vite: {
     plugins: [tailwindcss()],
