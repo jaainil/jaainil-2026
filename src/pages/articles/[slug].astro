@@ -15,18 +15,18 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 
-const resolvedImageUrl = (article.data.imageUrl as any).src ?? `/${article.data.imageUrl}`;
+const resolvedImageUrl = `/${article.data.imageUrl}`;
 
 const allArticles = await getCollection('articles');
 const relatedArticles = allArticles
   .filter((a) => a.id !== article.id)
   .sort((a) => (a.data.category === article.data.category ? -1 : 1))
   .slice(0, 3)
-  .map((article) => ({
-    ...article,
+  .map((a) => ({
+    ...a,
     data: {
-      ...article.data,
-      imageUrl: (article.data.imageUrl as any).src ?? `/${article.data.imageUrl}`,
+      ...a.data,
+      imageUrl: `/${a.data.imageUrl}`,
     },
   }));
 
@@ -62,7 +62,7 @@ const TOC_ITEMS = headings.map((h) => ({
       
       <div class="w-full h-full min-h-[300px] lg:min-h-[400px]" style="background-color: var(--color-image-bg);">
         <img 
-          src={resolvedImageUrl} 
+          src={resolvedImageUrl}
           alt={article.data.imageAlt || article.data.title}
           class="w-full h-full object-cover"
         />
@@ -125,7 +125,7 @@ const TOC_ITEMS = headings.map((h) => ({
             <div class="p-6 md:p-8 grow">
               <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
                 <img 
-                  src={relatedArticle.data.imageUrl} 
+                  src={relatedArticle.data.imageUrl}
                   alt={relatedArticle.data.title}
                   class="w-full h-full object-cover"
                 />
