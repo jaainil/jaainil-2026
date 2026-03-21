@@ -17,7 +17,7 @@ export default defineConfig({
     react(),
     readingTime(),
     mdx(),
-    keystatic(),
+    ...(process.env.NODE_ENV === 'development' ? [keystatic()] : []),
     sitemap({
       customPages: [
         'https://shravonix.com/llms.txt',

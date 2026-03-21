@@ -10,7 +10,7 @@ export interface Article {
   date: string;
   authors: Author[];
   imageUrl: string;
-  readTime: string;
+  readTime?: string;
   imageAlt?: string;
   description?: string;
   tags?: string[];
