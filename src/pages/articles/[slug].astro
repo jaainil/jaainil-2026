@@ -21,10 +21,41 @@ const { article } = Astro.props;
 const { Content, headings } = await render(article);
 
 const allArticles = await getCollection('articles');
-const relatedArticles = allArticles
-  .filter((a) => a.id !== article.id)
-  .sort((a) => (a.data.category === article.data.category ? -1 : 1))
-  .slice(0, 3);
+
+const relatedArticles = (() => {
+  const currentTags = article.data.tags || [];
+  const currentCategory = article.data.category;
+
+  const articles = allArticles
+    .filter((a) => a.id !== article.id)
+    .map((a) => {
+      const articleTags = a.data.tags || [];
+      
+      let score = 0;
+      
+      if (currentTags.length > 0 && articleTags.length > 0) {
+        const commonTags = currentTags.filter((tag: string) => articleTags.includes(tag));
+        score += commonTags.length * 10;
+      }
+      
+      if (a.data.category === currentCategory) {
+        score += 5;
+      }
+      
+      const daysSincePublished = (Date.now() - a.data.publishedAt.getTime()) / (1000 * 60 * 60 * 24);
+      score += Math.max(0, 10 - daysSincePublished * 0.1);
+      
+      return {
+        article: a,
+        score
+      };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((item) => item.article);
+
+  return articles;
+})();
 
 const TOC_ITEMS = headings.map((h) => ({
   id: h.slug,
