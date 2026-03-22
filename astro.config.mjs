@@ -5,6 +5,8 @@ import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import readingTime from 'astro-reading-time';
+import { openPolicy } from '@openpolicy/astro';
+import umami from '@yeskunall/astro-umami';
 import astroLLMsGenerator from 'astro-llms-generate';
 import robotsTxt from 'astro-robots-txt';
 import compressor from 'astro-compressor';
@@ -17,6 +19,8 @@ export default defineConfig({
     readingTime(),
     mdx(),
     ...(process.env.NODE_ENV === 'development' ? [keystatic()] : []),
+    openPolicy(),
+    umami({ id: 'ee167bbd-1971-4780-bac6-fa0ddae9a4df' }),
     sitemap({
       customPages: [
         'https://shravonix.com/llms.txt',
