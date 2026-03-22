@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
-import readingTime from 'astro-reading-time';
+
 import { openPolicy } from '@openpolicy/astro';
 import umami from '@yeskunall/astro-umami';
 import astroLLMsGenerator from 'astro-llms-generate';
@@ -16,7 +16,6 @@ export default defineConfig({
   site: 'https://shravonix.com',
   integrations: [
     react(),
-    readingTime(),
     mdx(),
     ...(process.env.NODE_ENV === 'development' ? [keystatic()] : []),
     openPolicy(),
