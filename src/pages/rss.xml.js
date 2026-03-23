@@ -3,14 +3,14 @@ import { getCollection } from 'astro:content';
 
 export async function GET(context) {
   const articles = await getCollection('articles');
+  const authors = await getCollection('authors');
+  
+  // Create author map for quick lookup
+  const authorMap = new Map(authors.map(a => [a.id, a.data.name]));
   
   // Sort articles newest-first for RSS readers
   const sortedArticles = [...articles].sort(
-    (a, b) => {
-      const dateA = a.data.publishedAt || a.data.date;
-      const dateB = b.data.publishedAt || b.data.date;
-      return new Date(dateB).getTime() - new Date(dateA).getTime();
-    }
+    (a, b) => new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime()
   );
 
   return rss({
@@ -19,10 +19,10 @@ export async function GET(context) {
     site: context.site,
     items: sortedArticles.map((article) => ({
       title: article.data.title,
-      pubDate: article.data.publishedAt || article.data.date,
+      pubDate: article.data.publishedAt,
       description: article.data.description,
       link: `/articles/${article.id}/`,
-      author: article.data.authors.map(a => a.name).join(', '),
+      author: article.data.authors.map(authorId => authorMap.get(authorId) || authorId).join(', '),
       categories: [article.data.category, ...(article.data.tags || [])],
     })),
     customData: `<language>en-us</language>`,

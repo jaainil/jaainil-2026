@@ -3,6 +3,24 @@ import type { CollectionEntry } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+const authors = defineCollection({
+  loader: glob({ 
+    pattern: '**/*.mdx', 
+    base: './src/content/authors',
+  }),
+  schema: z.object({
+    name: z.string(),
+    avatarUrl: z.string(),
+    role: z.string().optional(),
+    bio: z.string().optional(),
+    social: z.object({
+      twitter: z.string().optional(),
+      github: z.string().optional(),
+      linkedin: z.string().optional(),
+    }).optional(),
+  }),
+});
+
 const articles = defineCollection({
   loader: glob({ 
     pattern: '**/index.mdx', 
@@ -12,10 +30,7 @@ const articles = defineCollection({
     title: z.string(),
     category: z.string(),
     publishedAt: z.string().or(z.date()).transform((val) => new Date(val)),
-    authors: z.array(z.object({
-      name: z.string(),
-      avatarUrl: z.string(),
-    })),
+    authors: z.array(z.string()),
     imageUrl: image(),
     imageAlt: z.string().optional(),
     description: z.string(),
@@ -24,7 +39,9 @@ const articles = defineCollection({
 });
 
 export type Article = CollectionEntry<'articles'>;
+export type Author = CollectionEntry<'authors'>;
 
 export const collections = {
   articles,
+  authors,
 };

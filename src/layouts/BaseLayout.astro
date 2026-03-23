@@ -62,12 +62,16 @@ const articleSchema = articleData ? {
   headline: articleData.title,
   description: articleData.description,
   image: [image || OG_FALLBACK],
-  author: articleData.authors?.map((author: any) => ({
-    '@type': 'Person',
-    name: author.name,
-    image: author.avatarUrl,
-    url: SITE_URL,
-  })),
+  author: articleData.authors?.map((author: any) => {
+    const name = typeof author === 'string' ? author : author.name;
+    const avatarUrl = typeof author === 'string' ? undefined : author.avatarUrl;
+    return {
+      '@type': 'Person',
+      name,
+      image: avatarUrl,
+      url: SITE_URL,
+    };
+  }),
   datePublished: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
   dateModified: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
   url: currentUrl,

@@ -21,6 +21,13 @@ const { article } = Astro.props;
 const { Content, headings } = await render(article);
 
 const allArticles = await getCollection('articles');
+const allAuthors = await getCollection('authors');
+const authorMap = new Map(allAuthors.map(a => [a.id, a.data]));
+
+const resolvedAuthors = article.data.authors.map((slug: string) => {
+  const author = authorMap.get(slug);
+  return author ? { name: author.name, avatarUrl: author.avatarUrl } : { name: slug, avatarUrl: '' };
+});
 
 const relatedArticles = (() => {
   const currentTags = article.data.tags || [];
@@ -144,7 +151,7 @@ const breadcrumbSchema = {
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-6 sm:px-10 lg:px-16 py-4 border-y" style="border-color: var(--color-border);">
       <div class="flex items-center gap-4">
         <div class="flex gap-1.5">
-          {article.data.authors.map((author) => (
+          {resolvedAuthors.map((author) => (
             <img 
               src={author.avatarUrl} 
               alt={author.name} 
@@ -154,7 +161,20 @@ const breadcrumbSchema = {
           ))}
         </div>
         <div class="text-xs font-mono font-medium uppercase tracking-wider leading-relaxed max-w-md" style="color: var(--color-text-secondary);">
-          {article.data.authors.map((a) => a.name).join(', ')}
+          {resolvedAuthors.map((a, i) => (
+            <>
+              {i > 0 && ', '}
+              <a 
+                href={`/authors/${article.data.authors[i]}`} 
+                class="hover:underline transition-colors"
+                style="color: var(--color-text-secondary);"
+                onmouseenter="this.style.color='var(--color-text-primary)'"
+                onmouseleave="this.style.color='var(--color-text-secondary)'"
+              >
+                {a.name}
+              </a>
+            </>
+          ))}
         </div>
       </div>
       
@@ -217,15 +237,22 @@ const breadcrumbSchema = {
             </div>
             <div class="border-t p-4 px-6 md:p-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
               <div class="flex -space-x-2">
-                {relatedArticle.data.authors.map((author) => (
-                  <img 
-                    src={author.avatarUrl} 
-                    alt={author.name} 
-                    class="w-6 h-6 rounded-none border"
-                    style="border-color: var(--color-border);"
-                    loading="lazy"
-                  />
-                ))}
+                {(() => {
+                  const authorSlugs = relatedArticle.data.authors;
+                  const authorData = authorSlugs.map((slug: string) => {
+                    const author = authorMap.get(slug);
+                    return author ? { name: author.name, avatarUrl: author.avatarUrl } : { name: slug, avatarUrl: '' };
+                  });
+                  return authorData.map((author) => (
+                    <img 
+                      src={author.avatarUrl} 
+                      alt={author.name} 
+                      class="w-6 h-6 rounded-none border"
+                      style="border-color: var(--color-border);"
+                      loading="lazy"
+                    />
+                  ));
+                })()}
               </div>
               <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
                 {relatedArticle.data.publishedAt.toISOString().split('T')[0]}
