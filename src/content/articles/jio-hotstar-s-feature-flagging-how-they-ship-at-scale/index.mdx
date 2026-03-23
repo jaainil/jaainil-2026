@@ -1,0 +1,167 @@
+---
+title: 'JioHotstar''s Feature Flagging: How They Ship at Scale'
+category: Tech
+publishedAt: 2026-03-23T11:29:00.000Z
+authors:
+  - name: Jainil Prajapati
+    avatarUrl: https://picsum.photos/seed/jainil/40/40
+imageUrl: >-
+  src/content/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale/imageUrl.png
+description: >-
+  JioHotstar ships ~12 features a week to 500M users without breaking 61M live
+  viewers. Here's how their feature flagging system actually works.
+tags:
+  - feature flags
+  - feature flagging
+  - JioHotstar
+  - JioCinema
+  - streaming technology
+  - software engineering
+---
+**You can't do a big-bang release to 500 million users.** You especially can't do it when 61 million of those users might be watching the same live cricket match simultaneously. One broken feature, one wrong config value, one unintended interaction with a third-party SDK — and you've just ruined the experience for more people than live in Italy.
+
+And yet, the JioCinema engineering team ships roughly **a dozen new features every single week**. How?
+
+The answer isn't just good engineers or a lot of servers. It's a disciplined, layered approach to feature flagging that makes deploying to hundreds of millions of people feel — when it works — almost boring.
+
+---
+
+## What Does "Release" Even Mean at This Scale?
+
+Here's a question most developers don't have to think about: when a feature is "released," what does that actually mean?
+
+**JioHotstar's feature flagging approach separates code deployment from feature activation.** Engineers ship code that handles both the old and new behaviour. A config server then controls which path users take — toggled in real time, without a new app release. This lets the team roll out features to 1% of users, then 10%, then 50%, gathering data at every step before anyone commits to 100%.
+
+For most apps, a release is when you push the button. For JioHotstar, a release is a *multi-week journey* involving mobile builds, app store reviews, adoption curves, server-side configs, and feature flags — all coordinated in parallel.
+
+The engineering team at JioCinema published a detailed breakdown of exactly this challenge (May 2024), using a fictional feature called **BlueBoxes™** to trace a feature's journey from development to full rollout. The timeline spans roughly three to four weeks from code complete to majority user reach — not because the code is complex, but because the *distribution problem* is.
+
+\[INTERNAL LINK: How mobile app release cycles work for large-scale platforms]
+
+---
+
+## The Three-Layer System
+
+JioHotstar doesn't rely on one mechanism. They use three, layered on top of each other:
+
+### 1. App Version Targeting (Versioned Responses)
+
+The server can detect which version of the app a user is running and respond differently. If your app is version 3.1 and a feature shipped in 3.2, the server just... doesn't serve that feature to you. Clean, but expensive: the backend ends up peppered with `if (appVersion >= x)` conditions, and CDN caching becomes more complex because you're serving different responses to different users.
+
+This is the bluntest tool. It works, but it doesn't scale gracefully as a primary strategy.
+
+### 2. Client Feature Flags (Config Server)
+
+Here's where it gets interesting. Every time the JioHotstar app starts, it calls a **config server** and downloads a fresh set of feature flags. The app was already shipped with the code to handle both states — `enabled_blue: true` and `enabled_blue: false`. The flag just decides which path executes.
+
+This means engineers can:
+
+* **Toggle a feature off instantly** if something goes wrong — no hotfix, no app store review, no rollback
+* **A/B test** by giving 50% of users `enabled: true` and watching the metrics
+* **Gradually ramp** a feature from 1% → 10% → 100% user exposure, with a real killswitch at every step
+
+According to the JioCinema blog, at any point in time there are **hundreds of active feature flags** running simultaneously, each managing a different rollout or experiment.
+
+### 3. Server Configs (Dynamic Backend Behaviour)
+
+Some features don't live in the client at all. The server simply changes what data it returns. This is faster to iterate on — no app store involvement — but needs careful handling for backwards compatibility. Older app versions still need to understand the response shape, even if they don't render the new stuff.
+
+---
+
+## The Fingerprints You Can Actually See
+
+Here's the thing most people miss: you can *observe* feature flags in action just by using the app.
+
+During a live India match, a few things are visible right in the JioHotstar interface that hint directly at their flagging system:
+
+**The multiple cameras feature** — main cam, stump cam, batter cam, field view — these are individually controlled streams. Each one is a separate HLS feed. Whether the camera option is shown to you at all is almost certainly flag-gated, making it easy to test with a subset of users or roll back if something breaks.
+
+**The resolution gap** — and this one is genuinely interesting. During a live match, switching to "Full HD" on the main camera doesn't actually serve 1080p packets. Stump cam and field view serve 1080p fine. Main cam tops out at 720p. That's not a hardware limitation. That's either a deliberate capacity decision or a feature flag that hasn't been toggled on for main cam — possibly a bandwidth cost decision for the highest-traffic stream, possibly a test, possibly just an unresolved bug they're watching.
+
+**Data saver mode** — this is a clean example of a permission/ops toggle in action. The app knows which stream URL to request based on your quality setting, and the server gracefully serves a different bitrate. The adaptive machinery is entirely server-config driven.
+
+**The "heartbeat" pattern** — the app continuously polls an m3u playlist file every few seconds. Alongside that, it's almost certainly refreshing its config state at regular intervals. That heartbeat isn't just for video — it's how the app stays in sync with whatever the feature flag server has decided you should see.
+
+---
+
+## What Feature Flags Actually Protect Against
+
+Most people think of feature flags as a rollout tool. And they are. But at JioHotstar's scale, they're also a **circuit breaker**.
+
+During the 2023 Cricket World Cup — when concurrency crept toward 60 million — the engineering team needed a way to keep the core experience alive even if non-critical services buckled under load. The answer? Feature flags as **graceful degradation levers**.
+
+Personalized recommendations on the home page? Those can be turned off. Dynamic widgets? Gone. The sticker pack feature for live chat? Disabled. None of these should — and with proper flagging, *won't* — prevent you from watching the match.
+
+The JioCinema engineering documentation explicitly calls this out: the key to managing 25M+ concurrent users is **separating features crucial to the core experience from those that are "nice-to-haves."** When resources are stretched, the nice-to-haves get their flags flipped to `false`. The stream keeps playing.
+
+This is fundamentally different from feature flags as a developer convenience. At this scale, they're operational infrastructure — the difference between a degraded experience and a crashed one.
+
+---
+
+## The Myth: Feature Flags Are Just On/Off Switches for Devs
+
+Most people — even engineers who use feature flags — think of them as a deployment utility. You finish a feature, you ship the code behind a flag, you turn it on when you're ready. Done.
+
+What nobody's saying is that at JioHotstar's scale, feature flags are part of the **operational playbook** for a live event. Before a major match, the team reviews which flags are active, which features are in partial rollout, which experiments are running — and actively decides what state the system should be in before 60 million people show up.
+
+Think about it this way: you don't want an A/B test on your checkout flow to be running during Black Friday. JioHotstar doesn't want an experimental recommendation algorithm half-rolled-out when the India vs. Pakistan final kicks off. Feature flags are how they freeze the product surface for the duration of the event, then resume normal iteration after.
+
+---
+
+## The Mobile-Specific Problem
+
+The web is easy. You deploy a server-side change and everyone gets it instantly. Mobile is a different beast entirely.
+
+JioHotstar's app has hundreds of millions of installs across Android and iOS devices spanning years of versions. When they ship a new version of the app, it goes through Play Store and App Store review. Then users have to actually download it. Even after rolling out to 100% of users on the store, it can take **weeks** for the majority of active users to be on the new build.
+
+This creates a hard problem: you can't just "release" a feature. Code lives in the wild on old app versions for a long time.
+
+Client feature flags solve this elegantly. The app ships with the *capability* to run both sides of any flag — the old experience and the new one. The config server decides in real time which side you get. This means:
+
+* A feature can go "live" without a new app release
+* A feature can be killed instantly even if it shipped in an app version from three months ago
+* Old app versions and new ones can coexist gracefully, each getting flags appropriate to their capabilities
+
+The trade-off? Every feature needs to be built twice — both the flagged state and the default state. That's discipline overhead. But given the alternative (shipping a broken feature to 400M+ installs with no killswitch), it's a trade-off worth making every time.
+
+---
+
+## Lessons Worth Stealing
+
+You don't need 60 million concurrent users to benefit from how JioHotstar thinks about this. A few principles that apply at any scale:
+
+**Separate "code is deployed" from "feature is live."** These should be two different events on your calendar. When they're the same thing, you're one bad deploy away from a panic rollback.
+
+**Make the safe path the easy path.** The JioCinema engineering team notes this explicitly: you can't just document best practices and expect engineers to follow them when they're under deadline pressure. Build the gradual rollout into the default workflow. Make it *harder* to do a 100% flip than a 1% ramp.
+
+**Build killswitches before you need them.** Every feature that touches your critical path — playback, checkout, auth — should have a flag that can disable it independently. The cost of building that switch is a few hours. The cost of not having it during an incident is measured in whatever your revenue-per-minute looks like.
+
+**Treat flags as temporary.** Flags accumulate. An app with 500 active permanent flags is a maintenance nightmare. The JioCinema blog notes a clear lifecycle: feature flags for rollouts are short-term by design — once a feature is stable at 100%, the flag should be cleaned up. Failing to do this is how you end up with `if (appVersion >= 2.1.4 && flagEnabled("old_blue_boxes_v2"))` buried deep in code nobody touches anymore.
+
+---
+
+## FAQ
+
+**What is a feature flag in software development?**
+A feature flag (also called a feature toggle or feature switch) is a configuration that controls whether a piece of code runs for a given user or session. Instead of deploying code that immediately activates a feature for everyone, engineers wrap the new behaviour in a conditional that can be toggled remotely — enabling gradual rollouts, A/B tests, and instant rollbacks without a new deployment.
+
+**How does JioHotstar release features to hundreds of millions of users?**
+JioHotstar uses a layered system: app version targeting for backwards compatibility, client-side feature flags fetched from a config server on app launch, and dynamic server configs for backend behaviour. According to the JioCinema engineering blog, around a dozen new features ship every week, with hundreds of feature flags active simultaneously managing rollout stages and live experiments.
+
+**Why can't JioHotstar just push a fix instantly if something breaks?**
+The mobile app ecosystem doesn't work like a web server. New app versions require store review and user adoption, which takes days to weeks. Client feature flags exist precisely to solve this — they allow features to be toggled off instantly, regardless of which app version a user is running.
+
+**What is graceful degradation in streaming apps?**
+Graceful degradation means the app continues to function at reduced capability rather than failing completely when load or errors hit. For JioHotstar, this means turning off non-critical features like personalized recommendations or chat stickers during peak load events, so the core experience — the live stream — stays alive for all 60 million concurrent users.
+
+**Why isn't 1080p working on JioHotstar's main camera?**
+This appears to be either a deliberate capacity decision (main cam carries the most traffic, so constraining bitrate reduces CDN load) or a partially-rolled-out feature that hasn't been fully enabled. It's one of the more visible places where the boundary between "flag decision" and "accidental bug" gets blurry — even at JioHotstar's level of engineering maturity, the complexity of managing hundreds of flags means some things fall through the cracks.
+
+**What's the difference between feature flags and A/B testing?**
+They're related but distinct. Feature flags control what users see. A/B testing uses feature flags as the mechanism — exposing one group to variant A and another to variant B — and then measures the outcome to decide which version to keep. JioHotstar uses both: rollout flags for safely ramping features, and experiment flags for testing product decisions with real user data.
+
+---
+
+Feature flagging at JioHotstar isn't a footnote to the CDN architecture story — it's the layer that makes the entire engineering operation *humane*. You can have 10,000 Kubernetes nodes and a bulletproof multi-CDN setup, but if your deployment process is "push to 100% and pray," you're one release away from a very public failure at the worst possible moment.
+
+The next time 60-odd million people are watching a cricket match without it buffering, a config server somewhere quietly deciding who gets what version of the app is doing a lot of unsung work. That's the art of it.
