@@ -203,7 +203,7 @@ const itemListSchema = {
 
   function applyFilters() {
     let visible = 0;
-    cards.forEach((card, i) => {
+    cards.forEach((card) => {
       const category = card.dataset.category ?? '';
       const title = card.dataset.title ?? '';
       const description = card.dataset.description ?? '';
