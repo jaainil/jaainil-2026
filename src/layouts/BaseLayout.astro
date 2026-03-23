@@ -9,18 +9,26 @@ import { Seo } from 'astro-seo-meta';
 import { Schema } from 'astro-seo-schema';
 import '../styles/global.css';
 
+interface ResolvedAuthor {
+  name: string;
+  avatarUrl?: string;
+  slug?: string;
+}
+
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   articleData?: any;
+  resolvedAuthors?: ResolvedAuthor[];
 }
 
 const {
   title = 'Shravonix - Tech News & Deep Dives',
   description = 'In-depth technical analysis on AI models, browser engines, web frameworks, Linux kernel, and hardware. Nerdy insights for developers and tech enthusiasts who want deep technical content.',
   image = 'https://shravonix.com/og.jpg',
-  articleData = null
+  articleData = null,
+  resolvedAuthors = null,
 } = Astro.props;
 const url = new URL(Astro.url.pathname, Astro.site);
 const currentUrl = url.toString();
@@ -31,17 +39,43 @@ const OG_FALLBACK = `${SITE_URL}/og.jpg`;
 
 const organizationSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': ['Organization', 'NewsMediaOrganization'],
   '@id': `${SITE_URL}/#organization`,
   name: 'Shravonix',
+  alternateName: 'Shravonix Media',
+  description: 'In-depth technical analysis on AI, Linux, IoT, and software engineering for developers and tech enthusiasts.',
   url: SITE_URL,
   logo: {
     '@type': 'ImageObject',
+    '@id': `${SITE_URL}/#logo`,
     url: LOGO_URL,
+    width: 512,
+    height: 512,
+    caption: 'Shravonix',
   },
+  image: {
+    '@id': `${SITE_URL}/#logo`,
+  },
+  email: 'hello@shravonix.com',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'A/6 Shantivilla Residency, SVIT College Road',
+    addressLocality: 'Vasad',
+    addressRegion: 'Gujarat',
+    postalCode: '388306',
+    addressCountry: 'IN',
+  },
+  foundingDate: '2026',
   sameAs: [
     'https://twitter.com/shravonix',
+    'https://github.com/shravonix',
   ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'hello@shravonix.com',
+    contactType: 'editorial',
+    availableLanguage: 'English',
+  },
 };
 
 const siteSchema = {
@@ -49,39 +83,62 @@ const siteSchema = {
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
   name: 'Shravonix',
-  description: description,
+  alternateName: 'Shravonix — Tech News & Deep Dives',
+  description: 'In-depth technical analysis on AI models, browser engines, web frameworks, Linux kernel, and hardware. Nerdy insights for developers and tech enthusiasts.',
   url: SITE_URL,
+  inLanguage: 'en',
   publisher: {
     '@id': `${SITE_URL}/#organization`,
   },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/articles?category=All&q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
 };
+
+const schemaAuthors = resolvedAuthors
+  ? resolvedAuthors.map((a) => ({
+      '@type': 'Person',
+      name: a.name,
+      ...(a.avatarUrl && { image: a.avatarUrl }),
+      url: a.slug ? `${SITE_URL}/authors/${a.slug}` : SITE_URL,
+    }))
+  : articleData?.authors?.map((slug: string) => ({
+      '@type': 'Person',
+      name: slug,
+      url: `${SITE_URL}/authors/${slug}`,
+    }));
 
 const articleSchema = articleData ? {
   '@context': 'https://schema.org',
-  '@type': 'Article',
+  '@type': 'TechArticle',
+  '@id': `${currentUrl}#article`,
   headline: articleData.title,
   description: articleData.description,
   image: [image || OG_FALLBACK],
-  author: articleData.authors?.map((author: any) => {
-    const name = typeof author === 'string' ? author : author.name;
-    const avatarUrl = typeof author === 'string' ? undefined : author.avatarUrl;
-    return {
-      '@type': 'Person',
-      name,
-      image: avatarUrl,
-      url: SITE_URL,
-    };
-  }),
+  author: schemaAuthors,
   datePublished: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
-  dateModified: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
+  dateModified: articleData.updatedAt
+    ? (articleData.updatedAt instanceof Date ? articleData.updatedAt.toISOString() : articleData.updatedAt)
+    : (articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt),
   url: currentUrl,
   mainEntityOfPage: {
     '@type': 'WebPage',
     '@id': currentUrl,
   },
+  isPartOf: {
+    '@id': `${SITE_URL}/#website`,
+  },
   publisher: {
     '@id': `${SITE_URL}/#organization`,
   },
+  inLanguage: 'en',
+  ...(articleData.tags?.length && { keywords: articleData.tags.join(', ') }),
+  ...(articleData.category && { articleSection: articleData.category }),
 } : null;
 ---
 

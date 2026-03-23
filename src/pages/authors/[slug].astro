@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro-lqip/components';
+import { Schema } from 'astro-seo-schema';
 
 export async function getStaticPaths() {
   const authors = await getCollection('authors');
@@ -14,20 +15,61 @@ export async function getStaticPaths() {
 const { author } = Astro.props;
 const allArticles = await getCollection('articles');
 
-console.log('Debug - Author ID:', author.id);
-console.log('Debug - Author data:', author.data);
-console.log('Debug - Total articles:', allArticles.length);
-
 const authorArticles = allArticles
-  .filter((article) => {
-    const match = article.data.authors.includes(author.id);
-    console.log(`Debug - Article "${article.data.title}": authors=${JSON.stringify(article.data.authors)}, matches? ${match}`);
-    return match;
-  })
+  .filter((article) => article.data.authors.includes(author.id))
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const SITE_URL = 'https://shravonix.com';
+const authorUrl = `${SITE_URL}/authors/${author.id}`;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${authorUrl}#person`,
+  name: author.data.name,
+  url: authorUrl,
+  ...(author.data.avatarUrl && { image: author.data.avatarUrl }),
+  ...(author.data.bio && { description: author.data.bio }),
+  ...(author.data.role && { jobTitle: author.data.role }),
+  worksFor: {
+    '@id': `${SITE_URL}/#organization`,
+  },
+  sameAs: [
+    ...(author.data.social?.twitter ? [`https://twitter.com/${author.data.social.twitter}`] : []),
+    ...(author.data.social?.github ? [`https://github.com/${author.data.social.github}`] : []),
+    ...(author.data.social?.linkedin ? [`https://linkedin.com/in/${author.data.social.linkedin}`] : []),
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Authors', item: `${SITE_URL}/authors` },
+    { '@type': 'ListItem', position: 3, name: author.data.name, item: authorUrl },
+  ],
+};
+
+const webPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${authorUrl}#webpage`,
+  name: `${author.data.name} — Shravonix`,
+  description: author.data.bio || `Articles and profile of ${author.data.name} on Shravonix`,
+  url: authorUrl,
+  inLanguage: 'en',
+  isPartOf: { '@id': `${SITE_URL}/#website` },
+  about: { '@id': `${authorUrl}#person` },
+};
 ---
 
-<BaseLayout title={`${author.data.name} — Shravonix`} description={author.data.bio || `Articles by ${author.data.name}`}>
+<BaseLayout title={`${author.data.name} — Shravonix`} description={author.data.bio || `Articles and profile of ${author.data.name} on Shravonix`}>
+  <Fragment slot="head">
+    <Schema item={personSchema as any} />
+    <Schema item={breadcrumbSchema as any} />
+    <Schema item={webPageSchema as any} />
+  </Fragment>
   <div class="w-full pb-16">
     
     <!-- Author Header -->

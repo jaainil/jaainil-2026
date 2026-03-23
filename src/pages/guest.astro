@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Schema } from 'astro-seo-schema';
 
 const teamMembers = [
   {
@@ -9,9 +10,39 @@ const teamMembers = [
     bio: "Tech enthusiast covering web development, AI, and open source projects."
   }
 ];
+
+const SITE_URL = 'https://shravonix.com';
+const pageUrl = `${SITE_URL}/guest`;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Write for Us', item: pageUrl },
+  ],
+};
+
+const webPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${pageUrl}#webpage`,
+  name: 'Write for Us — Shravonix',
+  description: 'Contribute a guest post to Shravonix. Share your technical expertise with thousands of developers by writing about AI, Linux, IoT, or software engineering.',
+  url: pageUrl,
+  inLanguage: 'en',
+  isPartOf: { '@id': `${SITE_URL}/#website` },
+};
 ---
 
-<BaseLayout title="Write for Us — Shravonix">
+<BaseLayout
+  title="Write for Us — Shravonix"
+  description="Contribute a guest post to Shravonix. Share your technical expertise with thousands of developers by writing about AI, Linux, IoT, or software engineering."
+>
+  <Fragment slot="head">
+    <Schema item={breadcrumbSchema as any} />
+    <Schema item={webPageSchema as any} />
+  </Fragment>
   <div class="w-full pb-16">
     
     <!-- Page heading -->
