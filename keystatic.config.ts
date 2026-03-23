@@ -5,6 +5,17 @@ export default config({
     kind: 'local',
   },
   collections: {
+    categories: collection({
+      label: 'Categories',
+      slugField: 'name',
+      path: 'src/content/categories/*',
+      format: { data: 'yaml' },
+      schema: {
+        name: fields.slug({ name: { label: 'Name' } }),
+        description: fields.text({ label: 'Description', multiline: true }),
+        color: fields.text({ label: 'Color (hex)', description: 'Brand color for this category' }),
+      },
+    }),
     authors: collection({
       label: 'Authors',
       slugField: 'name',
@@ -36,7 +47,11 @@ export default config({
       },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
-        category: fields.text({ label: 'Category' }),
+        category: fields.relationship({
+          label: 'Category',
+          description: 'Select the category for this article',
+          collection: 'categories',
+        }),
         publishedAt: fields.datetime({ label: 'Published At', description: 'Exact publish time — used to order posts and display the publish date.' }),
         authors: fields.array(
           fields.relationship({
