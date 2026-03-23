@@ -1,0 +1,80 @@
+---
+interface Props {
+  items: Array<{ id: string; title: string }>;
+}
+
+const { items } = Astro.props;
+---
+
+<div id="toc-container">
+  <ul class="toc-list text-[14.5px] font-sans">
+    {items.map((item) => (
+      <li class="toc-item relative">
+        <a
+          href={`#${item.id}`}
+          class="toc-link block pl-4 py-2 transition-all duration-200"
+          data-id={item.id}
+        >
+          {item.title}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  #toc-container {
+    position: relative;
+    border-left: 1px solid var(--color-border);
+  }
+</style>
+
+<script define:vars={{ items }}>
+  const getActiveId = () => {
+    const scrollY = window.scrollY + 100;
+    
+    if (items.length === 0) return;
+    
+    let current = items[0].id;
+    let closestDistance = Infinity;
+    
+    for (const item of items) {
+      const el = document.getElementById(item.id);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const elementTop = rect.top + window.scrollY;
+        const distance = Math.abs(elementTop - scrollY);
+        
+        if (rect.top <= 100 && distance < closestDistance) {
+          current = item.id;
+          closestDistance = distance;
+        }
+      }
+    }
+    
+    return current;
+  };
+
+  const updateActiveState = () => {
+    const activeId = getActiveId();
+    
+    document.querySelectorAll('.toc-link').forEach(link => {
+      const itemId = link.getAttribute('data-id');
+      
+      if (itemId === activeId) {
+        link.style.color = 'var(--color-text-primary)';
+        link.style.fontWeight = '500';
+        link.style.borderLeft = '2px solid var(--color-text-primary)';
+        link.style.marginLeft = '-1px';
+      } else {
+        link.style.color = 'var(--color-text-muted)';
+        link.style.fontWeight = '400';
+        link.style.borderLeft = '2px solid transparent';
+        link.style.marginLeft = '-1px';
+      }
+    });
+  };
+
+  updateActiveState();
+  window.addEventListener('scroll', updateActiveState, { passive: true });
+</script>
