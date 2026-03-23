@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro-lqip/components';
+import { Schema } from 'astro-seo-schema';
 import type { Article } from '../../types';
 
 const allArticles = await getCollection('articles');
@@ -26,9 +27,55 @@ const articles: Article[] = allArticles
 
 // Fixed category order
 const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions'];
+
+const SITE_URL = 'https://shravonix.com';
+const pageUrl = `${SITE_URL}/articles`;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Articles', item: pageUrl },
+  ],
+};
+
+const webPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${pageUrl}#webpage`,
+  name: 'Article Index — Shravonix',
+  description: 'Browse every article published on Shravonix. In-depth technical analysis on AI, Linux, IoT, and software engineering.',
+  url: pageUrl,
+  inLanguage: 'en',
+  isPartOf: { '@id': `${SITE_URL}/#website` },
+};
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Shravonix Articles',
+  description: 'All articles published on Shravonix',
+  url: pageUrl,
+  numberOfItems: articles.length,
+  itemListElement: articles.map((article, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    url: `${SITE_URL}/articles/${article.id}`,
+    name: article.title,
+  })),
+};
 ---
 
-<BaseLayout title="Article Index — Shravonix" description="Browse every article published on Shravonix, filtered by category.">
+<BaseLayout
+  title="Article Index — Shravonix"
+  description="Browse every article published on Shravonix. In-depth technical analysis on AI, Linux, IoT, and software engineering."
+>
+  <Fragment slot="head">
+    <Schema item={breadcrumbSchema as any} />
+    <Schema item={webPageSchema as any} />
+    <Schema item={itemListSchema as any} />
+  </Fragment>
   <div class="w-full pb-16">
 
     <!-- Page Header -->

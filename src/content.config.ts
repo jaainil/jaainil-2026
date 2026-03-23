@@ -35,6 +35,7 @@ const articles = defineCollection({
     imageAlt: z.string().optional(),
     description: z.string(),
     tags: z.array(z.string()).optional(),
+    updatedAt: z.string().or(z.date()).transform((val) => new Date(val)).optional(),
   }),
 });
 

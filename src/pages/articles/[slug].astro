@@ -26,7 +26,9 @@ const authorMap = new Map(allAuthors.map(a => [a.id, a.data]));
 
 const resolvedAuthors = article.data.authors.map((slug: string) => {
   const author = authorMap.get(slug);
-  return author ? { name: author.name, avatarUrl: author.avatarUrl } : { name: slug, avatarUrl: '' };
+  return author
+    ? { name: author.name, avatarUrl: author.avatarUrl, slug }
+    : { name: slug, avatarUrl: '', slug };
 });
 
 const relatedArticles = (() => {
@@ -106,6 +108,7 @@ const breadcrumbSchema = {
   description={article.data.description}
   image={ogImage}
   articleData={article.data}
+  resolvedAuthors={resolvedAuthors}
 >
   <Fragment slot="head">
     <Schema item={breadcrumbSchema as any} />
