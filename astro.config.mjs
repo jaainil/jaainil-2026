@@ -16,7 +16,6 @@ export default defineConfig({
   site: 'https://shravonix.com',
   redirects: {
     '/the-art-of-feature-flagging-jiocinemas-approach-to-managing-features-at-scale': '/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale',
-    '/tags/[...slug]': '/',
   },
   integrations: [
     react(),
