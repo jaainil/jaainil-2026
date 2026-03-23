@@ -5,15 +5,22 @@ import { Image } from 'astro-lqip/components';
 import type { Article } from '../../types';
 
 const allArticles = await getCollection('articles');
+const allAuthors = await getCollection('authors');
+const authorMap = new Map(allAuthors.map(a => [a.id, a.data]));
+
 const articles: Article[] = allArticles
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
   .map((a) => {
-    const { imageUrl, publishedAt, ...rest } = a.data;
+    const { imageUrl, publishedAt, authors, ...rest } = a.data;
     return {
       id: a.id,
       ...rest,
       imageUrl,
       publishedAt: publishedAt.toISOString().split('T')[0],
+      authors: authors.map((slug: string) => {
+        const author = authorMap.get(slug);
+        return author ? { id: slug, name: author.name, avatarUrl: author.avatarUrl } : { id: slug, name: slug, avatarUrl: '' };
+      }),
     } as Article;
   });
 
