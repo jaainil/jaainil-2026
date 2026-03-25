@@ -34,7 +34,7 @@
     "astro-seo-meta": "^6.0.0",
     "astro-seo-schema": "^6.0.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.6.0",
+    "lucide-react": "^1.7.0",
     "marked": "^17.0.5",
     "pdfkit": "^0.18.0",
     "react": "^19.2.4",
