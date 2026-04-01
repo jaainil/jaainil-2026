@@ -8,7 +8,7 @@ Personal tech blog covering AI, web development, software engineering, and the l
 
 - **Framework:** Astro 6
 - **UI:** React 19 + Tailwind CSS 4
-- **Content:** MDX + MarkDoc + Keystatic CMS
+- **Content:** MDX + MarkDoc
 - **Icons:** Lucide React
 - **SEO:** astro-seo, Sitemap, Schema.org structured data
 - **Analytics:** Umami
@@ -17,7 +17,6 @@ Personal tech blog covering AI, web development, software engineering, and the l
 ## Features
 
 - Blog with MDX articles and author profiles
-- Keystatic headless CMS for content management
 - RSS feed at `/rss.xml`
 - Sitemap generation
 - Auto-generated privacy policy, terms, and cookie pages

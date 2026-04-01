@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
-import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
@@ -9,7 +8,7 @@ import { openPolicy } from '@openpolicy/astro';
 import umami from '@yeskunall/astro-umami';
 import astroLLMsGenerator from 'astro-llms-generate';
 import robotsTxt from 'astro-robots-txt';
-import compressor from 'astro-compressor';
+import compress from '@playform/compress';
 
 export default defineConfig({
   output: 'static',
@@ -20,7 +19,6 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
-    ...(process.env.NODE_ENV === 'development' ? [keystatic()] : []),
     openPolicy(),
     umami({ id: 'ee167bbd-1971-4780-bac6-fa0ddae9a4df' }),
     sitemap({
@@ -66,8 +64,7 @@ export default defineConfig({
       excludePatterns: [],
       i18n: false,
     }),
-    compressor(),
-    (await import('@playform/compress')).default(),
+    compress(),
   ],
   vite: {
     plugins: [tailwindcss()],
