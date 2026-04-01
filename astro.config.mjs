@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
-import { openPolicy } from '@openpolicy/astro';
+// import { openPolicy } from '@openpolicy/astro';
 import umami from '@yeskunall/astro-umami';
 import astroLLMsGenerator from 'astro-llms-generate';
 import robotsTxt from 'astro-robots-txt';
@@ -19,7 +19,7 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
-    openPolicy(),
+    // openPolicy(),
     umami({ id: 'ee167bbd-1971-4780-bac6-fa0ddae9a4df' }),
     sitemap({
       customPages: [
