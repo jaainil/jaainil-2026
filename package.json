@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "cross-env NODE_OPTIONS=\"--no-experimental-strip-types\" astro dev",
     "build": "astro build",
     "start": "npx serve dist/client --listen 3000",
     "preview": "astro preview",
@@ -49,6 +49,7 @@
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "cross-env": "^10.1.0",
     "typescript": "~6.0.2"
   }
 }
