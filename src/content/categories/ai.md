@@ -1,0 +1,5 @@
+---
+name: ai
+description: Artificial intelligence, machine learning, and AI research.
+color: "#7C3AED"
+---
