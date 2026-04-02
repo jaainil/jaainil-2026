@@ -1,3 +1,5 @@
+---
 name: tech
 description: Technology news, trends, and analysis from the industry.
 color: "#0078D4"
+---
