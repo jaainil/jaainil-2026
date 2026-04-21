@@ -9,9 +9,14 @@ export default defineConfig({
       previewUrl: "/articles/{slug}",
       schema: {
         title: fields.text({ label: "Title", validation: { isRequired: true } }),
-        category: fields.text({ label: "Category", validation: { isRequired: true } }),
+        category: fields.relationship({ label: "Category", collection: "categories", validation: { isRequired: true } }),
         publishedAt: fields.date({ label: "Published At", validation: { isRequired: true } }),
-        authors: fields.multiselect({ label: "Authors", options: ["jainil-prajapati"], validation: { isRequired: true } }),
+        authors: fields.array({ 
+          label: "Authors", 
+          itemField: fields.relationship({ label: "Author", collection: "authors" }),
+          itemLabel: "Author",
+          validation: { isRequired: true } 
+        }),
         imageUrl: fields.url({ label: "Image URL", validation: { isRequired: true } }),
         imageAlt: fields.text({ label: "Image Alt" }),
         description: fields.text({ label: "Description", validation: { isRequired: true } }),
