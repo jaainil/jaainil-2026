@@ -5,7 +5,7 @@ export default defineConfig({
     {
       name: "articles",
       path: "src/content/articles",
-      filePattern: "{slug}/index.md",
+      filePattern: "{slug}/index.mdx",
       previewUrl: "/articles/{slug}",
       schema: {
         title: fields.text({ label: "Title", validation: { isRequired: true } }),
@@ -17,7 +17,7 @@ export default defineConfig({
           itemLabel: "Author",
           validation: { isRequired: true } 
         }),
-        imageUrl: fields.url({ label: "Image URL", validation: { isRequired: true } }),
+        imageUrl: fields.image({ label: "Image", validation: { isRequired: true } }),
         imageAlt: fields.text({ label: "Image Alt" }),
         description: fields.text({ label: "Description", validation: { isRequired: true } }),
         tags: fields.array({ label: "Tags", itemField: fields.text({ label: "Tag" }) }),
