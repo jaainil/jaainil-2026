@@ -1,4 +1,4 @@
-import { defineConfig } from "@imjp/writenex-astro";
+import { defineConfig, fields } from "@imjp/writenex-astro/config";
 
 export default defineConfig({
   collections: [
@@ -8,15 +8,15 @@ export default defineConfig({
       filePattern: "{slug}/index.md",
       previewUrl: "/articles/{slug}",
       schema: {
-        title: { type: "string", required: true },
-        category: { type: "string", required: true },
-        publishedAt: { type: "date", required: true },
-        authors: { type: "array", items: "string", required: true, options: ["jainil-prajapati"] },
-        imageUrl: { type: "string", required: true },
-        imageAlt: { type: "string" },
-        description: { type: "string", required: true },
-        tags: { type: "array", items: "string" },
-        updatedAt: { type: "date" },
+        title: fields.text({ label: "Title", validation: { isRequired: true } }),
+        category: fields.text({ label: "Category", validation: { isRequired: true } }),
+        publishedAt: fields.date({ label: "Published At", validation: { isRequired: true } }),
+        authors: fields.multiselect({ label: "Authors", options: ["jainil-prajapati"], validation: { isRequired: true } }),
+        imageUrl: fields.url({ label: "Image URL", validation: { isRequired: true } }),
+        imageAlt: fields.text({ label: "Image Alt" }),
+        description: fields.text({ label: "Description", validation: { isRequired: true } }),
+        tags: fields.array({ label: "Tags", itemField: fields.text({ label: "Tag" }) }),
+        updatedAt: fields.date({ label: "Updated At" }),
       },
     },
     {
@@ -24,13 +24,13 @@ export default defineConfig({
       path: "src/content/authors",
       filePattern: "{slug}.md",
       schema: {
-        name: { type: "string", required: true },
-        avatarUrl: { type: "string", required: true },
-        role: { type: "string" },
-        bio: { type: "string" },
-        twitter: { type: "string" },
-        github: { type: "string" },
-        linkedin: { type: "string" },
+        name: fields.text({ label: "Name", validation: { isRequired: true } }),
+        avatarUrl: fields.url({ label: "Avatar URL", validation: { isRequired: true } }),
+        role: fields.text({ label: "Role" }),
+        bio: fields.text({ label: "Bio", multiline: true }),
+        twitter: fields.text({ label: "Twitter" }),
+        github: fields.text({ label: "GitHub" }),
+        linkedin: fields.text({ label: "LinkedIn" }),
       },
     },
     {
@@ -38,9 +38,9 @@ export default defineConfig({
       path: "src/content/categories",
       filePattern: "{slug}.md",
       schema: {
-        name: { type: "string", required: true },
-        description: { type: "string", required: true },
-        color: { type: "string", required: true },
+        name: fields.text({ label: "Name", validation: { isRequired: true } }),
+        description: fields.text({ label: "Description", validation: { isRequired: true } }),
+        color: fields.text({ label: "Color", validation: { isRequired: true } }),
       },
     },
   ],
