@@ -1,0 +1,211 @@
+---
+title: Tokens Are Getting Cheaper. So Why Does AI Feel More Expensive?
+description: Prime's right that the AI economy is shifting — but the real story isn't about money. It's about GPUs, and nobody has enough of them. Let's break this down.
+authors:
+  - jainil-prajapati
+category: ai
+publishedAt: 2026-05-08
+imageUrl: ./chatgpt-image-may-8-2026-12-13-17-am-movu3uv8.png
+---
+
+I had a single message running in Copilot for over two hours.
+
+One message. One. It was trying to crack a cryptography challenge and just... kept going. And the whole time, my Copilot usage meter was sitting at 0.4%.
+
+So when people started panicking about GitHub pausing signups or Anthropic messing with the $20 Claude plan — I had an actual answer. Not vibes. Not a hot take.
+
+Let me explain what's actually going on here, because the discourse has been genuinely bad.
+
+***
+
+## Okay so what's actually happening with AI pricing right now?
+
+The short version: **Anthropic, GitHub, and Cursor aren't raising prices to make more money. They're running out of GPUs.**
+
+These companies don't have enough compute to keep subsidizing the level of usage they've been giving away. And as agentic workflows explode — where a single "message" can run for hours, use $100+ of inference, and spawn parallel threads — the old flat-rate subscription math completely falls apart.
+
+This isn't the end of cheap AI. It's the end of unlimited AI. There's a difference.
+
+***
+
+## Here's what actually happened — the timeline
+
+Prime made a video about the "cracks showing in the AI economy." He's not wrong that something is shifting. But I think he missed some important details, especially around the economics of it.
+
+Let me do the context first.
+
+#### The Cursor moment (the real start)
+
+This actually goes back further than the recent drama. Cursor was one of the first to feel it. They were pricing by number of messages. Some messages cost a few cents to run. Others cost several hundred dollars. And Cursor has to pay the labs — Anthropic, OpenAI — in actual cash for each request.
+
+They couldn't eat the variance. A heavy user could consume $3,000 of inference on a $200 plan. So they switched to usage-based pricing — your cost reflects what it actually costs to run your requests.
+
+That was the writing on the wall. That was 2024.
+
+#### Anthropic's compute rationing experiments
+
+In March this year, Anthropic ran something subtle. For two weeks, they doubled usage outside of peak hours. Sounds generous, right?
+
+It wasn't altruism. It was them trying to push power users off-peak so their GPUs would be available during business hours when enterprise customers needed them.
+
+It didn't work fast enough. A week and a half later, they quietly announced that between 5am and 11am PT, you'd burn through your session limits faster than before.
+
+They tried the carrot. Then used the stick.
+
+#### The Claude Code drama
+
+April 21st, Anthropic's pricing page briefly showed Claude Code was only available on the $100 Max plan — not the $20 Pro plan. Twitter lost it. Sam Altman posted something about being drunk. Memes happened.
+
+Anthropic said it was a test on 2% of new signups and they reverted it.
+
+Here's the thing people missed: **this wasn't them trying to push you from $20 to $100.** They don't actually care that much about moving you up a tier. What they care about is enterprise revenue — which is where Anthropic is now at $30B ARR, ahead of OpenAI.
+
+The $20 plan change was them trying to slow down the compute firehose from low-tier users. Same energy as what GitHub did a week later.
+
+#### GitHub pausing signups
+
+April 20th. GitHub pauses new Copilot Pro and Pro+ signups entirely.
+
+Copilot VP Joe Binder wrote: *"It's now common for a handful of requests to incur costs that exceed the plan price."*
+
+That's the sentence. That's the whole thing.
+
+Agentic coding sessions — where you give Claude or GPT a task and it runs for hours, spawns subagents, debugs automatically — were never what the original Copilot pricing was built for. The old model was autocomplete. Short, stateless suggestions. Now people are running multi-hour parallel agent sessions on a $40/month plan.
+
+> **You don't pause signups because you want more money. You pause signups because you don't have capacity.**
+
+Microsoft isn't compute-poor because they're bad at business. They're compute-constrained because everyone is. And the GPUs that $40/month developers are using? Microsoft needs those for the Fortune 500 companies paying actual enterprise rates.
+
+***
+
+## The compute economics that people keep skipping over
+
+Let me be real about the numbers here.
+
+A $200/month Claude Max subscription was being used for somewhere between $1,000 and $5,000 of compute. According to people tracking this closely, Anthropic was subsidizing at 20x or more.
+
+That's not unsustainable because of the subscription revenue gap alone.
+
+**It's unsustainable because of electricity.**
+
+Running high-end GPUs at full load is genuinely expensive. I have a 5090 doing some training tasks. It alone bumped my electric bill by roughly $1,000. That's one consumer card. Anthropic is running server farms.
+
+Estimates put the raw compute cost to Anthropic at somewhere around 15–20% of what you pay on the API. So they're not just losing the revenue gap — there are users in the $200/month tier who are legitimately costing Anthropic money on electricity alone, before you account for the GPU depreciation, the training costs, the engineers, any of it.
+
+#### The pre-training vs post-training thing matters here
+
+Prime made a point about Opus 4.7 being less impressive and thus potentially losing money on the model drop. I understand where that's coming from but I think it misses something important.
+
+Not every model release involves a full new pre-training run.
+
+Pre-training is the big, insanely expensive thing. That's where you take terabytes of data and compress it into the model's weights. For a frontier model? We're talking hundreds of millions to potentially billions of dollars.
+
+Post-training — the fine-tuning, the RLHF, the RLVR — is how you shape the model's behavior. It's gotten incredibly powerful (it's why agentic coding performance has jumped so much recently). And it's often significantly cheaper than pre-training.
+
+When you see a model drop that feels like "the same but a bit better," that's probably post-training work. When you see a model that feels fundamentally different — like going from GPT-5.3 to 5.5 — that's likely a new pre-training.
+
+Opus 4.5 was probably new pre-training. That's why it felt so different and got way cheaper to run than previous Opus models. Opus 4.6 and 4.7? More likely post-training iterations. Less expensive. Not "failures" — just a different cost structure.
+
+So the claim that they're losing money on model drops because newer models don't get as much adoption doesn't really hold in this framing. The economics per model depend heavily on what type of training was done.
+
+***
+
+## The Google take in Prime's video is just wrong, bruh
+
+Prime frames Google as the company that doesn't have this problem because they make money elsewhere and can keep subsidizing.
+
+I get why it looks that way from the outside. But this is actually backwards.
+
+**Google was subsidizing harder than anyone.**
+
+Anti-gravity — sorry, Google's AI suite — had Opus 4.5 included in it. I personally knew people who were on Google's subscription purely for the subsidized Opus access. And that exploded so badly that Google was the **first** company to start aggressively restricting usage. People building plugins to track their usage? Banned. People linking Anti-gravity to open code tools? Banned. Quick restrictions, hard limits.
+
+Google didn't avoid this problem because they have money. They hit it first and had to walk it back faster and more aggressively than anyone else.
+
+The reason you don't think of Google as part of this story? Their models have been mediocre enough that fewer developers noticed or cared. It doesn't make the news when Google tightens limits because nobody's super emotionally attached to Gemini's free tier.
+
+But Google is actually the most extreme example of exactly what Prime's talking about. They're just underreported because of the model quality issue.
+
+***
+
+## Okay but tokens are getting cheaper, right?
+
+Here's where my actual opinion comes in.
+
+**Yes. And also no. And the nuance is the whole point.**
+
+Token prices per million are going up at the frontier. GPT-5.5 is 2x the token cost of 5.4. Fact.
+
+But something really interesting is happening underneath that number. The models are getting more efficient. 5.5 uses significantly fewer tokens per task than 5.4 did — especially for longer prompts where it uses 19–34% fewer completion tokens.
+
+The OpenRouter team did the actual analysis: switching from 5.4 to 5.5 raised real-world costs by 49–92% depending on your prompt length. Not 2x. The efficiency partially offsets the price hike.
+
+And then look at what the mid-tier does.
+
+GPT-5.5 medium is just as smart as 5.4 was at peak. Same benchmark scores. But costs less than half as much to run. If you were happy with 5.4's intelligence, you're paying substantially less for the same capability on the next model cycle.
+
+That's what actually matters. **At any given level of intelligence, the cost is dropping consistently.** The frontier gets more expensive as more compute gets poured in. But last-gen frontier becomes this-gen mid-tier at a fraction of the price.
+
+> The cost per unit of intelligence is going down. The cost of access to the absolute bleeding edge is going up. Both are true.
+
+The problem is that the access restrictions feel worse because they're visible and immediate, while the efficiency gains happen quietly underneath.
+
+***
+
+## The real story nobody's telling
+
+Here's the thing Prime is gesturing at but doesn't quite land on:
+
+**This isn't the end of the subsidy economy. It's the start of compute restrictions actually mattering.**
+
+The Anthropic $20 plan change and the GitHub Copilot signup pause are the same event. They both have the same cause. Neither company has enough Nvidia GPUs in their server farms to serve their enterprise customers and keep giving away compute at flat-rate consumer prices.
+
+The bottleneck isn't money. Microsoft has money. Anthropic has $18 billion in funding. The bottleneck is physical hardware that takes 12–24 months to order, build infrastructure for, and deploy.
+
+OpenAI had this same problem in 2022. Sam literally paused ChatGPT Plus signups back then for the same reason. They just bought more compute aggressively and now they don't have this problem. Not because they have more money — because they have more chips.
+
+Chips can't be made fast enough. That's the real story.
+
+When you frame it as "these companies are being greedy," you end up in conspiracy territory that just isn't accurate. The Copilot 7.5x message multiplier for GPT-5.5 isn't based on what the API costs. It's based on how much compute Microsoft has provisioned for that model cluster and how much of it they're willing to let $40/month users consume when enterprise deals are competing for the same GPUs.
+
+And by the way — Uber spent their entire year's AI budget in four months. They told every employee to use AI maxally, then acted surprised. That's API usage at full enterprise rates. Not $200/month subs.
+
+The average engineer at a company like Uber doing heavy AI usage is probably doing similar inference volume to what I do on my $200/month plan. They pay $2,000+ for it. That gap is the whole game.
+
+***
+
+## FAQ
+
+**Why did GitHub pause Copilot signups?**
+
+Because agentic coding sessions — where you hand AI a task and it runs autonomously for hours — now routinely cost more compute than the monthly plan price in a single session. GitHub VP Joe Binder literally said "it's now common for a handful of requests to incur costs that exceed the plan price." This isn't revenue collection. It's compute triage.
+
+**Is the all-you-can-eat AI era actually over?**
+
+The unlimited era is over, yes. But "all you can eat" was always a temporary subsidization play to build market share. The smarter reframe: at any level of intelligence you actually need, the costs are dropping. You just can't run a $5,000 agentic session for $200/month anymore.
+
+**Are AI tokens genuinely getting cheaper?**
+
+Per unit of intelligence, yes. Per token at the frontier, no — costs are going up as models get more capable. The trick is that the same level of intelligence that cost $X six months ago now costs less. The frontier keeps moving.
+
+**Why did Anthropic remove Claude Code from the $20 plan?**
+
+They briefly tested it on 2% of new signups, it caused a Twitter meltdown, Sam Altman dunked on them while apparently half in the bag, and they reverted it. The actual goal wasn't to push people to $100. It was to slow down compute consumption from the lowest-tier users who weren't their target customer anyway.
+
+**Is the AI bubble about to burst?**
+
+No. But the "unlimited compute as a marketing play" era is definitely ending. The companies who have more GPUs will win. The ones that don't will ration. That's not a bubble pop — that's a hardware supply problem.
+
+***
+
+The real question isn't "are tokens getting cheaper."
+
+It's "cheaper than what, for whom, and measured how."
+
+Per task? Getting cheaper. Per unit of intelligence? Getting cheaper. Per month on a flat consumer sub while running 24/7 agentic workloads? That math was always fake, and now they're fixing it.
+
+That's all.
+
+PS: That one Copilot message eventually finished after 2h15m. And my weekly usage is still at like 0.4%. So. Yeah.
+
+Chalo, bye!
