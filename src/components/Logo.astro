@@ -6,6 +6,6 @@ interface Props {
 const { className = "" } = Astro.props;
 ---
 
-<a href="/" class={`flex items-center h-full px-2 hover:opacity-90 transition-opacity ${className}`}>
-  <img src="/shravonix.png" alt="Shravonix" class="h-10 w-auto object-contain" />
+<a href="/" class={`flex items-center h-full px-2 hover:opacity-90 transition-opacity ${className}`} aria-label="Shravonix Home">
+  <img src="/shravonix.png" alt="Shravonix" class="h-10 w-auto object-contain" width="120" height="40" decoding="async" />
 </a>
