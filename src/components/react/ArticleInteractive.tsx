@@ -74,7 +74,7 @@ export default function ArticleInteractive({ articleTitle }: Props) {
       </div>
 
       {showToast && (
-        <div className="fixed bottom-6 right-6 z-[9999] flex items-center gap-3">
+        <div className="fixed bottom-6 right-6 z-9999 flex items-center gap-3">
           <div className="px-4 py-3 text-xs font-mono uppercase tracking-widest shadow-xl flex items-center gap-3 min-w-[200px]" style={{ backgroundColor: 'var(--color-accent-bg)', color: 'var(--color-accent-text)' }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0" style={{ backgroundColor: 'var(--color-accent-text)' }} />
             <span className="flex-1">Link copied!</span>
