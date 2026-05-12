@@ -31,7 +31,8 @@
     "@types/node": "npm:@types/node@^25.7.0",
     "@types/react": "npm:@types/react@^19.2.14",
     "@types/react-dom": "npm:@types/react-dom@^19.2.3",
-    "typescript": "npm:typescript@~6.0.3"
+    "typescript": "npm:typescript@~6.0.3",
+    "sharp": "npm:sharp@^0.33.0"
   },
   "tasks": {
     "dev": "astro dev",
@@ -54,5 +55,6 @@
     "singleQuote": true,
     "proseWrap": "preserve"
   },
+  "nodeModulesDir": "auto",
   "allowScripts": ["npm:es5-ext@0.10.64", "npm:esbuild@0.27.7", "npm:sharp@0.34.5"]
 }
