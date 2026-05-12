@@ -1,69 +1,52 @@
-import { defineConfig } from "@openpolicy/sdk";
+import { defineConfig, Statutory, Contractual, Voluntary } from "@openpolicy/sdk";
 
 export default defineConfig({
   company: {
     name: "Shravonix",
     legalName: "Shravonix",
     address: "A/6 Shantivilla Residency, SVIT College Road, Vasad, Anand, Gujarat 388306, India",
-    contact: "info@shravonix.com",
+    contact: { email: "info@shravonix.com" },
   },
-  privacy: {
-    effectiveDate: "2026-01-01",
-    dataCollected: {
+  effectiveDate: "2026-01-01",
+  jurisdictions: ["sg"],
+  data: {
+    collected: {
       "Account Information": ["Name", "Email address"],
       "Usage Data": ["Pages visited", "Browser type", "IP address"],
     },
-    legalBasis: "Legitimate interests and consent",
-    retention: { "Account data": "Until account deletion" },
-    cookies: { essential: true, analytics: true, marketing: false },
-    thirdParties: [
-      {
-        name: "Umami",
-        purpose: "Website analytics to understand visitor behavior",
+    context: {
+      "Account Information": {
+        purpose: "Account management and communication",
+        lawfulBasis: "legitimate_interests",
+        retention: "Until account deletion",
+        provision: Contractual("Required for account creation and service access"),
       },
-    ],
-    userRights: ["access", "erasure", "rectification", "portability", "restriction", "objection"],
-    jurisdictions: ["other"],
-  },
-  terms: {
-    effectiveDate: "2026-01-01",
-    acceptance: { methods: ["using the service", "creating an account"] },
-    eligibility: { minimumAge: 13 },
-    prohibitedUses: [
-      "Violating any applicable laws or regulations",
-      "Transmitting spam or malicious content",
-    ],
-    termination: {
-      companyCanTerminate: true,
-      userCanTerminate: true,
-    },
-    disclaimers: {
-      serviceProvidedAsIs: true,
-      noWarranties: true,
-    },
-    limitationOfLiability: {
-      excludesIndirectDamages: true,
-      liabilityCap: "Total liability shall not exceed the greater of $100 or amounts paid in the past 12 months.",
-    },
-    governingLaw: { jurisdiction: "India" },
-    changesPolicy: {
-      noticeMethod: "email or prominent notice on our website",
-      noticePeriodDays: 30,
-    },
-    privacyPolicyUrl: "/legal/privacy",
-  },
-  cookie: {
-    effectiveDate: "2026-01-01",
-    cookies: { essential: true, analytics: true, functional: false, marketing: false },
-    thirdParties: [
-      {
-        name: "Umami",
-        purpose: "Website analytics to understand visitor behavior",
-        policyUrl: "https://umami.is/privacy-policy",
+      "Usage Data": {
+        purpose: "Understanding how visitors use our website",
+        lawfulBasis: "legitimate_interests",
+        retention: "Until account deletion",
+        provision: Voluntary("Helps us improve our service"),
       },
-    ],
-    trackingTechnologies: ["web beacons", "local storage"],
-    consentMechanism: { hasBanner: true, hasPreferencePanel: true, canWithdraw: true },
-    jurisdictions: ["other"],
+    },
   },
+  cookies: {
+    used: { essential: true, analytics: true },
+    context: {
+      essential: { lawfulBasis: "legitimate_interests" },
+      analytics: { lawfulBasis: "consent" },
+    },
+  },
+  thirdParties: [
+    {
+      name: "Umami",
+      purpose: "Website analytics to understand visitor behavior",
+      policyUrl: "https://umami.is/privacy-policy",
+    },
+  ],
+  consentMechanism: {
+    hasBanner: true,
+    hasPreferencePanel: true,
+    canWithdraw: true,
+  },
+  trackingTechnologies: ["web beacons", "local storage"],
 });

@@ -1,0 +1,58 @@
+{
+  "imports": {
+    "astro": "npm:astro@^6.3.1",
+    "@astrojs/react": "npm:@astrojs/react@^5.0.4",
+    "@astrojs/mdx": "npm:@astrojs/mdx@^5.0.4",
+    "@astrojs/sitemap": "npm:@astrojs/sitemap@^3.7.2",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.3.0",
+    "@yeskunall/astro-umami": "npm:@yeskunall/astro-umami@^0.0.8",
+    "astro-llms-generate": "npm:astro-llms-generate@^1.3.3",
+    "astro-robots-txt": "npm:astro-robots-txt@^1.0.0",
+    "@playform/compress": "npm:@playform/compress@^0.2.3",
+    "@imjp/writenex-astro": "npm:@imjp/writenex-astro@^1.9.0",
+    "@astrojs/markdoc": "npm:@astrojs/markdoc@^1.0.4",
+    "@fontsource-variable/inter": "npm:@fontsource-variable/inter@^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "npm:@fontsource-variable/jetbrains-mono@^5.2.8",
+    "@fontsource-variable/space-grotesk": "npm:@fontsource-variable/space-grotesk@^5.2.10",
+    "@openpolicy/sdk": "npm:@openpolicy/sdk@^0.0.33",
+    "@openpolicy/astro": "npm:@openpolicy/astro@^0.0.23",
+    "@openpolicy/vite": "npm:@openpolicy/vite@^0.0.33",
+    "@tailwindcss/typography": "npm:@tailwindcss/typography@^0.5.19",
+    "react": "npm:react@^19.2.6",
+    "react-dom": "npm:react-dom@^19.2.6",
+    "clsx": "npm:clsx@^2.1.1",
+    "lucide-react": "npm:lucide-react@^1.14.0",
+    "marked": "npm:marked@^18.0.3",
+    "pdfkit": "npm:pdfkit@^0.18.0",
+    "schema-dts": "npm:schema-dts@^2.0.0",
+    "tailwind-merge": "npm:tailwind-merge@^3.6.0",
+    "tailwindcss": "npm:tailwindcss@^4.3.0",
+    "@astrojs/check": "npm:@astrojs/check@^0.9.9",
+    "@types/node": "npm:@types/node@^25.7.0",
+    "@types/react": "npm:@types/react@^19.2.14",
+    "@types/react-dom": "npm:@types/react-dom@^19.2.3",
+    "typescript": "npm:typescript@~6.0.3"
+  },
+  "tasks": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "clean": "rm -rf dist"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "lint": {
+    "include": ["src/"]
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": true,
+    "proseWrap": "preserve"
+  },
+  "allowScripts": ["npm:es5-ext@0.10.64", "npm:esbuild@0.27.7", "npm:sharp@0.34.5"]
+}
