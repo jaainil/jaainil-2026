@@ -28,30 +28,24 @@ Personal tech blog covering AI, web development, software engineering, and the l
 
 ## Getting Started
 
-**Prerequisites:** Node.js or Bun
-
 ```bash
 # Install dependencies
-npm install
-# or
-bun install
+deno install
 
 # Start dev server
-npm run dev
-# or
-bun run dev
+deno task dev
 
 # Build for production
-npm run build
+deno task build
 
 # Preview production build
-npm run preview
+deno task preview
 
 # Type check
-npm run check
+deno task check
 
 # Clean build output
-npm run clean
+deno task clean
 ```
 
 ## Project Structure
