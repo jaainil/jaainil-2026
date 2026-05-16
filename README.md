@@ -30,22 +30,22 @@ Personal tech blog covering AI, web development, software engineering, and the l
 
 ```bash
 # Install dependencies
-deno install
+bun install
 
 # Start dev server
-deno task dev
+bun run dev
 
 # Build for production
-deno task build
+bun run build
 
 # Preview production build
-deno task preview
+bun run preview
 
 # Type check
-deno task check
+bun run check
 
 # Clean build output
-deno task clean
+bun run clean
 ```
 
 ## Project Structure
