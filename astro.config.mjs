@@ -64,7 +64,9 @@ export default defineConfig({
       excludePatterns: [],
       i18n: false,
     }),
-    compress(),
+    compress({
+      CSS: false,
+    }),
   ],
   vite: {
     plugins: [tailwindcss()],
