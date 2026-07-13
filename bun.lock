@@ -10,6 +10,7 @@
         "@astrojs/react": "^6.0.1",
         "@astrojs/rss": "^4.0.19",
         "@astrojs/sitemap": "^3.7.3",
+        "@dietrichgebert/ponytail": "^4.8.4",
         "@fontsource-variable/inter": "^5.2.8",
         "@fontsource-variable/jetbrains-mono": "^5.2.8",
         "@fontsource-variable/space-grotesk": "^5.2.10",
@@ -235,6 +236,8 @@
     "@csstools/css-parser-algorithms": ["@csstools/css-parser-algorithms@3.0.5", "", { "peerDependencies": { "@csstools/css-tokenizer": "^3.0.4" } }, "sha512-DaDeUkXZKjdGhgYaHNJTV9pV7Y9B3b644jCLs9Upc3VeNGg6LWARAT6O+Q+/COo+2gg/bM5rhpMAtf70WqfBdQ=="],
 
     "@csstools/css-tokenizer": ["@csstools/css-tokenizer@3.0.4", "", {}, "sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw=="],
+
+    "@dietrichgebert/ponytail": ["@dietrichgebert/ponytail@4.8.4", "", {}, "sha512-MALDTmDxKa2SJ8zKVekuOwWvo6+PvypNf5xeV2AtLO5OBtkt1U7DLWOeUbb9Th3H9lV80EkWoRI05yK0/dnekA=="],
 
     "@emmetio/abbreviation": ["@emmetio/abbreviation@2.3.3", "", { "dependencies": { "@emmetio/scanner": "^1.0.4" } }, "sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA=="],
 
