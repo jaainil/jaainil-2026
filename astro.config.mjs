@@ -20,7 +20,10 @@ export default defineConfig({
     react(),
     mdx(),
     writenex(),
-    umami({ id: 'ee167bbd-1971-4780-bac6-fa0ddae9a4df' }),
+    umami({
+      id: '8169229f-6d5b-4ffc-ac38-9036661b5d94',
+      endpoint: 'https://umami.altctrlreturn.com',
+    }),
     sitemap({
       customPages: [
         'https://jaainil.com/llms.txt',
