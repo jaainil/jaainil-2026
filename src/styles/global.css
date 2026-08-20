@@ -27,19 +27,30 @@
   --tw-prose-td-borders: var(--color-border);
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Light theme tokens */
 :root {
   --color-bg: #fafafa;
   --color-surface: #ffffff;
+  --color-surface-elevated: #f4f4f5;
   --color-border: #e4e4e7;
   --color-border-strong: #d4d4d8;
   --color-text-primary: #09090b;
-  --color-text-secondary: #71717a;
-  --color-text-muted: #a1a1aa;
+  --color-text-secondary: #52525b;
+  --color-text-muted: #71717a;
   --color-hover: #f4f4f5;
   --color-accent-bg: #09090b;
   --color-accent-text: #ffffff;
   --color-image-bg: #f4f4f5;
+  /* Button specific tokens */
+  --color-btn-primary-bg: #09090b;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-hover: #27272a;
+  --color-btn-secondary-bg: #ffffff;
+  --color-btn-secondary-text: #09090b;
+  --color-btn-secondary-border: #e4e4e7;
+  --color-btn-secondary-hover: #f4f4f5;
   /* Footer is always dark */
   --color-footer-bg: #18181b;
   --color-footer-surface: #09090b;
@@ -51,16 +62,25 @@
 /* Dark theme tokens */
 .dark {
   --color-bg: #09090b;
-  --color-surface: #18181b;
+  --color-surface: #121215;
+  --color-surface-elevated: #1e1e24;
   --color-border: #27272a;
   --color-border-strong: #3f3f46;
-  --color-text-primary: #fafafa;
+  --color-text-primary: #f4f4f5;
   --color-text-secondary: #a1a1aa;
   --color-text-muted: #71717a;
-  --color-hover: #27272a;
-  --color-accent-bg: #fafafa;
+  --color-hover: #1e1e24;
+  --color-accent-bg: #f4f4f5;
   --color-accent-text: #09090b;
-  --color-image-bg: #27272a;
+  --color-image-bg: #18181b;
+  /* Button specific tokens */
+  --color-btn-primary-bg: #f4f4f5;
+  --color-btn-primary-text: #09090b;
+  --color-btn-primary-hover: #e4e4e7;
+  --color-btn-secondary-bg: #1e1e24;
+  --color-btn-secondary-text: #f4f4f5;
+  --color-btn-secondary-border: #3f3f46;
+  --color-btn-secondary-hover: #27272a;
 }
 
 html {
