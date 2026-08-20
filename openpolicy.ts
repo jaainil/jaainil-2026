@@ -2,10 +2,10 @@ import { defineConfig, Statutory, Contractual, Voluntary } from "@openpolicy/sdk
 
 export default defineConfig({
   company: {
-    name: "Shravonix",
-    legalName: "Shravonix",
+    name: "Jainil Prajapati",
+    legalName: "Jainil Prajapati",
     address: "A/6 Shantivilla Residency, SVIT College Road, Vasad, Anand, Gujarat 388306, India",
-    contact: { email: "info@shravonix.com" },
+    contact: { email: "jainilprajapati9@gmail.com" },
   },
   effectiveDate: "2026-01-01",
   jurisdictions: ["sg"],

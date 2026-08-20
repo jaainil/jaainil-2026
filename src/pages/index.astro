@@ -4,13 +4,15 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import type { Article } from '../types';
 
+// Fetch articles for the portfolio's "Latest Technical Writing / Blog" section
 const allArticles = await getCollection('articles');
 const allAuthors = await getCollection('authors');
 
 const authorMap = new Map(allAuthors.map(a => [a.id, a.data]));
 
-const articles: Article[] = allArticles
+const latestArticles: Article[] = allArticles
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3)
   .map((a) => {
     const { imageUrl, publishedAt, authors, ...rest } = a.data;
     return {
@@ -25,407 +27,1171 @@ const articles: Article[] = allArticles
     } as Article;
   });
 
-const featuredArticle = articles[0];
-const secondaryFeatured = articles.slice(1, 3);
-const gridArticles = articles.slice(3);
+const totalArticlesCount = allArticles.length;
 
-// Canonical categories for this news site
-const SITE_CATEGORIES = ['Linux', 'Tech', 'AI', 'IoT', 'Opinions', 'Programming'];
+// Skills matrix from combined resume
+const skillCategories = [
+  {
+    title: 'Frontend Development',
+    icon: 'code',
+    skills: ['Astro', 'React', 'Next.js', 'Remix', 'Vite', 'TailwindCSS', 'Radix UI', 'TypeScript', 'JavaScript'],
+  },
+  {
+    title: 'Backend & APIs',
+    icon: 'server',
+    skills: ['Node.js', 'Express.js', 'Next.js API Routes', 'Prisma ORM', 'REST APIs', 'Stripe Integration'],
+  },
+  {
+    title: 'DevOps & Infrastructure',
+    icon: 'cloud',
+    skills: ['Docker', 'Docker Compose', 'GitHub Actions', 'CI/CD Pipelines', 'Linux (Debian/Ubuntu)', 'Proxmox VE', 'Nginx', 'Vercel'],
+  },
+  {
+    title: 'Databases & Storage',
+    icon: 'database',
+    skills: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Supabase'],
+  },
+  {
+    title: 'Networking & Protocols',
+    icon: 'network',
+    skills: ['TCP/IP', 'DNS', 'DHCP', 'IPv4/IPv6', 'Subnetting & Routing', 'Firewalls (UFW, iptables)', 'Port Forwarding'],
+  },
+  {
+    title: 'Design & Media Tools',
+    icon: 'design',
+    skills: ['Figma', 'Adobe Photoshop', 'Adobe Illustrator', 'Canva', 'Adobe Premiere Pro', 'Adobe After Effects'],
+  },
+  {
+    title: 'AI & Workflow Automation',
+    icon: 'activity',
+    skills: ['LangChain Basics', 'LLM Integrations', 'AI Workflows', 'Fuse.js Fuzzy Search', 'Webhooks'],
+  },
+  {
+    title: 'Tools & Systems Support',
+    icon: 'hardware',
+    skills: ['Git & GitHub', 'Bash Scripting', 'Postman', 'Hardware Diagnostics', 'BIOS/UEFI Setup', 'SSH / Remote Support'],
+  },
+];
 
-// For each category, grab up to 3 matching articles — skip empty categories
-const categoryArticles = SITE_CATEGORIES.map((cat) => ({
-  name: cat,
-  articles: articles.filter((a) => {
-    const articleCategory = (a.category || '').toLowerCase().trim();
-    const targetCategory = cat.toLowerCase().trim();
-    return articleCategory === targetCategory;
-  }).slice(0, 3),
-})).filter((section) => section.articles.length > 0);
+// Featured Projects from resume
+const projects = [
+  {
+    title: 'Dokploy Template Automation Suite & Networking',
+    subtitle: 'Open Source PaaS Infrastructure & CI Validation',
+    badge: '10+ PRs Merged',
+    period: '2025 - Present',
+    url: 'https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil',
+    linkLabel: 'GitHub PRs (10+ Merged)',
+    external: true,
+    tags: ['Dokploy', 'Docker Compose', 'Node.js', 'GitHub Actions', 'JSON Schema', 'Networking'],
+    points: [
+      'Contributed 10+ merged pull requests to Dokploy official deployment templates repository.',
+      'Built a meta.json CLI tool for schema validation, deduplication, and syntax checks across 100+ templates.',
+      'Configured GitHub Actions CI workflows to validate Docker Compose files, container port mappings, and volume mounts.',
+      'Created and maintained 10+ production deployment templates including Habitica, Statping-NG, and BookLore.',
+    ],
+  },
+  {
+    title: 'Writenex: Open Source CMS for Astro',
+    subtitle: 'NPM Package & Headless Content Management',
+    badge: 'NPM Package (79+ Commits)',
+    period: '2025 - Present',
+    url: 'https://www.npmjs.com/package/@imjp/writenex-astro',
+    linkLabel: 'npmjs.com/@imjp/writenex-astro',
+    external: true,
+    tags: ['Astro', 'TypeScript', 'MDX', 'NPM Distribution', 'GitHub Actions'],
+    points: [
+      'Forked and developed an open source CMS integration, growing it to 79+ commits and 6 version releases.',
+      'Built Fields API, version history, image upload handling, and MDX support from scratch.',
+      'Automated semantic releases and packaging through GitHub Actions CI/CD pipelines.',
+      'Published on npm registry, installable via npx astro add @imjp/writenex-astro.',
+    ],
+  },
+  {
+    title: 'Blog Maker: Multi-Tenant SaaS Platform',
+    subtitle: 'Full Stack Publishing with Stripe Billing',
+    badge: 'SaaS Platform',
+    period: '2025',
+    url: 'https://blog-maker.vercel.app/',
+    linkLabel: 'Live Demo',
+    external: true,
+    tags: ['Next.js', 'Prisma ORM', 'PostgreSQL', 'Stripe Webhooks', 'Vercel', 'Radix UI'],
+    points: [
+      'Built a multi-user SaaS blogging platform using Next.js, Prisma ORM, and PostgreSQL database migrations.',
+      'Integrated Stripe webhooks with retry logic and idempotency checks to process subscription payments.',
+      'Reduced initial page loads to under 200ms using Radix UI components and server-side data fetching.',
+    ],
+  },
+  {
+    title: 'MemoryView: AI Resources Hub',
+    subtitle: 'Curated AI & ML Learning Directory',
+    badge: 'Remix SSR & Search',
+    period: '2024 - 2025',
+    url: 'https://remix-llm-resoures.vercel.app/',
+    linkLabel: 'Live Directory',
+    external: true,
+    tags: ['Remix.js', 'Fuse.js', 'TailwindCSS', 'SSR', 'AI Directory'],
+    points: [
+      'Curated a searchable catalog of 150+ AI/ML resources for developers, researchers, and students.',
+      'Integrated Fuse.js for instant fuzzy search, cutting search latency by 60%.',
+      'Used Remix server-side rendering for fast initial load times and clean SEO indexing.',
+    ],
+  },
+  {
+    title: 'Indian AI Tracker',
+    subtitle: 'Ecosystem Dashboard for Indian AI Initiatives',
+    badge: 'Analytics Dashboard',
+    period: '2024',
+    url: 'https://india-ai-tracker.vercel.app',
+    linkLabel: 'Live Dashboard',
+    external: true,
+    tags: ['Vite', 'Radix UI', 'Recharts', 'CMDK', 'Data Visualization'],
+    points: [
+      'Built an analytics dashboard tracking 150+ Indian AI startups, research initiatives, and LLM projects.',
+      'Implemented dynamic filtering, search shortcuts with CMDK, and interactive charts via Recharts.',
+      'Delivered sub-second response times with responsive layouts supporting dark and light themes.',
+    ],
+  },
+  {
+    title: 'Shravonix Platform (Sunsetted Publication & Archive)',
+    subtitle: 'High-Performance Technical Media Archive',
+    badge: 'Sunsetted Publication',
+    period: '2024 - 2026',
+    url: '/articles',
+    linkLabel: 'Browse Sunset Archive',
+    external: false,
+    tags: ['Astro SSG', 'Edge CDN', 'Technical Writing', 'SEO Architecture', 'Archive'],
+    points: [
+      'Founded and engineered Shravonix as an independent technical publication covering Linux, AI, and systems engineering.',
+      'Reached 5K+ monthly active readers with deep-dive technical investigations and benchmarks before sunsetting.',
+      'Preserved 100% of historical articles in a permanent, high-performance static archive.',
+    ],
+  },
+];
 ---
 
-<BaseLayout title="Shravonix — Tech News & Deep Dives">
+<BaseLayout
+  title="Jainil Prajapati: Full-Stack Developer & DevOps Engineer"
+  description="Portfolio of Jainil Prajapati. Full-stack developer and DevOps engineer experienced in Next.js, Node.js, Docker, CI/CD pipelines, Linux server administration, and open-source ecosystems."
+>
   <div class="w-full pb-16">
 
-    <!-- Page heading with correct top padding -->
-    <div class="border-b px-6 md:px-8 py-8" style="border-color: var(--color-border);">
-      <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Latest</p>
-      <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
-        Tech Deep Dives
-      </h1>
-    </div>
-
-    <!-- Featured Articles Hero -->
-    {featuredArticle && (
-      <div class="border-b grid grid-cols-1 lg:grid-cols-3" style="border-color: var(--color-border);">
-        <!-- Primary featured -->
-        <div class="lg:col-span-2 border-b lg:border-b-0 lg:border-r flex flex-col group cursor-pointer transition-colors" style="border-color: var(--color-border);">
-          <a href={`/articles/${featuredArticle.id}`} class="flex flex-col h-full" onmouseenter="this.parentElement.style.backgroundColor='var(--color-hover)'" onmouseleave="this.parentElement.style.backgroundColor=''">
-            <div class="p-6 md:p-8 grow">
-              <div class="rounded-none overflow-hidden mb-8 aspect-video relative border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                <Image
-                  src={featuredArticle.imageUrl}
-                  alt={featuredArticle.imageAlt ?? featuredArticle.title}
-                  class="w-full h-full object-cover"
-                  width={1200}
-                  height={675}
-                  format="webp"
-                  quality={85}
-                  loading="eager"
-                />
-              </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-4" style="color: var(--color-text-muted);">
-                <span>// {featuredArticle.category}</span>
-              </div>
-              <h2 class="text-3xl md:text-5xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
-                {featuredArticle.title}
-              </h2>
-              {featuredArticle.description && (
-                <p class="text-sm font-sans leading-relaxed line-clamp-3" style="color: var(--color-text-secondary);">
-                  {featuredArticle.description}
-                </p>
-              )}
-            </div>
-            <div class="border-t p-4 px-6 md:px-8 flex items-center gap-4 text-xs font-mono" style="border-color: var(--color-border); color: var(--color-text-muted);">
-              <div class="flex -space-x-2">
-                {featuredArticle.authors.map((author: { name: string; avatarUrl: string }) => (
-                  <img
-                    src={author.avatarUrl}
-                    alt={author.name}
-                    class="w-8 h-8 rounded-none border"
-                    style="border-color: var(--color-border);"
-                    loading="lazy"
-                    decoding="async"
-                    width="32"
-                    height="32"
-                  />
-                ))}
-              </div>
-              <span class="font-medium" style="color: var(--color-text-primary);">
-                {featuredArticle.authors.map((a: { id?: string; name: string }, i: number) => (
-                  <>
-                    {i > 0 && ', '}
-                    <a 
-                      href={`/authors/${a.id || 'authors'}`} 
-                      class="hover:underline transition-colors"
-                      style="color: var(--color-text-primary);"
-                      onmouseenter="this.style.color='var(--color-accent-text)'"
-                      onmouseleave="this.style.color='var(--color-text-primary)'"
-                    >
-                      {a.name}
-                    </a>
-                  </>
-                ))}
+    <!-- HERO SECTION -->
+    <section class="border-b" style="border-color: var(--color-border);">
+      <div class="grid grid-cols-1 lg:grid-cols-12">
+        
+        <!-- Left Hero Content (8 cols) -->
+        <div class="lg:col-span-8 p-6 sm:p-8 md:p-12 lg:border-r flex flex-col justify-between" style="border-color: var(--color-border);">
+          <div>
+            <!-- Status & Location header -->
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+              <span class="inline-flex items-center gap-2 px-3 py-1 text-[11px] font-mono uppercase tracking-widest border" style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-primary);">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Open for Engineering Roles & Projects
               </span>
-              <span class="ml-auto uppercase tracking-widest">{featuredArticle.publishedAt}</span>
+              <span class="text-[11px] font-mono uppercase tracking-widest flex items-center gap-1" style="color: var(--color-text-muted);">
+                Anand, Gujarat, India
+              </span>
             </div>
-          </a>
+
+            <!-- Main Heading -->
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
+              Jainil Prajapati
+            </h1>
+
+            <!-- Titles -->
+            <div class="space-y-1.5 mb-6">
+              <p class="text-lg sm:text-xl font-mono font-medium tracking-tight" style="color: var(--color-text-primary);">
+                Full-Stack Developer & DevOps Engineer <span class="text-xs font-mono px-2 py-0.5 border ml-2" style="border-color: var(--color-border); color: var(--color-text-secondary);">AI Enthusiast</span>
+              </p>
+              <p class="text-sm sm:text-base font-mono" style="color: var(--color-text-secondary);">
+                Cloud Infrastructure, Linux Administration & Open Source Contributor
+              </p>
+            </div>
+
+            <!-- Summary Intro (Un-slopped) -->
+            <p class="text-base sm:text-lg font-sans leading-relaxed max-w-2xl mb-8" style="color: var(--color-text-secondary);">
+              I build full-stack web applications and cloud infrastructure. I created and maintain Writenex CMS on npm, contribute to Dokploy open-source templates, and previously ran Shravonix (5K monthly readers). Currently working at Aexawareinfotech building client applications, Docker container workflows, and CI/CD pipelines.
+            </p>
+          </div>
+
+          <!-- Quick Action CTAs & Contact Pills -->
+          <div class="space-y-4 pt-4 border-t" style="border-color: var(--color-border);">
+            <div class="flex flex-wrap items-center gap-3">
+              <a
+                href="#projects"
+                class="px-6 py-3 text-xs font-mono uppercase tracking-widest font-semibold border transition-colors flex items-center gap-2"
+                style="background-color: var(--color-accent-bg); color: var(--color-accent-text); border-color: var(--color-accent-bg);"
+              >
+                View Projects
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </a>
+
+              <a
+                href="#experience"
+                class="px-6 py-3 text-xs font-mono uppercase tracking-widest border transition-colors flex items-center gap-2"
+                style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-primary);"
+                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+                onmouseleave="this.style.backgroundColor='var(--color-surface)'"
+              >
+                Experience
+              </a>
+
+              <a
+                href="/articles"
+                class="px-6 py-3 text-xs font-mono uppercase tracking-widest border transition-colors flex items-center gap-2"
+                style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-secondary);"
+                onmouseenter="this.style.backgroundColor='var(--color-hover)';this.style.color='var(--color-text-primary)'"
+                onmouseleave="this.style.backgroundColor='var(--color-surface)';this.style.color='var(--color-text-secondary)'"
+              >
+                Shravonix Archive ({totalArticlesCount})
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+
+            <!-- Contact quick badges -->
+            <div class="flex flex-wrap items-center gap-3 text-xs font-mono pt-2" style="color: var(--color-text-secondary);">
+              <a
+                href="mailto:jainilprajapati9@gmail.com"
+                class="inline-flex items-center gap-1.5 hover:underline"
+                style="color: var(--color-text-primary);"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                jainilprajapati9@gmail.com
+              </a>
+              <span style="color: var(--color-border-strong);">•</span>
+              <a
+                href="tel:+919725284302"
+                class="inline-flex items-center gap-1.5 hover:underline"
+                style="color: var(--color-text-primary);"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                +91 9725284302
+              </a>
+            </div>
+          </div>
         </div>
 
-        <!-- Secondary featured (2 stacked) -->
-        <div class="flex flex-col">
-          {secondaryFeatured.map((article: Article, index: number) => (
-            <a
-              href={`/articles/${article.id}`}
-              class={`group flex flex-col flex-1 transition-colors ${index === 0 ? "border-b" : ""}`}
-              style={`border-color: var(--color-border);`}
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor=''"
-            >
-              <div class="p-6 md:p-8 grow">
-                <div class="rounded-none overflow-hidden mb-6 aspect-video relative border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                  <Image
-                    src={article.imageUrl}
-                    alt={article.imageAlt ?? article.title}
-                    class="w-full h-full object-cover"
-                    width={600}
-                    height={338}
-                    format="webp"
-                    quality={80}
-                    loading="lazy"
-                  />
-                </div>
-                <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
-                  <span>// {article.category}</span>
-                </div>
-                <h3 class="text-xl font-display font-bold tracking-tight mb-3" style="color: var(--color-text-primary);">
-                  {article.title}
-                </h3>
-                <div class="mt-auto pt-4 text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                  {article.publishedAt}
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    )}
-
-    <!-- Divider: Latest → More -->
-    <div class="flex items-center px-6 md:px-8 border-b" style="border-color: var(--color-border);">
-      <span class="text-[10px] font-mono uppercase tracking-[0.2em] py-3 pr-6 border-r w-48 shrink-0" style="color: var(--color-text-muted); border-color: var(--color-border);">// More</span>
-      <div class="flex-1 h-px" style="background: repeating-linear-gradient(90deg, var(--color-border) 0px, var(--color-border) 4px, transparent 4px, transparent 10px);"></div>
-    </div>
-
-    <!-- Category Filter Bar -->
-    <div class="px-6 md:px-8 py-6 border-b" style="border-color: var(--color-border);">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border" style="border-color: var(--color-border);">
-          {['All', ...SITE_CATEGORIES].map((category: string, index: number) => (
-            <button
-              data-category={category}
-              class={`home-cat-btn px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors${index !== 0 ? " border-l" : ""}`}
-              style={`border-color: var(--color-border); ${index === 0 ? "background-color: var(--color-accent-bg); color: var(--color-accent-text);" : "background-color: var(--color-surface); color: var(--color-text-secondary);"}`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div class="relative w-full md:w-64 border" style="border-color: var(--color-border);">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            id="home-search-input"
-            type="text"
-            placeholder="SEARCH ARTICLES..."
-            class="w-full pl-10 pr-4 py-3 rounded-none border-none focus:ring-0 text-xs font-mono uppercase tracking-widest outline-none"
-            style="background-color: var(--color-surface); color: var(--color-text-primary);"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- More Articles Grid (remaining after featured 3) -->
-    {gridArticles.length > 0 && (
-      <div id="home-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b" style="border-color: var(--color-border);">
-        {gridArticles.map((article: Article, index: number) => (
-          <a
-            href={`/articles/${article.id}`}
-            data-category={article.category}
-            data-title={article.title.toLowerCase()}
-            data-description={(article.description ?? '').toLowerCase()}
-            class={`home-article-card group flex flex-col h-full border-b transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
-            style="border-color: var(--color-border);"
-            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-            onmouseleave="this.style.backgroundColor=''"
-          >
-            <div class="p-6 md:p-8 grow">
-              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                <Image
-                  src={article.imageUrl}
-                  alt={article.imageAlt ?? article.title}
-                  class="w-full h-full object-cover"
-                  width={600}
-                  height={338}
-                  format="webp"
-                  quality={80}
-                  loading="lazy"
+        <!-- Right Hero Sidebar & Profile Card (4 cols) -->
+        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-surface);">
+          <div>
+            <!-- Profile Photo Box -->
+            <div class="border p-4 mb-6 relative group" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="aspect-square overflow-hidden border mb-3" style="border-color: var(--color-border);">
+                <img
+                  src="https://storage.rxresu.me/clwlkfh7b0bgqtojz2itm0gc5/pictures/wtpe5ep6q61y0h1fkatnigk6.jpg"
+                  alt="Jainil Prajapati"
+                  class="w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-300"
+                  width="400"
+                  height="400"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
-              <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
-                <span>// {article.category}</span>
-              </div>
-              <h3 class="text-xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
-                {article.title}
-              </h3>
-            </div>
-            <div class="border-t p-4 px-6 md:px-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
-              <div class="flex -space-x-2">
-                {article.authors.map((author: { id?: string; name: string; avatarUrl: string }) => (
-                  <img
-                    src={author.avatarUrl}
-                    alt={author.name}
-                    class="w-6 h-6 rounded-none border"
-                    style="border-color: var(--color-border);"
-                    loading="lazy"
-                    decoding="async"
-                    width="24"
-                    height="24"
-                  />
-                ))}
-              </div>
-              <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                {article.publishedAt}
+              <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
+                <span>// ID: JAINIL_PRAJAPATI</span>
+                <span class="text-emerald-500 font-bold">ONLINE</span>
               </div>
             </div>
-          </a>
-        ))}
-      </div>
-    )}
 
-    <!-- Empty state for home search -->
-    <div id="home-empty-state" class="hidden px-6 md:px-8 py-16 text-center border-b" style="border-color: var(--color-border);">
-      <p class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">No articles found.</p>
-    </div>
-
-    <!-- Divider: Grid → Category sections -->
-    <div class="flex items-center px-6 md:px-8 border-b" style="border-color: var(--color-border);">
-      <span class="text-[10px] font-mono uppercase tracking-[0.2em] py-3 pr-6 border-r w-48 shrink-0" style="color: var(--color-text-muted); border-color: var(--color-border);">// By Category</span>
-      <div class="flex-1 h-px" style="background: repeating-linear-gradient(90deg, var(--color-border) 0px, var(--color-border) 4px, transparent 4px, transparent 10px);"></div>
-    </div>
-
-    <!-- Category Sections — dynamically rendered per category that has articles -->
-    {categoryArticles.map((section) => (
-      <section class="border-b" style="border-color: var(--color-border);">
-        <!-- Divider-style section header -->
-        <div class="flex items-center border-b" style="border-color: var(--color-border);">
-          <div class="flex items-center gap-3 px-6 md:px-8 py-4 border-r shrink-0 w-48" style="border-color: var(--color-border);">
-            <span class="text-[10px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">//</span>
-            <h2 class="text-[11px] font-mono font-bold uppercase tracking-[0.2em]" style="color: var(--color-text-primary);">
-              {section.name}
-            </h2>
+            <!-- Profile Info Key-Value Table -->
+            <div class="border divide-y text-xs font-mono" style="border-color: var(--color-border); divide-color: var(--color-border);">
+              <div class="p-3 flex justify-between">
+                <span style="color: var(--color-text-muted);">ROLE</span>
+                <span class="font-medium text-right" style="color: var(--color-text-primary);">Full Stack & DevOps</span>
+              </div>
+              <div class="p-3 flex justify-between">
+                <span style="color: var(--color-text-muted);">COMPANY</span>
+                <span class="font-medium text-right" style="color: var(--color-text-primary);">Aexaware Infotech</span>
+              </div>
+              <div class="p-3 flex justify-between">
+                <span style="color: var(--color-text-muted);">OPEN SOURCE</span>
+                <span class="font-medium text-right text-emerald-500 font-semibold">Dokploy (10+ PRs)</span>
+              </div>
+              <div class="p-3 flex justify-between">
+                <span style="color: var(--color-text-muted);">NPM PACKAGE</span>
+                <span class="font-medium text-right" style="color: var(--color-text-primary);">@imjp/writenex-astro</span>
+              </div>
+              <div class="p-3 flex justify-between">
+                <span style="color: var(--color-text-muted);">COMMUNITY</span>
+                <span class="font-medium text-right" style="color: var(--color-text-primary);">r/AI_India (21K)</span>
+              </div>
+              <div class="p-3 flex justify-between">
+                <span style="color: var(--color-text-muted);">EDUCATION</span>
+                <span class="font-medium text-right" style="color: var(--color-text-primary);">B.E. IT (SVIT)</span>
+              </div>
+            </div>
           </div>
-          <div class="flex-1 h-px mx-4" style="background: repeating-linear-gradient(90deg, var(--color-border) 0px, var(--color-border) 4px, transparent 4px, transparent 10px);"></div>
-          <a
-            href={`/articles?category=${encodeURIComponent(section.name)}`}
-            class="text-[10px] font-mono uppercase tracking-[0.2em] transition-colors flex items-center gap-1 px-6 md:px-8 py-4 border-l shrink-0"
-            style="border-color: var(--color-border); color: var(--color-text-muted);"
-            onmouseenter="this.style.color='var(--color-text-primary)'"
-            onmouseleave="this.style.color='var(--color-text-muted)'"
-          >
-            View All
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
 
-        <!-- Articles in this category -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-          {section.articles.map((article: Article, index: number) => (
+          <!-- Social Links Matrix -->
+          <div class="grid grid-cols-3 gap-2 mt-6 pt-4 border-t text-center font-mono text-xs uppercase" style="border-color: var(--color-border);">
             <a
-              href={`/articles/${article.id}`}
-              class={`group flex flex-col h-full transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
+              href="https://github.com/jaainil"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="p-2.5 border transition-colors flex flex-col items-center gap-1.5"
               style="border-color: var(--color-border);"
               onmouseenter="this.style.backgroundColor='var(--color-hover)'"
               onmouseleave="this.style.backgroundColor=''"
             >
-              <div class="p-6 md:p-8 grow">
-                <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                  <Image
-                    src={article.imageUrl}
-                    alt={article.imageAlt ?? article.title}
-                    class="w-full h-full object-cover"
-                    width={600}
-                    height={338}
-                    format="webp"
-                    quality={80}
-                    loading="lazy"
-                  />
-                </div>
-                <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
-                  <span>// {article.category}</span>
-                </div>
-                <h3 class="text-lg font-display font-bold tracking-tight mb-3" style="color: var(--color-text-primary);">
-                  {article.title}
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              <span>GitHub</span>
+            </a>
+
+            <a
+              href="https://www.linkedin.com/in/jaainil/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="p-2.5 border transition-colors flex flex-col items-center gap-1.5"
+              style="border-color: var(--color-border);"
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor=''"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              <span>LinkedIn</span>
+            </a>
+
+            <a
+              href="https://www.npmjs.com/~imjp"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="p-2.5 border transition-colors flex flex-col items-center gap-1.5"
+              style="border-color: var(--color-border);"
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor=''"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.666H4V9.999h2.666v4.001zm4 0H9.333V9.999h1.333v4.001zm10.667 0h-2.667v-4.001h-2.666v4.001h-2.667V9.999h8v4.001z"/>
+              </svg>
+              <span>npm</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- METRICS STRIP -->
+    <section class="border-b grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border); background-color: var(--color-surface);">
+      <div class="p-6 md:p-8">
+        <p class="text-3xl sm:text-4xl font-display font-bold tracking-tight mb-1" style="color: var(--color-text-primary);">10+</p>
+        <p class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">Merged PRs on Dokploy</p>
+      </div>
+      <div class="p-6 md:p-8">
+        <p class="text-3xl sm:text-4xl font-display font-bold tracking-tight mb-1" style="color: var(--color-text-primary);">79+</p>
+        <p class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">Commits on Writenex CMS</p>
+      </div>
+      <div class="p-6 md:p-8">
+        <p class="text-3xl sm:text-4xl font-display font-bold tracking-tight mb-1" style="color: var(--color-text-primary);">21K+</p>
+        <p class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">Members on r/AI_India</p>
+      </div>
+      <div class="p-6 md:p-8">
+        <p class="text-3xl sm:text-4xl font-display font-bold tracking-tight mb-1" style="color: var(--color-text-primary);">&lt;200ms</p>
+        <p class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">SaaS Response Latency</p>
+      </div>
+    </section>
+
+    <!-- WORK EXPERIENCE SECTION -->
+    <section id="experience" class="border-b" style="border-color: var(--color-border);">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b px-6 md:px-8 py-5" style="border-color: var(--color-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// 01</span>
+          <h2 class="text-xl sm:text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
+            Work Experience
+          </h2>
+        </div>
+        <span class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">September 2025 - Present</span>
+      </div>
+
+      <!-- Experience Item -->
+      <div class="p-6 md:p-10" style="border-color: var(--color-border);">
+        <div class="border p-6 md:p-8" style="border-color: var(--color-border); background-color: var(--color-surface);">
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4 border-b pb-6 mb-6" style="border-color: var(--color-border);">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl sm:text-2xl font-display font-bold" style="color: var(--color-text-primary);">
+                  Full Stack & DevOps Engineer
                 </h3>
-                {article.description && (
-                  <p class="text-sm font-sans leading-relaxed line-clamp-2" style="color: var(--color-text-secondary);">
-                    {article.description}
-                  </p>
-                )}
+                <span class="px-2.5 py-0.5 text-[11px] font-mono uppercase tracking-widest border font-semibold" style="border-color: var(--color-accent-bg); background-color: var(--color-accent-bg); color: var(--color-accent-text);">
+                  Current
+                </span>
               </div>
-            <div class="border-t p-4 px-6 md:px-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
-              <div class="flex -space-x-2">
-                {article.authors.map((author: { name: string; avatarUrl: string }) => (
-                  <img
-                    src={author.avatarUrl}
-                    alt={author.name}
-                    class="w-6 h-6 rounded-none border"
-                    style="border-color: var(--color-border);"
-                    loading="lazy"
-                    decoding="async"
-                    width="24"
-                    height="24"
-                  />
+              <p class="text-sm sm:text-base font-mono font-medium" style="color: var(--color-text-primary);">
+                Aexawareinfotech Pvt. Ltd.
+              </p>
+              <p class="text-xs font-mono uppercase tracking-widest mt-1" style="color: var(--color-text-muted);">
+                Vadodara, Gujarat, India • Full-time
+              </p>
+            </div>
+
+            <a
+              href="https://aexaware.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs font-mono uppercase tracking-widest px-4 py-2 border inline-flex items-center gap-1.5 self-start transition-colors"
+              style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+            >
+              aexaware.com ↗
+            </a>
+          </div>
+
+          <!-- Responsibilities -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-xs font-mono font-bold uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
+                // Full Stack Engineering
+              </h4>
+              <ul class="space-y-2.5 text-sm font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Managed client communication and translated requirements into production-ready web applications.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Built and shipped full-stack web applications using Next.js, Node.js, and Prisma under tight deadlines.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Handled end-to-end product delivery from schema design to deployment across multiple client projects.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="text-xs font-mono font-bold uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
+                // DevOps & Deployment Pipelines
+              </h4>
+              <ul class="space-y-2.5 text-sm font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Built and maintained GitHub Actions CI/CD workflows to automate tests, container builds, and deployments.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Containerized applications with Docker and Docker Compose for consistent multi-environment setups.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Configured Nginx reverse proxies, SSL certificates, and firewall rules on Linux production servers.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span>Managed database migrations, environment variables, and rollback strategies across client systems.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tech tags -->
+          <div class="mt-8 pt-6 border-t flex flex-wrap items-center gap-2" style="border-color: var(--color-border);">
+            <span class="text-xs font-mono uppercase tracking-widest mr-2" style="color: var(--color-text-muted);">Tech:</span>
+            {['Next.js', 'Node.js', 'Prisma ORM', 'Docker', 'Docker Compose', 'GitHub Actions', 'Nginx', 'Linux', 'PostgreSQL'].map((tag) => (
+              <span class="px-2.5 py-1 text-xs font-mono border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-secondary);">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROJECTS SECTION -->
+    <section id="projects" class="border-b" style="border-color: var(--color-border);">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b px-6 md:px-8 py-5" style="border-color: var(--color-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// 02</span>
+          <h2 class="text-xl sm:text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
+            Featured Projects & SaaS
+          </h2>
+        </div>
+        <span class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">6 Deployments</span>
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x border-b" style="border-color: var(--color-border); divide-color: var(--color-border);">
+        {projects.slice(0, 3).map((p) => (
+          <div class="p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-surface);">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border" style="border-color: var(--color-border); color: var(--color-text-muted); background-color: var(--color-bg);">
+                  {p.badge}
+                </span>
+                <span class="text-[11px] font-mono" style="color: var(--color-text-muted);">{p.period}</span>
+              </div>
+
+              <h3 class="text-lg font-display font-bold mb-1" style="color: var(--color-text-primary);">
+                {p.title}
+              </h3>
+              <p class="text-xs font-mono uppercase tracking-wider mb-4" style="color: var(--color-text-muted);">
+                {p.subtitle}
+              </p>
+
+              <ul class="space-y-2 mb-6 text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                {p.points.map((pt: string) => (
+                  <li class="flex items-start gap-1.5">
+                    <span class="font-mono text-xs mt-0.5" style="color: var(--color-text-muted);">▸</span>
+                    <span>{pt}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1.5 mb-6 pt-4 border-t" style="border-color: var(--color-border);">
+                {p.tags.map((tag: string) => (
+                  <span class="text-[11px] font-mono px-2 py-0.5 border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-muted);">
+                    {tag}
+                  </span>
                 ))}
               </div>
-              <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-                {article.publishedAt}
+
+              <a
+                href={p.url}
+                target={p.external ? "_blank" : "_self"}
+                rel={p.external ? "noopener noreferrer" : undefined}
+                class="w-full text-center block text-xs font-mono uppercase tracking-widest py-2.5 px-4 border font-medium transition-colors"
+                style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+              >
+                {p.linkLabel} {p.external ? '↗' : '→'}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Second Row of Projects -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border);">
+        {projects.slice(3, 6).map((p) => (
+          <div class="p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-surface);">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border" style="border-color: var(--color-border); color: var(--color-text-muted); background-color: var(--color-bg);">
+                  {p.badge}
+                </span>
+                <span class="text-[11px] font-mono" style="color: var(--color-text-muted);">{p.period}</span>
+              </div>
+
+              <h3 class="text-lg font-display font-bold mb-1" style="color: var(--color-text-primary);">
+                {p.title}
+              </h3>
+              <p class="text-xs font-mono uppercase tracking-wider mb-4" style="color: var(--color-text-muted);">
+                {p.subtitle}
+              </p>
+
+              <ul class="space-y-2 mb-6 text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                {p.points.map((pt: string) => (
+                  <li class="flex items-start gap-1.5">
+                    <span class="font-mono text-xs mt-0.5" style="color: var(--color-text-muted);">▸</span>
+                    <span>{pt}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1.5 mb-6 pt-4 border-t" style="border-color: var(--color-border);">
+                {p.tags.map((tag: string) => (
+                  <span class="text-[11px] font-mono px-2 py-0.5 border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-muted);">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <a
+                href={p.url}
+                target={p.external ? "_blank" : "_self"}
+                rel={p.external ? "noopener noreferrer" : undefined}
+                class="w-full text-center block text-xs font-mono uppercase tracking-widest py-2.5 px-4 border font-medium transition-colors"
+                style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+              >
+                {p.linkLabel} {p.external ? '↗' : '→'}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- SKILLS MATRIX SECTION -->
+    <section id="skills" class="border-b" style="border-color: var(--color-border);">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b px-6 md:px-8 py-5" style="border-color: var(--color-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// 03</span>
+          <h2 class="text-xl sm:text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
+            Technical Skills Matrix
+          </h2>
+        </div>
+        <span class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">8 Focus Areas</span>
+      </div>
+
+      <!-- Skills 8-Card Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 border-b" style="border-color: var(--color-border);">
+        {skillCategories.slice(0, 4).map((cat) => (
+          <div class="p-6 border-b lg:border-b-0 border-r last:border-r-0" style="border-color: var(--color-border); background-color: var(--color-surface);">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+              <h3 class="text-sm font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
+                {cat.title}
+              </h3>
+            </div>
+            <ul class="space-y-2">
+              {cat.skills.map((skill: string) => (
+                <li class="text-xs font-mono flex items-center justify-between" style="color: var(--color-text-secondary);">
+                  <span>{skill}</span>
+                  <span class="text-[10px] text-zinc-600 font-mono">OK</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0" style="border-color: var(--color-border);">
+        {skillCategories.slice(4, 8).map((cat) => (
+          <div class="p-6 border-b sm:border-b-0 border-r last:border-r-0" style="border-color: var(--color-border); background-color: var(--color-surface);">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+              <h3 class="text-sm font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
+                {cat.title}
+              </h3>
+            </div>
+            <ul class="space-y-2">
+              {cat.skills.map((skill: string) => (
+                <li class="text-xs font-mono flex items-center justify-between" style="color: var(--color-text-secondary);">
+                  <span>{skill}</span>
+                  <span class="text-[10px] text-zinc-600 font-mono">OK</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- OPEN SOURCE CONTRIBUTIONS SECTION -->
+    <section id="opensource" class="border-b" style="border-color: var(--color-border);">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b px-6 md:px-8 py-5" style="border-color: var(--color-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// 04</span>
+          <h2 class="text-xl sm:text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
+            Open Source Contributions
+          </h2>
+        </div>
+        <a
+          href="https://github.com/jaainil"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs font-mono uppercase tracking-widest transition-colors flex items-center gap-1 hover:underline"
+          style="color: var(--color-text-primary);"
+        >
+          <span>github.com/jaainil</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Open Source Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border);">
+        
+        <!-- Dokploy Core Contribution (8 cols) -->
+        <div class="lg:col-span-8 p-6 sm:p-8 md:p-10 flex flex-col justify-between" style="background-color: var(--color-surface);">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 text-xs font-mono font-semibold border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);">
+                  Core Contributor
+                </span>
+                <h3 class="text-xl font-display font-bold" style="color: var(--color-text-primary);">
+                  Dokploy / templates
+                </h3>
+              </div>
+              <span class="text-xs font-mono" style="color: var(--color-text-muted);">10+ Merged Pull Requests</span>
+            </div>
+
+            <p class="text-sm font-sans leading-relaxed mb-6" style="color: var(--color-text-secondary);">
+              Dokploy is an open source PaaS alternative to Coolify and Heroku. As a regular contributor to their official templates repository, I build automation scripts, maintain deployment blueprints, and debug Docker configurations for the community.
+            </p>
+
+            <!-- Detailed contributions list -->
+            <div class="space-y-3 mb-6">
+              <div class="p-4 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+                <h4 class="text-xs font-mono font-bold uppercase tracking-wider mb-1" style="color: var(--color-text-primary);">
+                  meta.json Automation Suite & CLI
+                </h4>
+                <p class="text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                  Built custom CLI validation scripts to eliminate duplication and enforce strict schema rules across 100+ application templates.
+                </p>
+              </div>
+
+              <div class="p-4 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+                <h4 class="text-xs font-mono font-bold uppercase tracking-wider mb-1" style="color: var(--color-text-primary);">
+                  GitHub Actions CI Pipeline
+                </h4>
+                <p class="text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                  Added automated linting and syntax checks to ensure pull requests pass Docker Compose structure verification before merging.
+                </p>
+              </div>
+
+              <div class="p-4 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+                <h4 class="text-xs font-mono font-bold uppercase tracking-wider mb-1" style="color: var(--color-text-primary);">
+                  New Application Blueprints
+                </h4>
+                <p class="text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                  Authored and tested complete Docker Compose setups for Habitica, Statping-NG, BookLore, Blinko, and Gitea with multi-database support.
+                </p>
               </div>
             </div>
-            </a>
-          ))}
-        </div>
-      </section>
-    ))}
+          </div>
 
-    <!-- View All Articles CTA -->
-    <div class="px-6 md:px-8 py-10 flex justify-center border-b" style="border-color: var(--color-border);">
-      <a
-        href="/articles"
-        class="flex items-center gap-2 px-8 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-        style="border-color: var(--color-text-primary); color: var(--color-text-primary);"
-        onmouseenter="this.style.backgroundColor='var(--color-text-primary)';this.style.color='var(--color-surface)'"
-        onmouseleave="this.style.backgroundColor='';this.style.color='var(--color-text-primary)'"
-      >
-        Browse All Articles
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </div>
+          <a
+            href="https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest font-semibold px-4 py-2.5 border transition-colors self-start"
+            style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+            onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+          >
+            Review Merged PRs on GitHub
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Additional Repositories & npm (4 cols) -->
+        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-surface);">
+          <div>
+            <h4 class="text-xs font-mono font-bold uppercase tracking-widest mb-4" style="color: var(--color-text-muted);">
+              // Published Packages & Repos
+            </h4>
+
+            <div class="space-y-4">
+              <a
+                href="https://www.npmjs.com/package/@imjp/writenex-astro"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block p-4 border transition-colors group"
+                style="border-color: var(--color-border); background-color: var(--color-bg);"
+                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+              >
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-mono font-bold text-red-500">npm package</span>
+                  <span class="text-[10px] font-mono" style="color: var(--color-text-muted);">v1.6.4</span>
+                </div>
+                <h5 class="text-sm font-mono font-bold mb-1" style="color: var(--color-text-primary);">
+                  @imjp/writenex-astro
+                </h5>
+                <p class="text-xs font-sans" style="color: var(--color-text-secondary);">
+                  Open source headless CMS for Astro SSG projects with Fields API and MDX support.
+                </p>
+              </a>
+
+              <a
+                href="https://github.com/jaainil"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block p-4 border transition-colors group"
+                style="border-color: var(--color-border); background-color: var(--color-bg);"
+                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+              >
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-mono font-bold text-emerald-500">github repository</span>
+                  <span class="text-[10px] font-mono" style="color: var(--color-text-muted);">Astro SSG</span>
+                </div>
+                <h5 class="text-sm font-mono font-bold mb-1" style="color: var(--color-text-primary);">
+                  jaainil / portfolio & blog
+                </h5>
+                <p class="text-xs font-sans" style="color: var(--color-text-secondary);">
+                  Source code for this website, featuring Astro SSG, Tailwind CSS, and edge caching.
+                </p>
+              </a>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t mt-6 text-xs font-mono" style="border-color: var(--color-border); color: var(--color-text-muted);">
+            <p>GitHub handle: <span class="font-bold" style="color: var(--color-text-primary);">@jaainil</span></p>
+            <p>npm handle: <span class="font-bold" style="color: var(--color-text-primary);">~imjp</span></p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- EDUCATION, CERTIFICATIONS & LEADERSHIP SECTION -->
+    <section class="border-b" style="border-color: var(--color-border);">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b px-6 md:px-8 py-5" style="border-color: var(--color-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// 05</span>
+          <h2 class="text-xl sm:text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
+            Education, Certifications & Leadership
+          </h2>
+        </div>
+        <span class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">Background</span>
+      </div>
+
+      <!-- 3 Column Content Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border); background-color: var(--color-surface);">
+        
+        <!-- Column 1: Education -->
+        <div class="p-6 sm:p-8">
+          <div class="flex items-center gap-2 mb-6">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            <h3 class="text-sm font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
+              // Formal Education
+            </h3>
+          </div>
+
+          <div class="space-y-6">
+            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
+                <span>2021 - Present</span>
+                <span class="text-emerald-500 font-bold">CGPA: 7.03</span>
+              </div>
+              <h4 class="text-sm font-display font-bold mb-1" style="color: var(--color-text-primary);">
+                B.E. Information Technology
+              </h4>
+              <p class="text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                Sardar Vallabhbhai Patel Institute of Technology (SVIT), Gujarat, India.
+              </p>
+            </div>
+
+            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
+                <span>2020 - 2021</span>
+                <span class="text-emerald-500 font-bold">Score: 75%</span>
+              </div>
+              <h4 class="text-sm font-display font-bold mb-1" style="color: var(--color-text-primary);">
+                Higher Secondary (12th Science)
+              </h4>
+              <p class="text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
+                Saraswati Shishukunj School. Physics, Chemistry, and Mathematics (PCM).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Certifications & Hackathons -->
+        <div class="p-6 sm:p-8">
+          <div class="flex items-center gap-2 mb-6">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            <h3 class="text-sm font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
+              // Hackathons & Certificates
+            </h3>
+          </div>
+
+          <div class="space-y-4">
+            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
+                <span>SVIT • 2024</span>
+                <span class="text-amber-500 font-mono text-[10px] uppercase font-bold">Finalist</span>
+              </div>
+              <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
+                MECIA Hacks Participant & Finalist
+              </h4>
+              <p class="text-xs font-sans mt-1" style="color: var(--color-text-secondary);">
+                Built and deployed an AI-assisted web application in a 24-hour hackathon.
+              </p>
+            </div>
+
+            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
+                <span>Hack2skill</span>
+                <span class="text-amber-500 font-mono text-[10px] uppercase font-bold">AR Hackathon</span>
+              </div>
+              <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
+                Snap AR Lens Creation Hackathon
+              </h4>
+              <p class="text-xs font-sans mt-1" style="color: var(--color-text-secondary);">
+                Built an interactive Snapchat lens using Snap AR Studio with custom 3D elements.
+              </p>
+            </div>
+
+            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
+                <span>Web3Dev</span>
+                <span class="text-emerald-500 font-mono text-[10px] uppercase font-bold">Bootcamp</span>
+              </div>
+              <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
+                Web Development Bootcamp
+              </h4>
+              <p class="text-xs font-sans mt-1" style="color: var(--color-text-secondary);">
+                Hands-on training in JavaScript, full-stack architecture, and Web3 fundamentals.
+              </p>
+            </div>
+
+            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
+                <span>freeCodeCamp</span>
+                <span class="text-emerald-500 font-mono text-[10px] uppercase font-bold">Certified</span>
+              </div>
+              <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
+                Responsive Web Design
+              </h4>
+              <p class="text-xs font-sans mt-1" style="color: var(--color-text-secondary);">
+                Modern responsive layouts and CSS flexbox standards.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Leadership & Community -->
+        <div class="p-6 sm:p-8">
+          <div class="flex items-center gap-2 mb-6">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            <h3 class="text-sm font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
+              // Community Leadership
+            </h3>
+          </div>
+
+          <div class="border p-5 mb-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="flex items-center justify-between text-xs font-mono mb-2">
+              <span class="text-emerald-500 font-bold">r/AI_India</span>
+              <span style="color: var(--color-text-muted);">Past Moderator</span>
+            </div>
+            <h4 class="text-base font-display font-bold mb-2" style="color: var(--color-text-primary);">
+              Reddit Community Lead (21K Members)
+            </h4>
+            <p class="text-xs font-sans leading-relaxed mb-4" style="color: var(--color-text-secondary);">
+              Grew the developer community from 1K to 21K members. Moderated discussions around open source LLMs, Indian AI startups, and machine learning research.
+            </p>
+            <ul class="space-y-1.5 text-xs font-sans" style="color: var(--color-text-secondary);">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-500 font-mono">✔</span>
+                <span>Organized release threads and developer benchmarks</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-500 font-mono">✔</span>
+                <span>Curated a community open source learning directory</span>
+              </li>
+            </ul>
+
+            <div class="mt-4 pt-4 border-t" style="border-color: var(--color-border);">
+              <a
+                href="https://www.reddit.com/r/AI_India/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-xs font-mono uppercase tracking-widest hover:underline flex items-center gap-1.5"
+                style="color: var(--color-text-primary);"
+              >
+                Visit r/AI_India ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SHRAVONIX ARCHIVE / RECENT ARTICLES SECTION -->
+    <section id="blog" class="border-b" style="border-color: var(--color-border);">
+      <!-- Section Header -->
+      <div class="flex items-center justify-between border-b px-6 md:px-8 py-5" style="border-color: var(--color-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// 06</span>
+          <h2 class="text-xl sm:text-2xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
+            Shravonix Archive & Technical Writing
+          </h2>
+        </div>
+        <a
+          href="/articles"
+          class="text-xs font-mono uppercase tracking-widest transition-colors flex items-center gap-1.5 hover:underline"
+          style="color: var(--color-text-primary);"
+        >
+          <span>Browse Sunset Archive ({totalArticlesCount} Articles)</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border);">
+        {latestArticles.map((article: Article) => (
+          <a
+            href={`/articles/${article.id}`}
+            class="p-6 sm:p-8 flex flex-col justify-between transition-colors group"
+            style="background-color: var(--color-surface);"
+            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+            onmouseleave="this.style.backgroundColor='var(--color-surface)'"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-4">
+                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border" style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-bg);">
+                  {article.category}
+                </span>
+                <span class="text-xs font-mono" style="color: var(--color-text-muted);">
+                  {article.publishedAt}
+                </span>
+              </div>
+
+              {article.imageUrl && (
+                <div class="aspect-video overflow-hidden border mb-4" style="border-color: var(--color-border);">
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="225"
+                  />
+                </div>
+              )}
+
+              <h3 class="text-base sm:text-lg font-display font-bold tracking-tight mb-2 group-hover:underline" style="color: var(--color-text-primary);">
+                {article.title}
+              </h3>
+              <p class="text-xs font-sans leading-relaxed line-clamp-3 mb-4" style="color: var(--color-text-secondary);">
+                {article.description}
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between text-xs font-mono pt-4 border-t" style="border-color: var(--color-border); color: var(--color-text-muted);">
+              <span>{article.readingTime || '5 min read'}</span>
+              <span class="group-hover:translate-x-1 transition-transform" style="color: var(--color-text-primary);">Read Archive →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- CONTACT & CONNECT SECTION -->
+    <section id="contact" class="border-b" style="border-color: var(--color-border);">
+      <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border);">
+        
+        <!-- Left Contact CTA (8 cols) -->
+        <div class="lg:col-span-8 p-6 sm:p-8 md:p-12 flex flex-col justify-between" style="background-color: var(--color-surface);">
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="text-[11px] font-mono uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">// Direct Inquiries</span>
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
+              Let us collaborate on your next project.
+            </h2>
+
+            <p class="text-base sm:text-lg font-sans leading-relaxed max-w-xl mb-8" style="color: var(--color-text-secondary);">
+              Whether you need full-stack application development, Docker containerization, CI/CD pipeline automation, or Linux infrastructure management, feel free to reach out.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-4 pt-6 border-t" style="border-color: var(--color-border);">
+            <a
+              href="mailto:jainilprajapati9@gmail.com"
+              class="px-6 py-3.5 text-xs font-mono uppercase tracking-widest font-semibold border transition-colors flex items-center gap-2"
+              style="background-color: var(--color-accent-bg); color: var(--color-accent-text); border-color: var(--color-accent-bg);"
+            >
+              Send an Email
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </a>
+
+            <a
+              href="https://www.linkedin.com/in/jaainil/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-6 py-3.5 text-xs font-mono uppercase tracking-widest border transition-colors flex items-center gap-2"
+              style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
+              onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+            >
+              Connect on LinkedIn
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Quick Info Box (4 cols) -->
+        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-bg);">
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-xs font-mono font-bold uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
+                // Contact Details
+              </h3>
+              <div class="space-y-2 text-xs font-mono">
+                <p style="color: var(--color-text-secondary);">
+                  Email: <a href="mailto:jainilprajapati9@gmail.com" class="font-bold hover:underline" style="color: var(--color-text-primary);">jainilprajapati9@gmail.com</a>
+                </p>
+                <p style="color: var(--color-text-secondary);">
+                  Phone: <a href="tel:+919725284302" class="font-bold hover:underline" style="color: var(--color-text-primary);">+91 9725284302</a>
+                </p>
+                <p style="color: var(--color-text-secondary);">
+                  Location: <span class="font-bold" style="color: var(--color-text-primary);">Anand, Gujarat, India</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-6 border-t" style="border-color: var(--color-border);">
+              <h3 class="text-xs font-mono font-bold uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
+                // Online Profiles
+              </h3>
+              <ul class="space-y-2.5 text-xs font-mono">
+                <li>
+                  <a href="https://github.com/jaainil" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center justify-between" style="color: var(--color-text-primary);">
+                    <span>GitHub</span>
+                    <span style="color: var(--color-text-muted);">jaainil ↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.linkedin.com/in/jaainil/" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center justify-between" style="color: var(--color-text-primary);">
+                    <span>LinkedIn</span>
+                    <span style="color: var(--color-text-muted);">jaainil ↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.npmjs.com/~imjp" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center justify-between" style="color: var(--color-text-primary);">
+                    <span>npm</span>
+                    <span style="color: var(--color-text-muted);">~imjp ↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.reddit.com/r/AI_India/" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center justify-between" style="color: var(--color-text-primary);">
+                    <span>Reddit</span>
+                    <span style="color: var(--color-text-muted);">r/AI_India ↗</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t mt-6 text-[11px] font-mono uppercase tracking-widest" style="border-color: var(--color-border); color: var(--color-text-muted);">
+            Available for remote and on-site opportunities.
+          </div>
+        </div>
+
+      </div>
+    </section>
 
   </div>
 </BaseLayout>
-
-<script>
-  const searchInput = document.getElementById('home-search-input') as HTMLInputElement;
-  const grid = document.getElementById('home-grid');
-  const emptyState = document.getElementById('home-empty-state');
-  const cards = document.querySelectorAll<HTMLAnchorElement>('.home-article-card');
-  const catBtns = document.querySelectorAll<HTMLButtonElement>('.home-cat-btn');
-
-  let activeCategory = 'All';
-  let searchQuery = '';
-
-  function applyFilters() {
-    let visible = 0;
-
-    cards.forEach((card) => {
-      const category = card.dataset.category ?? '';
-      const title = card.dataset.title ?? '';
-      const description = card.dataset.description ?? '';
-
-      const matchesCategory = activeCategory === 'All' || category.toLowerCase() === activeCategory.toLowerCase();
-      const matchesSearch = searchQuery === '' || title.includes(searchQuery) || description.includes(searchQuery);
-
-      card.style.display = matchesCategory && matchesSearch ? '' : 'none';
-      if (matchesCategory && matchesSearch) visible++;
-    });
-
-    if (grid && emptyState) {
-      if (visible === 0) {
-        grid.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-      } else {
-        grid.classList.remove('hidden');
-        emptyState.classList.add('hidden');
-      }
-    }
-  }
-
-  function setActiveBtn(category: string) {
-    catBtns.forEach((btn) => {
-      const isActive = btn.dataset.category === category;
-      btn.style.backgroundColor = isActive ? 'var(--color-accent-bg)' : 'var(--color-surface)';
-      btn.style.color = isActive ? 'var(--color-accent-text)' : 'var(--color-text-secondary)';
-    });
-  }
-
-  catBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      activeCategory = btn.dataset.category ?? 'All';
-      setActiveBtn(activeCategory);
-      applyFilters();
-    });
-  });
-
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      searchQuery = searchInput.value.toLowerCase().trim();
-      applyFilters();
-    });
-  }
-</script>

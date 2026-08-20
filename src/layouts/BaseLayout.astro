@@ -24,9 +24,9 @@ interface Props {
 }
 
 const {
-  title = 'Shravonix - Tech News & Deep Dives',
-  description = 'In-depth technical analysis on AI models, browser engines, web frameworks, Linux kernel, and hardware. Nerdy insights for developers and tech enthusiasts who want deep technical content.',
-  image = 'https://shravonix.com/og.jpg',
+  title = 'Jainil Prajapati — DevOps & Infrastructure Engineer | Linux & Systems Support',
+  description = 'Portfolio of Jainil Prajapati. DevOps and Infrastructure Engineer experienced in Docker containerization, CI/CD pipeline automation, Linux server administration, Proxmox virtualization, and open source development.',
+  image = 'https://storage.rxresu.me/clwlkfh7b0bgqtojz2itm0gc5/pictures/wtpe5ep6q61y0h1fkatnigk6.jpg',
   articleData = null,
   resolvedAuthors = null,
 } = Astro.props;
@@ -37,13 +37,45 @@ const SITE_URL = 'https://shravonix.com';
 const LOGO_URL = `${SITE_URL}/shravonix.png`;
 const OG_FALLBACK = `${SITE_URL}/og.jpg`;
 
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE_URL}/#person`,
+  name: 'Jainil Prajapati',
+  jobTitle: 'DevOps Engineer | Cloud & Platform Infrastructure',
+  url: 'https://jaainil.com/',
+  image: 'https://storage.rxresu.me/clwlkfh7b0bgqtojz2itm0gc5/pictures/wtpe5ep6q61y0h1fkatnigk6.jpg',
+  email: 'jainilprajapati9@gmail.com',
+  telephone: '+919725284302',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Anand',
+    addressRegion: 'Gujarat',
+    addressCountry: 'IN',
+  },
+  sameAs: [
+    'https://www.linkedin.com/in/jaainil/',
+    'https://github.com/jaainil',
+    'https://www.npmjs.com/~imjp',
+    'https://www.reddit.com/r/AI_India/',
+  ],
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Aexawareinfotech Pvt. Ltd.',
+  },
+  alumniOf: {
+    '@type': 'EducationalOrganization',
+    name: 'Sardar Vallabhbhai Patel Institute of Technology',
+  },
+};
+
 const organizationSchema = {
   '@context': 'https://schema.org',
-  '@type': ['Organization', 'NewsMediaOrganization'],
+  '@type': 'Person',
   '@id': `${SITE_URL}/#organization`,
-  name: 'Shravonix',
-  alternateName: 'Shravonix Media',
-  description: 'In-depth technical analysis on AI, Linux, IoT, and software engineering for developers and tech enthusiasts.',
+  name: 'Jainil Prajapati',
+  alternateName: 'Jainil Prajapati — DevOps & Infrastructure Engineer',
+  description: 'DevOps engineering, infrastructure automation, systems troubleshooting, and in-depth technical analysis.',
   url: SITE_URL,
   logo: {
     '@type': 'ImageObject',
@@ -51,52 +83,32 @@ const organizationSchema = {
     url: LOGO_URL,
     width: 512,
     height: 512,
-    caption: 'Shravonix',
+    caption: 'Jainil Prajapati',
   },
   image: {
     '@id': `${SITE_URL}/#logo`,
   },
-  email: 'hello@shravonix.com',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: 'A/6 Shantivilla Residency, SVIT College Road',
-    addressLocality: 'Vasad',
-    addressRegion: 'Gujarat',
-    postalCode: '388306',
-    addressCountry: 'IN',
+  founder: {
+    '@id': `${SITE_URL}/#person`,
   },
-  foundingDate: '2026',
   sameAs: [
-    'https://twitter.com/shravonix',
-    'https://github.com/shravonix',
+    'https://github.com/jaainil',
+    'https://www.linkedin.com/in/jaainil/',
+    'https://www.npmjs.com/~imjp',
   ],
-  contactPoint: {
-    '@type': 'ContactPoint',
-    email: 'hello@shravonix.com',
-    contactType: 'editorial',
-    availableLanguage: 'English',
-  },
 };
 
 const siteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
-  name: 'Shravonix',
-  alternateName: 'Shravonix — Tech News & Deep Dives',
-  description: 'In-depth technical analysis on AI models, browser engines, web frameworks, Linux kernel, and hardware. Nerdy insights for developers and tech enthusiasts.',
+  name: 'Jainil Prajapati — Portfolio & Tech Blog',
+  alternateName: 'Jainil Prajapati — DevOps & Infrastructure Engineer',
+  description: 'DevOps and Infrastructure Engineer experienced in Docker containerization, CI/CD pipeline automation, Linux administration, and open-source ecosystems.',
   url: SITE_URL,
   inLanguage: 'en',
   publisher: {
-    '@id': `${SITE_URL}/#organization`,
-  },
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: `${SITE_URL}/articles?category=All&q={search_term_string}`,
-    },
-    'query-input': 'required name=search_term_string',
+    '@id': `${SITE_URL}/#person`,
   },
 };
 
@@ -130,16 +142,11 @@ const articleSchema = articleData ? {
     '@type': 'WebPage',
     '@id': currentUrl,
   },
-  isPartOf: {
-    '@id': `${SITE_URL}/#website`,
-  },
-  publisher: {
-    '@id': `${SITE_URL}/#organization`,
-  },
   inLanguage: 'en',
   ...(articleData.tags?.length && { keywords: articleData.tags.join(', ') }),
   ...(articleData.category && { articleSection: articleData.category }),
 } : null;
+
 ---
 
 <!DOCTYPE html>
@@ -157,7 +164,7 @@ const articleSchema = articleData ? {
       })();
     </script>
     <link rel="canonical" href={currentUrl} />
-    <link rel="alternate" type="application/rss+xml" title="Shravonix - Tech News & Deep Dives" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Jainil Prajapati - Tech & DevOps Blog" href="/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="/shravonix.png" />
     <Seo
@@ -174,11 +181,12 @@ const articleSchema = articleData ? {
       }}
       twitter={{
         image: image,
-        site: '@shravonix',
+        site: '@jaainil',
         card: 'summary_large_image'
       }}
     />
     {articleSchema && <Schema item={articleSchema as any} />}
+    <Schema item={personSchema as any} />
     <Schema item={organizationSchema as any} />
     <Schema item={siteSchema as any} />
     <slot name="head" />

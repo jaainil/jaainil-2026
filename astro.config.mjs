@@ -58,8 +58,8 @@ export default defineConfig({
     }),
     robotsTxt(),
     astroLLMsGenerator({
-      title: 'Shravonix Documentation',
-      description: 'Complete documentation and content for AI understanding',
+      title: 'Jainil Prajapati — Engineering Portfolio & Technical Blog',
+      description: 'DevOps & infrastructure engineering portfolio, projects, and technical writing',
       includePatterns: ['**/*'],
       excludePatterns: [],
       i18n: false,
