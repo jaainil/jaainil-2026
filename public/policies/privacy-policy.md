@@ -1,67 +1,47 @@
 ## Introduction
 
-This Privacy Policy describes how Shravonix ("we", "us", or "our") collects, uses, and shares information about you when you use our services. Effective Date: 2026-01-01.
+This Privacy Policy describes how Jainil Prajapati ("we", "us", or "our", jaainil.com) collects, uses, and shares information about you when you visit this website. Effective Date: 2026-01-01.
 
-If you have questions about this policy, please contact us at info@shravonix.com.
+If you have questions about this policy, please contact jainilprajapati9@gmail.com.
 
 ---
 
 ## Information We Collect
 
-We collect the following categories of information:
+We collect minimal information necessary to deliver and analyze the portfolio and articles:
 
-- **Account Information**
-  - Name
-  - Email address
 - **Usage Data**
   - Pages visited
-  - Browser type
-  - IP address
-
----
-
-## Data Retention
-
-We retain your data for the following periods:
-
-- **Account data**: Until account deletion
+  - Referrer URLs
+  - Browser type and device category
+  - Aggregated geographic region (country-level)
 
 ---
 
 ## Cookies and Tracking
 
-We use the following types of cookies and tracking technologies:
+We use privacy-friendly analytics via Umami:
 
-- Essential cookies — required for the service to function
-- Analytics cookies — help us understand how the service is used
+- No invasive personal tracking or cross-site ad profiling is conducted.
+- Essential session tokens only where technically required.
 
 ---
 
 ## Third-Party Services
 
-We share data with the following third-party services:
-
-- **Umami** — Website analytics to understand visitor behavior
+- **Umami** — Privacy-preserving website analytics to understand readership trends.
 
 ---
 
 ## Your Rights
 
-You have the following rights regarding your personal data:
-
-- Right to access your personal data
-- Right to request deletion of your data
-- Right to correct inaccurate data
-- Right to receive your data in a portable format
-- Right to restrict how we process your data
-- Right to object to processing
+You have the right to request information on data collected or ask questions regarding your privacy by contacting us directly.
 
 ---
 
-## Contact Us
+## Contact
 
-Contact us:
-
-- **Legal Name: **Shravonix
-- **Address: **A/6 Shantivilla Residency, SVIT College Road, Vasad, Anand, Gujarat 388306, India
-- **Email: **info@shravonix.com
+- **Name: **Jainil Prajapati
+- **Location: **Anand, Gujarat, India
+- **Email: **jainilprajapati9@gmail.com
+- **Website: **https://jaainil.com

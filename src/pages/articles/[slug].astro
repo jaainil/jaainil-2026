@@ -75,7 +75,7 @@ const TOC_ITEMS = headings.map((h) => ({
 const imageUrlMeta = article.data.imageUrl as unknown as ImageMetadata;
 const ogImage = imageUrlMeta?.src
   ? new URL(imageUrlMeta.src, Astro.site).toString()
-  : 'https://shravonix.com/og.jpg';
+  : 'https://jaainil.com/og.jpg';
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -85,19 +85,19 @@ const breadcrumbSchema = {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: 'https://shravonix.com',
+      item: 'https://jaainil.com',
     },
     {
       '@type': 'ListItem',
       position: 2,
       name: 'Articles',
-      item: 'https://shravonix.com/articles',
+      item: 'https://jaainil.com/articles',
     },
     {
       '@type': 'ListItem',
       position: 3,
       name: article.data.title,
-      item: `https://shravonix.com/articles/${article.id}`,
+      item: `https://jaainil.com/articles/${article.id}`,
     },
   ],
 };
@@ -222,7 +222,7 @@ const breadcrumbSchema = {
             <>
               {i > 0 && ', '}
               <a 
-                href={`/authors/${article.data.authors[i]}`} 
+                href="/about" 
                 class="hover:underline transition-colors"
                 style="color: var(--color-text-secondary);"
                 onmouseenter="this.style.color='var(--color-text-primary)'"

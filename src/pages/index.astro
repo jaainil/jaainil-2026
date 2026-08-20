@@ -92,19 +92,19 @@ const projects = [
     ],
   },
   {
-    title: 'Writenex: Open Source CMS for Astro',
-    subtitle: 'NPM Package & Headless Content Management',
-    badge: 'NPM Package (79+ Commits)',
+    title: 'Writenex: Visual CMS Integration for Astro',
+    subtitle: 'NPM Package & Content Collections Visual Editor',
+    badge: 'NPM Package (@imjp/writenex-astro)',
     period: '2025 - Present',
-    url: 'https://www.npmjs.com/package/@imjp/writenex-astro',
-    linkLabel: 'npmjs.com/@imjp/writenex-astro',
+    url: 'https://writenex-writenex.vercel.app/astro',
+    linkLabel: 'Live Docs & Demo',
     external: true,
-    tags: ['Astro', 'TypeScript', 'MDX', 'NPM Distribution', 'GitHub Actions'],
+    tags: ['Astro Integration', 'TypeScript Fields API', 'WYSIWYG Editor', 'MDX & Markdoc', 'NPM Distribution'],
     points: [
-      'Forked and developed an open source CMS integration, growing it to 79+ commits and 6 version releases.',
-      'Built Fields API, version history, image upload handling, and MDX support from scratch.',
-      'Automated semantic releases and packaging through GitHub Actions CI/CD pipelines.',
-      'Published on npm registry, installable via npx astro add @imjp/writenex-astro.',
+      'Engineered an open-source visual editor and CMS integration for Astro Content Collections with zero-config auto-discovery.',
+      'Designed a TypeScript-first Fields API with 25+ field types, autocomplete inference, and built-in validation rules.',
+      'Implemented automatic shadow-copy version history and drag-and-drop image asset management (colocated & public).',
+      'Automated semantic releases to the npm registry via GitHub Actions CI/CD pipelines.',
     ],
   },
   {
@@ -168,12 +168,30 @@ const projects = [
     ],
   },
 ];
+
+// Schema for Homepage
+const SITE_URL = 'https://jaainil.com';
+const homePageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${SITE_URL}/#webpage`,
+  name: 'Jainil Prajapati — Full-Stack Developer & DevOps Engineer',
+  description: 'Portfolio and technical writings of Jainil Prajapati. Full-stack development, Docker workflows, CI/CD automation, Linux administration, and Dokploy open-source contributions.',
+  url: SITE_URL,
+  inLanguage: 'en',
+  isPartOf: { '@id': `${SITE_URL}/#website` },
+  about: { '@id': `${SITE_URL}/#person` },
+  mainEntity: { '@id': `${SITE_URL}/#person` },
+};
 ---
 
 <BaseLayout
-  title="Jainil Prajapati: Full-Stack Developer & DevOps Engineer"
-  description="Portfolio of Jainil Prajapati. Full-stack developer and DevOps engineer experienced in Next.js, Node.js, Docker, CI/CD pipelines, Linux server administration, and open-source ecosystems."
+  title="Jainil Prajapati — Full-Stack Developer & DevOps Engineer"
+  description="Portfolio and technical writings of Jainil Prajapati. Full-stack development, Docker workflows, CI/CD automation, Linux administration, and Dokploy open-source contributions."
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(homePageSchema)} />
+  </Fragment>
   <div class="w-full pb-16">
 
     <!-- HERO SECTION -->
@@ -210,9 +228,58 @@ const projects = [
             </div>
 
             <!-- Summary Intro (Un-slopped) -->
-            <p class="text-base sm:text-lg font-sans leading-relaxed max-w-2xl mb-8" style="color: var(--color-text-secondary);">
+            <p class="text-base sm:text-lg font-sans leading-relaxed max-w-2xl mb-6" style="color: var(--color-text-secondary);">
               I build full-stack web applications and cloud infrastructure. I created and maintain Writenex CMS on npm, contribute to Dokploy open-source templates, and previously ran Shravonix (5K monthly readers). Currently working at Aexawareinfotech building client applications, Docker container workflows, and CI/CD pipelines.
             </p>
+
+            <!-- Core Stack Badges & Current Status -->
+            <div class="space-y-4 mb-6">
+              <!-- Primary Tech Stack Pills -->
+              <div>
+                <p class="text-[11px] font-mono uppercase tracking-widest mb-2.5" style="color: var(--color-text-muted);">
+                  // Primary Stack & Technologies
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  {[
+                    'Docker',
+                    'GitHub Actions CI/CD',
+                    'Linux (Debian/Ubuntu)',
+                    'Proxmox VE',
+                    'Nginx & SSL',
+                    'Next.js',
+                    'React',
+                    'Astro',
+                    'Node.js',
+                    'PostgreSQL',
+                    'Prisma ORM',
+                    'Self-Hosting & Homelab',
+                  ].map((tech) => (
+                    <span
+                      class="px-2.5 py-1 text-xs font-mono border transition-colors cursor-default"
+                      style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-primary);"
+                      onmouseenter="this.style.borderColor='var(--color-text-primary)'"
+                      onmouseleave="this.style.borderColor='var(--color-border)'"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Compact Live Engineering Focus Status -->
+              <div class="p-3.5 border text-xs font-mono" style="border-color: var(--color-border); background-color: var(--color-bg);">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] uppercase tracking-wider text-emerald-500 font-bold flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Current Focus
+                  </span>
+                  <span class="text-[10px]" style="color: var(--color-text-muted);">IST / UTC+5:30</span>
+                </div>
+                <p class="font-sans text-xs leading-relaxed" style="color: var(--color-text-secondary);">
+                  DevOps pipelines & full-stack apps at Aexaware • Linux server administration & Docker workflows • Maintaining <strong class="font-mono text-[11px]" style="color: var(--color-text-primary);">@imjp/writenex-astro</strong> • 10+ merged PRs on Dokploy
+                </p>
+              </div>
+            </div>
           </div>
 
           <!-- Quick Action CTAs & Contact Pills -->
@@ -287,7 +354,7 @@ const projects = [
             <div class="border p-4 mb-6 relative group" style="border-color: var(--color-border); background-color: var(--color-bg);">
               <div class="aspect-square overflow-hidden border mb-3" style="border-color: var(--color-border);">
                 <img
-                  src="https://storage.rxresu.me/clwlkfh7b0bgqtojz2itm0gc5/pictures/wtpe5ep6q61y0h1fkatnigk6.jpg"
+                  src="/profile.png"
                   alt="Jainil Prajapati"
                   class="w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-300"
                   width="400"
@@ -722,7 +789,7 @@ const projects = [
 
             <div class="space-y-4">
               <a
-                href="https://www.npmjs.com/package/@imjp/writenex-astro"
+                href="https://writenex-writenex.vercel.app/astro"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="block p-4 border transition-colors group"
@@ -732,13 +799,13 @@ const projects = [
               >
                 <div class="flex items-center justify-between mb-1">
                   <span class="text-xs font-mono font-bold text-red-500">npm package</span>
-                  <span class="text-[10px] font-mono" style="color: var(--color-text-muted);">v1.6.4</span>
+                  <span class="text-[10px] font-mono" style="color: var(--color-text-muted);">v1.9.1</span>
                 </div>
                 <h5 class="text-sm font-mono font-bold mb-1" style="color: var(--color-text-primary);">
                   @imjp/writenex-astro
                 </h5>
                 <p class="text-xs font-sans" style="color: var(--color-text-secondary);">
-                  Open source headless CMS for Astro SSG projects with Fields API and MDX support.
+                  Visual editor for Astro Content Collections with TypeScript-first Fields API (25+ types), WYSIWYG editing & version history.
                 </p>
               </a>
 
@@ -983,15 +1050,16 @@ const projects = [
               </div>
 
               {article.imageUrl && (
-                <div class="aspect-video overflow-hidden border mb-4" style="border-color: var(--color-border);">
-                  <img
+                <div class="aspect-video overflow-hidden border mb-4" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
+                  <Image
                     src={article.imageUrl}
                     alt={article.title}
                     class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                     loading="lazy"
-                    decoding="async"
-                    width="400"
-                    height="225"
+                    width={600}
+                    height={338}
+                    format="webp"
+                    quality={80}
                   />
                 </div>
               )}
@@ -1107,9 +1175,9 @@ const projects = [
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.reddit.com/r/AI_India/" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center justify-between" style="color: var(--color-text-primary);">
+                  <a href="https://www.reddit.com/user/enough_jainil/" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center justify-between" style="color: var(--color-text-primary);">
                     <span>Reddit</span>
-                    <span style="color: var(--color-text-muted);">r/AI_India ↗</span>
+                    <span style="color: var(--color-text-muted);">u/enough_jainil ↗</span>
                   </a>
                 </li>
               </ul>

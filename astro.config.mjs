@@ -12,7 +12,7 @@ import writenex from '@imjp/writenex-astro';
 
 export default defineConfig({
   output: 'static',
-  site: 'https://shravonix.com',
+  site: 'https://jaainil.com',
   redirects: {
     '/the-art-of-feature-flagging-jiocinemas-approach-to-managing-features-at-scale': '/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale',
   },
@@ -23,27 +23,27 @@ export default defineConfig({
     umami({ id: 'ee167bbd-1971-4780-bac6-fa0ddae9a4df' }),
     sitemap({
       customPages: [
-        'https://shravonix.com/llms.txt',
-        'https://shravonix.com/llms-small.txt',
-        'https://shravonix.com/llms-full.txt',
+        'https://jaainil.com/llms.txt',
+        'https://jaainil.com/llms-small.txt',
+        'https://jaainil.com/llms-full.txt',
       ],
       serialize(item) {
         // Homepage — highest priority, frequent changes
-        if (item.url === 'https://shravonix.com/' || item.url === 'https://shravonix.com') {
+        if (item.url === 'https://jaainil.com/' || item.url === 'https://jaainil.com') {
           item.changefreq = 'daily';
           item.priority = 1.0;
           item.lastmod = new Date().toISOString();
           return item;
         }
         // Articles listing page
-        if (item.url === 'https://shravonix.com/articles' || item.url === 'https://shravonix.com/articles/') {
+        if (item.url === 'https://jaainil.com/articles' || item.url === 'https://jaainil.com/articles/') {
           item.changefreq = 'daily';
           item.priority = 0.9;
           item.lastmod = new Date().toISOString();
           return item;
         }
         // Individual article pages
-        if (/shravonix\.com\/articles\/.+/.test(item.url)) {
+        if (/jaainil\.com\/articles\/.+/.test(item.url)) {
           item.changefreq = 'monthly';
           item.priority = 0.8;
           item.lastmod = new Date().toISOString();
