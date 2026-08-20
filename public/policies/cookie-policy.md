@@ -1,65 +1,33 @@
 ## Cookie Policy
 
-This Cookie Policy explains how Shravonix ("we", "us", or "our") uses cookies and similar tracking technologies on our services. Effective Date: 2026-01-01.
+This Cookie Policy explains how Jainil Prajapati ("we", "us", or "our", jaainil.com) uses cookies and browser local storage on this website. Effective Date: 2026-01-01.
 
 ---
 
-## What Are Cookies?
+## What Are Cookies & Local Storage?
 
-Cookies are small text files placed on your device by websites you visit. They are widely used to make websites work more efficiently and to provide information to site owners.
-
-Cookies can be "session cookies" (deleted when you close your browser) or "persistent cookies" (remain on your device until they expire or you delete them).
+Cookies and local storage are mechanisms used by websites to remember user preferences (such as dark mode versus light mode settings).
 
 ---
 
-## Types of Cookies We Use
+## What We Use
 
-- **Essential Cookies** — Required for the basic functioning of our services. These cannot be disabled.
-- **Analytics Cookies** — Help us understand how visitors interact with our services so we can improve them.
-
----
-
-## Other Tracking Technologies
-
-In addition to cookies, we may use the following tracking technologies:
-
-- web beacons
-- local storage
+- **Theme Preferences (Local Storage)** — Stores your theme selection (`dark` or `light`) so your viewing choice is preserved.
+- **Umami Analytics** — Privacy-preserving cookieless analytics to count page reads without cross-site tracking or selling data.
 
 ---
 
-## Third-Party Cookies
+## Managing Your Preferences
 
-The following third parties may set cookies through our services:
-
-- **Umami** — Website analytics to understand visitor behavior ([Privacy Policy](https://umami.is/privacy-policy))
+You can clear your browser storage or cookies at any time via your browser settings.
 
 ---
 
-## Your Consent
+## Contact
 
-- We display a cookie consent banner when you first visit our services.
-- You can manage your cookie preferences at any time via our preference panel.
-- You may withdraw your consent at any time; however, this will not affect the lawfulness of processing based on consent before its withdrawal.
+If you have questions about this policy:
 
----
-
-## Managing Cookies
-
-Most web browsers allow you to control cookies through their settings. You can:
-
-- Delete cookies already stored on your device
-- Block cookies from being set on your device
-- Set your browser to notify you when a cookie is being set
-
-Please note that restricting cookies may impact the functionality of our services. Consult your browser's help documentation for instructions on managing cookies.
-
----
-
-## Contact Us
-
-If you have questions about this Cookie Policy, please contact us:
-
-- **Legal Name: **Shravonix
-- **Address: **A/6 Shantivilla Residency, SVIT College Road, Vasad, Anand, Gujarat 388306, India
-- **Email: **info@shravonix.com
+- **Name: **Jainil Prajapati
+- **Location: **Anand, Gujarat, India
+- **Email: **jainilprajapati9@gmail.com
+- **Website: **https://jaainil.com

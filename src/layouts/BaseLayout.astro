@@ -23,17 +23,24 @@ interface Props {
   resolvedAuthors?: ResolvedAuthor[];
 }
 
+const SITE_URL = 'https://jaainil.com';
+const PROFILE_IMAGE = `${SITE_URL}/profile.png`;
+
 const {
-  title = 'Jainil Prajapati — DevOps & Infrastructure Engineer | Linux & Systems Support',
-  description = 'Portfolio of Jainil Prajapati. DevOps and Infrastructure Engineer experienced in Docker containerization, CI/CD pipeline automation, Linux server administration, Proxmox virtualization, and open source development.',
-  image = 'https://storage.rxresu.me/clwlkfh7b0bgqtojz2itm0gc5/pictures/wtpe5ep6q61y0h1fkatnigk6.jpg',
+  title = 'Jainil Prajapati — Full-Stack Developer & DevOps Engineer',
+  description = 'Portfolio of Jainil Prajapati. Full-Stack Developer and DevOps Engineer experienced in Next.js, Node.js, Docker containerization, CI/CD pipeline automation, and Linux systems.',
+  image = PROFILE_IMAGE,
   articleData = null,
   resolvedAuthors = null,
 } = Astro.props;
-const url = new URL(Astro.url.pathname, Astro.site);
+const url = new URL(Astro.url.pathname, Astro.site || SITE_URL);
 const currentUrl = url.toString();
 
-const SITE_URL = 'https://shravonix.com';
+const resolvedOgImage = image?.startsWith('http')
+  ? image
+  : image?.startsWith('/')
+    ? `${SITE_URL}${image}`
+    : PROFILE_IMAGE;
 const LOGO_URL = `${SITE_URL}/shravonix.png`;
 const OG_FALLBACK = `${SITE_URL}/og.jpg`;
 
@@ -42,9 +49,9 @@ const personSchema = {
   '@type': 'Person',
   '@id': `${SITE_URL}/#person`,
   name: 'Jainil Prajapati',
-  jobTitle: 'DevOps Engineer | Cloud & Platform Infrastructure',
-  url: 'https://jaainil.com/',
-  image: 'https://storage.rxresu.me/clwlkfh7b0bgqtojz2itm0gc5/pictures/wtpe5ep6q61y0h1fkatnigk6.jpg',
+  jobTitle: 'Full-Stack Developer & DevOps Engineer',
+  url: SITE_URL,
+  image: `${SITE_URL}/profile.png`,
   email: 'jainilprajapati9@gmail.com',
   telephone: '+919725284302',
   address: {
@@ -57,44 +64,29 @@ const personSchema = {
     'https://www.linkedin.com/in/jaainil/',
     'https://github.com/jaainil',
     'https://www.npmjs.com/~imjp',
-    'https://www.reddit.com/r/AI_India/',
+    'https://www.reddit.com/user/enough_jainil/',
   ],
   worksFor: {
     '@type': 'Organization',
     name: 'Aexawareinfotech Pvt. Ltd.',
+    url: 'https://aexaware.com',
   },
   alumniOf: {
     '@type': 'EducationalOrganization',
     name: 'Sardar Vallabhbhai Patel Institute of Technology',
   },
-};
-
-const organizationSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  '@id': `${SITE_URL}/#organization`,
-  name: 'Jainil Prajapati',
-  alternateName: 'Jainil Prajapati — DevOps & Infrastructure Engineer',
-  description: 'DevOps engineering, infrastructure automation, systems troubleshooting, and in-depth technical analysis.',
-  url: SITE_URL,
-  logo: {
-    '@type': 'ImageObject',
-    '@id': `${SITE_URL}/#logo`,
-    url: LOGO_URL,
-    width: 512,
-    height: 512,
-    caption: 'Jainil Prajapati',
-  },
-  image: {
-    '@id': `${SITE_URL}/#logo`,
-  },
-  founder: {
-    '@id': `${SITE_URL}/#person`,
-  },
-  sameAs: [
-    'https://github.com/jaainil',
-    'https://www.linkedin.com/in/jaainil/',
-    'https://www.npmjs.com/~imjp',
+  knowsAbout: [
+    'Full-Stack Web Development',
+    'DevOps',
+    'CI/CD Pipelines',
+    'Docker Containerization',
+    'Linux Server Administration',
+    'Proxmox VE',
+    'Next.js',
+    'Astro',
+    'Node.js',
+    'Prisma ORM',
+    'PostgreSQL',
   ],
 };
 
@@ -102,12 +94,15 @@ const siteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
-  name: 'Jainil Prajapati — Portfolio & Tech Blog',
-  alternateName: 'Jainil Prajapati — DevOps & Infrastructure Engineer',
-  description: 'DevOps and Infrastructure Engineer experienced in Docker containerization, CI/CD pipeline automation, Linux administration, and open-source ecosystems.',
+  name: 'Jainil Prajapati — Full-Stack Developer & DevOps Engineer',
+  alternateName: 'Jainil Prajapati Portfolio & Blog',
+  description: 'Full-stack development, DevOps pipelines, Docker containerization, Linux administration, and open-source ecosystems by Jainil Prajapati.',
   url: SITE_URL,
   inLanguage: 'en',
   publisher: {
+    '@id': `${SITE_URL}/#person`,
+  },
+  author: {
     '@id': `${SITE_URL}/#person`,
   },
 };
@@ -117,7 +112,7 @@ const schemaAuthors = resolvedAuthors
       '@type': 'Person',
       name: a.name,
       ...(a.avatarUrl && { image: a.avatarUrl }),
-      url: a.slug ? `${SITE_URL}/authors/${a.slug}` : SITE_URL,
+      url: a.slug ? `${SITE_URL}/authors/${a.slug}` : `${SITE_URL}/about`,
     }))
   : articleData?.authors?.map((slug: string) => ({
       '@type': 'Person',
@@ -133,6 +128,9 @@ const articleSchema = articleData ? {
   description: articleData.description,
   image: [image || OG_FALLBACK],
   author: schemaAuthors,
+  publisher: {
+    '@id': `${SITE_URL}/#person`,
+  },
   datePublished: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
   dateModified: articleData.updatedAt
     ? (articleData.updatedAt instanceof Date ? articleData.updatedAt.toISOString() : articleData.updatedAt)
@@ -166,28 +164,28 @@ const articleSchema = articleData ? {
     <link rel="canonical" href={currentUrl} />
     <link rel="alternate" type="application/rss+xml" title="Jainil Prajapati - Tech & DevOps Blog" href="/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/shravonix.png" />
+    <link rel="icon" type="image/png" href="/profile.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/profile.png" />
     <Seo
       title={title}
       description={description}
-      icon="/favicon.ico"
+      icon="/profile.png"
       themeColor="#000000"
       colorScheme="dark"
       robots="index, follow"
       facebook={{
-        image: image,
+        image: resolvedOgImage,
         url: currentUrl,
         type: articleData ? 'article' : 'website'
       }}
       twitter={{
-        image: image,
+        image: resolvedOgImage,
         site: '@jaainil',
         card: 'summary_large_image'
       }}
     />
     {articleSchema && <Schema item={articleSchema as any} />}
     <Schema item={personSchema as any} />
-    <Schema item={organizationSchema as any} />
     <Schema item={siteSchema as any} />
     <slot name="head" />
   </head>

@@ -16,20 +16,21 @@ const breadcrumbSchema = {
 
 const webPageSchema = {
   '@context': 'https://schema.org',
-  '@type': 'AboutPage',
+  '@type': 'ProfilePage',
   '@id': `${pageUrl}#webpage`,
-  name: 'About Jainil Prajapati: Full-Stack Developer & DevOps Engineer',
-  description: 'Learn about Jainil Prajapati, a Full-Stack Developer and DevOps Engineer experienced in Next.js, Node.js, Docker, Linux server administration, and open-source ecosystems.',
+  name: 'About Jainil Prajapati — Full-Stack Developer & DevOps Engineer',
+  description: 'Learn about Jainil Prajapati: full-stack developer and DevOps engineer experienced in Next.js, Node.js, Docker containerization, Linux systems, and open-source contributions.',
   url: pageUrl,
   inLanguage: 'en',
   isPartOf: { '@id': `${SITE_URL}/#website` },
   about: { '@id': `${SITE_URL}/#person` },
+  mainEntity: { '@id': `${SITE_URL}/#person` },
 };
 ---
 
 <BaseLayout
-  title="About: Jainil Prajapati (Full-Stack Developer & DevOps Engineer)"
-  description="Learn about Jainil Prajapati, a Full-Stack Developer and DevOps Engineer experienced in Next.js, Node.js, Docker, Linux server administration, and open-source ecosystems."
+  title="About Jainil Prajapati — Full-Stack Developer & DevOps Engineer"
+  description="Learn about Jainil Prajapati: full-stack developer and DevOps engineer experienced in Next.js, Node.js, Docker containerization, Linux systems, and open-source contributions."
 >
   <Fragment slot="head">
     <Schema item={breadcrumbSchema as any} />
