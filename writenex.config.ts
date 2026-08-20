@@ -15,7 +15,7 @@ export default defineConfig({
           defaultValue: "Tech",
         }),
         publishedAt: fields.date({ label: "Published At", validation: { isRequired: true } }),
-        imageUrl: fields.image({ label: "Cover Image", validation: { isRequired: true } }),
+        imageUrl: fields.image({ label: "Cover Image" }),
         imageAlt: fields.text({ label: "Image Alt" }),
         description: fields.text({ label: "Description", multiline: true, validation: { isRequired: true } }),
         tags: fields.array({ label: "Tags", itemField: fields.text({ label: "Tag" }) }),

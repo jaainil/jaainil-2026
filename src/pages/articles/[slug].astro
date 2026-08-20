@@ -72,7 +72,7 @@ const TOC_ITEMS = headings.map((h) => ({
 }));
 
 // article.data.imageUrl is typed as string in JSON schema but resolves to ImageMetadata at runtime
-const imageUrlMeta = article.data.imageUrl as unknown as ImageMetadata;
+const imageUrlMeta = article.data.imageUrl as unknown as ImageMetadata | undefined;
 const ogImage = imageUrlMeta?.src
   ? new URL(imageUrlMeta.src, Astro.site).toString()
   : 'https://jaainil.com/og.jpg';
@@ -116,7 +116,7 @@ const breadcrumbSchema = {
   <ReadingProgressBar client:only="react" />
   <BackToTop client:only="react" />
   <div class="max-w-7xl mx-auto border-x min-h-screen" style="border-color: var(--color-border); background-color: var(--color-surface);">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-10 lg:p-16">
+    <div class={`grid grid-cols-1 ${article.data.imageUrl ? "lg:grid-cols-2" : ""} gap-8 lg:gap-12 p-6 sm:p-10 lg:p-16`}>
       <div class="flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider mb-6" style="color: var(--color-text-muted);">
@@ -134,20 +134,22 @@ const breadcrumbSchema = {
         </div>
       </div>
       
-      <div class="w-full h-full min-h-[300px] lg:min-h-[400px]" style="background-color: var(--color-image-bg);">
-        <Image
-          src={article.data.imageUrl}
-          alt={article.data.imageAlt || article.data.title}
-          class="w-full h-full object-cover"
-          width={800}
-          height={600}
-          format="webp"
-          quality={85}
-          loading="eager"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </div>
+      {article.data.imageUrl && (
+        <div class="w-full h-full min-h-[300px] lg:min-h-[400px]" style="background-color: var(--color-image-bg);">
+          <Image
+            src={article.data.imageUrl}
+            alt={article.data.imageAlt || article.data.title}
+            class="w-full h-full object-cover"
+            width={800}
+            height={600}
+            format="webp"
+            quality={85}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      )}
     </div>
 
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-6 sm:px-10 lg:px-16 py-4 border-y" style="border-color: var(--color-border);">
@@ -230,19 +232,21 @@ const breadcrumbSchema = {
             onmouseleave="this.style.backgroundColor=''"
           >
             <div class="p-6 md:p-8 grow">
-              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                <Image
-                  src={relatedArticle.data.imageUrl}
-                  alt={relatedArticle.data.title}
-                  class="w-full h-full object-cover"
-                  width={400}
-                  height={225}
-                  format="webp"
-                  quality={80}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
+              {relatedArticle.data.imageUrl && (
+                <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
+                  <Image
+                    src={relatedArticle.data.imageUrl}
+                    alt={relatedArticle.data.title}
+                    class="w-full h-full object-cover"
+                    width={400}
+                    height={225}
+                    format="webp"
+                    quality={80}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              )}
               <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                 <span>// {relatedArticle.data.category}</span>
               </div>

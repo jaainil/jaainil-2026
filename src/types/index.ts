@@ -12,7 +12,7 @@ export interface Article {
   category: string;
   publishedAt: string;
   authors: Author[];
-  imageUrl: ImageMetadata;
+  imageUrl?: ImageMetadata;
   readTime?: string;
   imageAlt?: string;
   description?: string;

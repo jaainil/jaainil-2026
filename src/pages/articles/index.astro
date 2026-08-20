@@ -140,18 +140,20 @@ const itemListSchema = {
           onmouseleave="this.style.backgroundColor=''"
         >
           <div class="p-6 md:p-8 grow">
-            <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-               <Image
-                 src={article.imageUrl}
-                 alt={article.title}
-                 class="w-full h-full object-cover"
-                 width={600}
-                 height={338}
-                 format="webp"
-                 quality={80}
-                 loading="lazy"
-               />
-            </div>
+            {article.imageUrl && (
+              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
+                 <Image
+                   src={article.imageUrl}
+                   alt={article.title}
+                   class="w-full h-full object-cover"
+                   width={600}
+                   height={338}
+                   format="webp"
+                   quality={80}
+                   loading="lazy"
+                 />
+              </div>
+            )}
             <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3">
               <span style="color: var(--color-text-muted);">// {article.category}</span>
             </div>

@@ -88,19 +88,21 @@ const featuredArticles = allArticles
             onmouseleave="this.style.backgroundColor=''"
           >
             <div class="p-6 md:p-8 grow">
-              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                <Image
-                  src={article.data.imageUrl}
-                  alt={article.data.title}
-                  class="w-full h-full object-cover"
-                  width={400}
-                  height={225}
-                  format="webp"
-                  quality={80}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
+              {article.data.imageUrl && (
+                <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
+                  <Image
+                    src={article.data.imageUrl}
+                    alt={article.data.title}
+                    class="w-full h-full object-cover"
+                    width={400}
+                    height={225}
+                    format="webp"
+                    quality={80}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              )}
               <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                 <span>// {article.data.category}</span>
               </div>
