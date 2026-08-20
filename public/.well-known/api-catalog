@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/linkset.json",
+  "linkset": [
+    {
+      "anchor": "https://jaainil.com",
+      "service-doc": [
+        {
+          "href": "https://jaainil.com/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://jaainil.com"
+        }
+      ]
+    }
+  ]
+}

@@ -27,6 +27,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@yeskunall/astro-umami": "^0.0.9",
     "astro": "^7.2.4",
+    "astro-aeo": "^1.2.0",
     "astro-icon": "^1.2.0",
     "astro-llms-generate": "^1.3.3",
     "astro-robots-txt": "^1.0.0",

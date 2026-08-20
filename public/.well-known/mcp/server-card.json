@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/main/schema/server-card.json",
+  "serverInfo": {
+    "name": "jaainil-portfolio",
+    "version": "1.0.0",
+    "description": "Portfolio and technical writing MCP discovery card for Jainil Prajapati"
+  },
+  "capabilities": {
+    "resources": {
+      "subscribe": false,
+      "listChanged": false
+    },
+    "tools": {
+      "listChanged": false
+    }
+  }
+}

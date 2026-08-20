@@ -4,9 +4,8 @@ import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
+import aeo from 'astro-aeo';
 import umami from '@yeskunall/astro-umami';
-import astroLLMsGenerator from 'astro-llms-generate';
-import robotsTxt from 'astro-robots-txt';
 import compress from '@playform/compress';
 import writenex from '@imjp/writenex-astro';
 import icon from 'astro-icon';
@@ -27,11 +26,6 @@ export default defineConfig({
       endpoint: 'https://umami.altctrlreturn.com',
     }),
     sitemap({
-      customPages: [
-        'https://jaainil.com/llms.txt',
-        'https://jaainil.com/llms-small.txt',
-        'https://jaainil.com/llms-full.txt',
-      ],
       serialize(item) {
         // Homepage — highest priority
         if (item.url === 'https://jaainil.com/' || item.url === 'https://jaainil.com') {
@@ -61,13 +55,62 @@ export default defineConfig({
         return item;
       },
     }),
-    robotsTxt(),
-    astroLLMsGenerator({
-      title: 'Jainil Prajapati — Engineering Portfolio & Technical Blog',
-      description: 'DevOps & infrastructure engineering portfolio, projects, and technical writing',
-      includePatterns: ['**/*'],
-      excludePatterns: [],
-      i18n: false,
+    aeo({
+      site: {
+        name: 'Jainil Prajapati',
+        description: 'Full-Stack Developer & DevOps Engineer. Technical articles, DevOps workflows, Linux systems, and open-source contributions.',
+        profile: {
+          enabled: true,
+          name: 'Jainil Prajapati',
+          description: 'Full-Stack Developer & DevOps Engineer',
+          website: 'https://jaainil.com',
+          email: 'jainilprajapati9@gmail.com',
+          logo: 'https://jaainil.com/profile.png',
+          sameAs: [
+            'https://github.com/jaainil',
+            'https://www.linkedin.com/in/jaainil/',
+            'https://www.npmjs.com/~imjp',
+            'https://www.reddit.com/user/enough_jainil/',
+          ],
+          entityType: 'Person',
+        },
+      },
+      markdown: {
+        enabled: true,
+        frontmatter: true,
+      },
+      corpus: {
+        index: {
+          enabled: true,
+          sections: [
+            { title: 'Home', match: '/' },
+            { title: 'About & Profile', match: '/about' },
+            { title: 'Articles & Deep Dives', match: '/articles/**' },
+            { title: 'Legal Policies', match: '/legal/**' },
+          ],
+          defaultSection: 'Pages',
+        },
+        full: {
+          enabled: true,
+          mode: 'all',
+        },
+      },
+      discovery: {
+        sitemap: {
+          mode: 'external',
+        },
+        robots: {
+          enabled: true,
+          universalAllow: true,
+          includeLlmsTxt: true,
+          extraLines: [
+            'Content-Signal: ai-train=yes, search=yes, ai-input=yes',
+          ],
+        },
+      },
+      schema: {
+        autoInject: false,
+      },
     }),
     compress({
       CSS: false,
