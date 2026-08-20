@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
 import type { Article } from '../types';
 
 // Fetch articles for the portfolio's "Latest Technical Writing / Blog" section
@@ -29,47 +30,106 @@ const latestArticles: Article[] = allArticles
 
 const totalArticlesCount = allArticles.length;
 
-// Skills matrix from combined resume
+// Skills matrix with individual technology icons
 const skillCategories = [
   {
     title: 'Frontend Development',
-    icon: 'code',
-    skills: ['Astro', 'React', 'Next.js', 'Remix', 'Vite', 'TailwindCSS', 'Radix UI', 'TypeScript', 'JavaScript'],
+    categoryIcon: 'lucide:layout-template',
+    skills: [
+      { name: 'Astro', icon: 'simple-icons:astro' },
+      { name: 'React', icon: 'simple-icons:react' },
+      { name: 'Next.js', icon: 'simple-icons:nextdotjs' },
+      { name: 'Remix', icon: 'simple-icons:remix' },
+      { name: 'Vite', icon: 'simple-icons:vite' },
+      { name: 'TailwindCSS', icon: 'simple-icons:tailwindcss' },
+      { name: 'Radix UI', icon: 'simple-icons:radixui' },
+      { name: 'TypeScript', icon: 'simple-icons:typescript' },
+      { name: 'JavaScript', icon: 'simple-icons:javascript' },
+    ],
   },
   {
     title: 'Backend & APIs',
-    icon: 'server',
-    skills: ['Node.js', 'Express.js', 'Next.js API Routes', 'Prisma ORM', 'REST APIs', 'Stripe Integration'],
+    categoryIcon: 'lucide:server',
+    skills: [
+      { name: 'Node.js', icon: 'simple-icons:nodedotjs' },
+      { name: 'Express.js', icon: 'simple-icons:express' },
+      { name: 'Next.js APIs', icon: 'simple-icons:nextdotjs' },
+      { name: 'Prisma ORM', icon: 'simple-icons:prisma' },
+      { name: 'REST APIs', icon: 'lucide:network' },
+      { name: 'Stripe Billing', icon: 'simple-icons:stripe' },
+    ],
   },
   {
     title: 'DevOps & Infrastructure',
-    icon: 'cloud',
-    skills: ['Docker', 'Docker Compose', 'GitHub Actions', 'CI/CD Pipelines', 'Linux (Debian/Ubuntu)', 'Proxmox VE', 'Nginx', 'Vercel'],
+    categoryIcon: 'lucide:boxes',
+    skills: [
+      { name: 'Docker', icon: 'simple-icons:docker' },
+      { name: 'Docker Compose', icon: 'simple-icons:docker' },
+      { name: 'GitHub Actions', icon: 'simple-icons:githubactions' },
+      { name: 'CI/CD Pipelines', icon: 'lucide:git-branch' },
+      { name: 'Linux / Debian', icon: 'simple-icons:debian' },
+      { name: 'Proxmox VE', icon: 'simple-icons:proxmox' },
+      { name: 'Nginx', icon: 'simple-icons:nginx' },
+      { name: 'Vercel', icon: 'simple-icons:vercel' },
+    ],
   },
   {
     title: 'Databases & Storage',
-    icon: 'database',
-    skills: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Supabase'],
+    categoryIcon: 'lucide:database',
+    skills: [
+      { name: 'PostgreSQL', icon: 'simple-icons:postgresql' },
+      { name: 'MySQL', icon: 'simple-icons:mysql' },
+      { name: 'MongoDB', icon: 'simple-icons:mongodb' },
+      { name: 'Redis', icon: 'simple-icons:redis' },
+      { name: 'Supabase', icon: 'simple-icons:supabase' },
+    ],
   },
   {
     title: 'Networking & Protocols',
-    icon: 'network',
-    skills: ['TCP/IP', 'DNS', 'DHCP', 'IPv4/IPv6', 'Subnetting & Routing', 'Firewalls (UFW, iptables)', 'Port Forwarding'],
+    categoryIcon: 'lucide:router',
+    skills: [
+      { name: 'TCP/IP & DNS', icon: 'lucide:globe' },
+      { name: 'DHCP & Subnetting', icon: 'lucide:network' },
+      { name: 'IPv4 / IPv6', icon: 'lucide:binary' },
+      { name: 'Firewalls (UFW)', icon: 'lucide:shield' },
+      { name: 'Port Forwarding', icon: 'lucide:arrow-right-left' },
+      { name: 'Nginx Reverse Proxy', icon: 'simple-icons:nginx' },
+    ],
   },
   {
     title: 'Design & Media Tools',
-    icon: 'design',
-    skills: ['Figma', 'Adobe Photoshop', 'Adobe Illustrator', 'Canva', 'Adobe Premiere Pro', 'Adobe After Effects'],
+    categoryIcon: 'lucide:palette',
+    skills: [
+      { name: 'Figma', icon: 'simple-icons:figma' },
+      { name: 'Adobe Photoshop', icon: 'simple-icons:adobephotoshop' },
+      { name: 'Adobe Illustrator', icon: 'simple-icons:adobeillustrator' },
+      { name: 'Canva', icon: 'simple-icons:canva' },
+      { name: 'Adobe Premiere Pro', icon: 'simple-icons:adobepremierepro' },
+      { name: 'After Effects', icon: 'simple-icons:adobeaftereffects' },
+    ],
   },
   {
-    title: 'AI & Workflow Automation',
-    icon: 'activity',
-    skills: ['LangChain Basics', 'LLM Integrations', 'AI Workflows', 'Fuse.js Fuzzy Search', 'Webhooks'],
+    title: 'AI & Automations',
+    categoryIcon: 'lucide:sparkles',
+    skills: [
+      { name: 'LLM Integrations', icon: 'lucide:cpu' },
+      { name: 'AI Workflows', icon: 'lucide:bot' },
+      { name: 'LangChain Basics', icon: 'simple-icons:langchain' },
+      { name: 'Fuse.js Search', icon: 'lucide:search' },
+      { name: 'Webhooks & Events', icon: 'lucide:webhook' },
+    ],
   },
   {
-    title: 'Tools & Systems Support',
-    icon: 'hardware',
-    skills: ['Git & GitHub', 'Bash Scripting', 'Postman', 'Hardware Diagnostics', 'BIOS/UEFI Setup', 'SSH / Remote Support'],
+    title: 'Tools & Systems',
+    categoryIcon: 'lucide:terminal',
+    skills: [
+      { name: 'Git & GitHub', icon: 'simple-icons:github' },
+      { name: 'Bash Scripting', icon: 'simple-icons:gnubash' },
+      { name: 'Postman', icon: 'simple-icons:postman' },
+      { name: 'Hardware Diagnostics', icon: 'lucide:cpu' },
+      { name: 'BIOS / UEFI', icon: 'lucide:settings-2' },
+      { name: 'SSH & Remote Support', icon: 'lucide:terminal' },
+    ],
   },
 ];
 
@@ -665,23 +725,39 @@ const homePageSchema = {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0" style="border-color: var(--color-border);">
         {skillCategories.map((cat, index) => (
           <div
-            class={`p-6 border-b ${index % 2 === 0 ? 'sm:border-r' : 'sm:border-r-0'} ${(index + 1) % 4 !== 0 ? 'lg:border-r' : 'lg:border-r-0'} ${index >= 4 ? 'lg:border-b-0' : ''} ${index >= 6 ? 'sm:border-b-0' : ''}`}
+            class={`p-6 border-b ${index % 2 === 0 ? 'sm:border-r' : 'sm:border-r-0'} ${(index + 1) % 4 !== 0 ? 'lg:border-r' : 'lg:border-r-0'} ${index >= 4 ? 'lg:border-b-0' : ''} ${index >= 6 ? 'sm:border-b-0' : ''} flex flex-col justify-between`}
             style="border-color: var(--color-border); background-color: var(--color-surface);"
           >
-            <div class="flex items-center gap-2 mb-4">
-              <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
-              <h3 class="text-sm font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
-                {cat.title}
-              </h3>
+            <div>
+              <div class="flex items-center gap-2.5 mb-5 pb-3 border-b" style="border-color: var(--color-border);">
+                <div class="p-1.5 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+                  <Icon name={cat.categoryIcon} class="w-4 h-4" style="color: var(--color-text-primary);" />
+                </div>
+                <h3 class="text-xs font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
+                  {cat.title}
+                </h3>
+              </div>
+              
+              <div class="flex flex-wrap gap-1.5">
+                {cat.skills.map((skill) => (
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-mono border transition-colors hover:border-zinc-500"
+                    style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+                  >
+                    <Icon name={skill.icon} class="w-3.5 h-3.5 shrink-0 opacity-80" />
+                    <span>{skill.name}</span>
+                  </span>
+                ))}
+              </div>
             </div>
-            <ul class="space-y-2">
-              {cat.skills.map((skill: string) => (
-                <li class="text-xs font-mono flex items-center justify-between" style="color: var(--color-text-secondary);">
-                  <span>{skill}</span>
-                  <span class="text-[10px] text-zinc-600 font-mono">OK</span>
-                </li>
-              ))}
-            </ul>
+
+            <div class="mt-5 pt-3 border-t flex items-center justify-between text-[10px] font-mono" style="border-color: var(--color-border); color: var(--color-text-muted);">
+              <span>STATUS</span>
+              <span class="text-emerald-500 font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                ACTIVE
+              </span>
+            </div>
           </div>
         ))}
       </div>

@@ -9,6 +9,7 @@ import astroLLMsGenerator from 'astro-llms-generate';
 import robotsTxt from 'astro-robots-txt';
 import compress from '@playform/compress';
 import writenex from '@imjp/writenex-astro';
+import icon from 'astro-icon';
 
 export default defineConfig({
   output: 'static',
@@ -20,6 +21,7 @@ export default defineConfig({
     react(),
     mdx(),
     writenex(),
+    icon(),
     umami({
       id: '8169229f-6d5b-4ffc-ac38-9036661b5d94',
       endpoint: 'https://umami.altctrlreturn.com',
