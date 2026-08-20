@@ -18,8 +18,8 @@ const webPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
   '@id': `${pageUrl}#webpage`,
-  name: 'Write for Us — Shravonix',
-  description: 'Contribute a guest post to Shravonix. Share your technical expertise with thousands of developers by writing about AI, Linux, IoT, or software engineering.',
+  name: 'Contribute a Technical Article — Jainil Prajapati',
+  description: 'Contribute a technical deep dive or guest article on AI, Linux, DevOps, IoT, or software engineering.',
   url: pageUrl,
   inLanguage: 'en',
   isPartOf: { '@id': `${SITE_URL}/#website` },
@@ -27,8 +27,8 @@ const webPageSchema = {
 ---
 
 <BaseLayout
-  title="Write for Us — Shravonix"
-  description="Contribute a guest post to Shravonix. Share your technical expertise with thousands of developers by writing about AI, Linux, IoT, or software engineering."
+  title="Contribute a Technical Article — Jainil Prajapati"
+  description="Contribute a technical deep dive or guest article on AI, Linux, DevOps, IoT, or software engineering."
 >
   <Fragment slot="head">
     <Schema item={breadcrumbSchema as any} />
@@ -38,9 +38,9 @@ const webPageSchema = {
     
     <!-- Page heading -->
     <div class="border-b px-6 md:px-8 py-8" style="border-color: var(--color-border);">
-      <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Contribute</p>
+      <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Community & Guest Writing</p>
       <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
-        Write for Shravonix
+        Write & Collaborate
       </h1>
     </div>
 
@@ -48,13 +48,13 @@ const webPageSchema = {
     <section class="border-b px-6 md:px-8 py-16" style="border-color: var(--color-border);">
       <div class="max-w-3xl">
         <h2 class="text-sm font-mono font-bold uppercase tracking-widest mb-6" style="color: var(--color-text-primary);">
-          // Why Write For Us
+          // Why Collaborate
         </h2>
         <p class="text-lg font-sans leading-relaxed mb-6" style="color: var(--color-text-secondary);">
-          Shravonix welcomes contributions from the tech community. Whether you're a seasoned developer, researcher, or tech enthusiast, we want to hear your story.
+          We welcome high-quality technical contributions from developers, researchers, and systems engineers.
         </p>
         <p class="text-lg font-sans leading-relaxed" style="color: var(--color-text-secondary);">
-          We focus on <strong>technical depth</strong> — articles that go beyond surface-level reporting to explore how technology actually works.
+          We focus on <strong>technical depth</strong> — articles that explore architectural internals, benchmarks, Linux kernel systems, and real-world infrastructure.
         </p>
       </div>
     </section>

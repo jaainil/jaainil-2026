@@ -14,8 +14,8 @@ export async function GET(context) {
   );
 
   return rss({
-    title: 'Shravonix - Tech News & Deep Dives',
-    description: 'In-depth technical analysis on AI models, browser engines, web frameworks, Linux kernel, and hardware.',
+    title: 'Jainil Prajapati — Tech & DevOps Blog',
+    description: 'Engineering deep dives, Linux server administration, containerization, and platform architecture by Jainil Prajapati.',
     site: context.site,
     items: sortedArticles.map((article) => ({
       title: article.data.title,

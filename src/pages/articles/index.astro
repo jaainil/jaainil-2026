@@ -44,8 +44,8 @@ const webPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   '@id': `${pageUrl}#webpage`,
-  name: 'Article Index — Shravonix',
-  description: 'Browse every article published on Shravonix. In-depth technical analysis on AI, Linux, IoT, and software engineering.',
+  name: 'Technical Blog & Deep Dives — Jainil Prajapati',
+  description: 'Technical articles, DevOps pipelines, Linux guides, homelab tutorials, and systems engineering analysis by Jainil Prajapati.',
   url: pageUrl,
   inLanguage: 'en',
   isPartOf: { '@id': `${SITE_URL}/#website` },
@@ -54,8 +54,8 @@ const webPageSchema = {
 const itemListSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'Shravonix Articles',
-  description: 'All articles published on Shravonix',
+  name: 'Jainil Prajapati Technical Articles',
+  description: 'All technical articles published by Jainil Prajapati',
   url: pageUrl,
   numberOfItems: articles.length,
   itemListElement: articles.map((article, index) => ({
@@ -68,8 +68,8 @@ const itemListSchema = {
 ---
 
 <BaseLayout
-  title="Article Index — Shravonix"
-  description="Browse every article published on Shravonix. In-depth technical analysis on AI, Linux, IoT, and software engineering."
+  title="Technical Blog & Articles — Jainil Prajapati"
+  description="Technical articles, DevOps pipelines, Linux guides, homelab tutorials, and systems engineering analysis by Jainil Prajapati."
 >
   <Fragment slot="head">
     <Schema item={breadcrumbSchema as any} />
@@ -80,14 +80,17 @@ const itemListSchema = {
 
     <!-- Page Header -->
     <div class="border-b px-6 md:px-8 py-10" style="border-color: var(--color-border);">
-      <div class="flex items-end justify-between gap-4">
+      <div class="flex items-start md:items-end justify-between gap-4 flex-col md:flex-row">
         <div>
-          <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Archive</p>
-          <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight" style="color: var(--color-text-primary);">
-            Article Index
+          <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Sunsetted Publication Archive</p>
+          <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight mb-3" style="color: var(--color-text-primary);">
+            Shravonix Article Archive
           </h1>
+          <p class="text-sm font-sans max-w-2xl leading-relaxed" style="color: var(--color-text-secondary);">
+            Shravonix has been sunsetted. All original technical articles, Linux deep dives, and software engineering analyses originally published under Shravonix are permanently preserved here in this archive.
+          </p>
         </div>
-        <p id="article-count" class="text-[11px] font-mono uppercase tracking-widest pb-1 hidden md:block">
+        <p id="article-count" class="text-[11px] font-mono uppercase tracking-widest pb-1 hidden md:block shrink-0">
           {articles.length} article{articles.length !== 1 ? 's' : ''}
         </p>
       </div>

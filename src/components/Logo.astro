@@ -6,6 +6,16 @@ interface Props {
 const { className = "" } = Astro.props;
 ---
 
-<a href="/" class={`flex items-center h-full px-2 hover:opacity-90 transition-opacity ${className}`} aria-label="Shravonix Home">
-  <img src="/shravonix.png" alt="Shravonix" class="h-10 w-auto object-contain" width="120" height="40" decoding="async" />
-</a>
+<a href="/" class={`flex items-center gap-2.5 h-full px-1 group transition-opacity ${className}`} aria-label="Jainil Prajapati Portfolio">
+  <div class="w-7 h-7 flex items-center justify-center font-mono font-bold text-xs border" style="border-color: var(--color-border); background-color: var(--color-accent-bg); color: var(--color-accent-text);">
+    JP
+  </div>
+  <div class="flex flex-col justify-center">
+    <span class="font-display font-bold text-xs sm:text-sm tracking-tight leading-tight" style="color: var(--color-text-primary);">
+      Jainil Prajapati
+    </span>
+    <span class="text-[9px] font-mono uppercase tracking-widest hidden sm:inline" style="color: var(--color-text-muted);">
+      DevOps & Platform
+    </span>
+  </div>
+</a>
