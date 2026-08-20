@@ -65,7 +65,6 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
   scrollbar-width: thin;
   scrollbar-color: var(--color-border-strong) var(--color-surface);
 }
@@ -76,9 +75,9 @@ html {
   }
 }
 
-/* Offset anchor scroll for sticky navbar */
+/* Offset anchor scroll for 64px (4rem) sticky navbar + snug 12px gap */
 h1, h2, h3, h4, h5, h6, [id] {
-  scroll-margin-top: 5.5rem;
+  scroll-margin-top: 4.75rem;
 }
 
 @utility hide-scrollbar {
