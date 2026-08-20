@@ -63,6 +63,12 @@
   --color-image-bg: #27272a;
 }
 
+@layer base {
+  *, ::before, ::after {
+    border-color: var(--color-border);
+  }
+}
+
 /* Offset anchor scroll for sticky navbar */
 h1, h2, h3, h4, h5, h6 {
   scroll-margin-top: 80px;
