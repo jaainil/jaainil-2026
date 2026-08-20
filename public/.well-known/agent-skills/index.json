@@ -1,4 +1,12 @@
 {
   "$schema": "https://agentskills.io/schema/v0.2.0/skills.json",
-  "skills": []
+  "skills": [
+    {
+      "name": "search-articles",
+      "type": "skill",
+      "description": "Search and retrieve technical engineering articles, Linux deep dives, and DevOps benchmarks by Jainil Prajapati",
+      "url": "https://jaainil.com/.well-known/agent-skills/search-articles/SKILL.md",
+      "sha256": "70df7cc739848b1bb3f882ac08dfbb87954d85dbc94da69c49bf2134790675bb"
+    }
+  ]
 }
