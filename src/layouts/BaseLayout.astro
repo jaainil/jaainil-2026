@@ -5,7 +5,7 @@ import '@fontsource-variable/jetbrains-mono';
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { Seo } from 'astro-seo-meta';
+import { SEO } from 'astro-seo';
 import { Schema } from 'astro-seo-schema';
 import '../styles/global.css';
 
@@ -161,27 +161,52 @@ const articleSchema = articleData ? {
         }
       })();
     </script>
-    <link rel="canonical" href={currentUrl} />
-    <link rel="alternate" type="application/rss+xml" title="Jainil Prajapati - Tech & DevOps Blog" href="/rss.xml" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="icon" type="image/png" href="/profile.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/profile.png" />
-    <Seo
+    <SEO
       title={title}
       description={description}
-      icon="/profile.png"
-      themeColor="#000000"
-      colorScheme="dark"
-      robots="index, follow"
-      facebook={{
-        image: resolvedOgImage,
-        url: currentUrl,
-        type: articleData ? 'article' : 'website'
+      canonical={currentUrl}
+      openGraph={{
+        basic: {
+          title: title,
+          type: articleData ? 'article' : 'website',
+          image: resolvedOgImage,
+          url: currentUrl,
+        },
+        optional: {
+          description: description,
+          siteName: 'Jainil Prajapati',
+        },
+        ...(articleData && {
+          article: {
+            publishedTime: articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt,
+            modifiedTime: articleData.updatedAt
+              ? (articleData.updatedAt instanceof Date ? articleData.updatedAt.toISOString() : articleData.updatedAt)
+              : (articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt),
+            authors: articleData.authors || ['Jainil Prajapati'],
+            section: articleData.category || 'Technology',
+            tags: articleData.tags || [],
+          },
+        }),
       }}
       twitter={{
-        image: resolvedOgImage,
+        card: 'summary_large_image',
         site: '@jaainil',
-        card: 'summary_large_image'
+        creator: '@jaainil',
+        title: title,
+        description: description,
+        image: resolvedOgImage,
+      }}
+      extend={{
+        link: [
+          { rel: 'icon', type: 'image/png', href: '/profile.png' },
+          { rel: 'apple-touch-icon', sizes: '180x180', href: '/profile.png' },
+          { rel: 'alternate', type: 'application/rss+xml', title: 'Jainil Prajapati - Tech & DevOps Blog', href: '/rss.xml' },
+          { rel: 'sitemap', href: '/sitemap-index.xml' },
+        ],
+        meta: [
+          { name: 'theme-color', content: '#000000' },
+          { name: 'color-scheme', content: 'dark light' },
+        ],
       }}
     />
     {articleSchema && <Schema item={articleSchema as any} />}
