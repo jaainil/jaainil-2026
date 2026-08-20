@@ -7,8 +7,10 @@
   },
   "entries": [
     {
+      "identifier": "urn:air:jaainil.com:corpus:llms",
       "id": "urn:air:jaainil.com:corpus:llms",
       "displayName": "Jainil Prajapati LLM Corpus",
+      "description": "Curated index of technical articles, engineering guides, and open source projects",
       "type": "text/plain",
       "url": "https://jaainil.com/llms.txt",
       "representativeQueries": [
@@ -20,14 +22,29 @@
       ]
     },
     {
+      "identifier": "urn:air:jaainil.com:corpus:llms-full",
       "id": "urn:air:jaainil.com:corpus:llms-full",
       "displayName": "Jainil Prajapati Full Content LLM Corpus",
+      "description": "Full-text archive of technical blogs, Linux internals, and infrastructure deep dives",
       "type": "text/plain",
       "url": "https://jaainil.com/llms-full.txt",
       "representativeQueries": [
         "Full technical blogs and articles",
         "Linux systems deep dives",
-        "DevOps CI/CD architectures"
+        "DevOps CI/CD architectures",
+        "Web engineering benchmarks"
+      ]
+    },
+    {
+      "identifier": "urn:air:jaainil.com:mcp:server-card",
+      "id": "urn:air:jaainil.com:mcp:server-card",
+      "displayName": "Jainil Prajapati MCP Server Card",
+      "description": "Model Context Protocol capabilities and tools card",
+      "type": "application/json",
+      "url": "https://jaainil.com/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "MCP server tools for jaainil.com",
+        "Model Context Protocol capabilities"
       ]
     }
   ]

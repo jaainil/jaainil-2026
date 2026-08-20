@@ -226,5 +226,53 @@ const articleSchema = articleData ? {
         <Footer />
       </div>
     </div>
+    <script is:inline>
+      // WebMCP API (W3C Web Machine Learning Model Context Protocol)
+      if (typeof window !== 'undefined' && 'modelContext' in navigator && navigator.modelContext?.provideContext) {
+        try {
+          navigator.modelContext.provideContext({
+            tools: [
+              {
+                name: 'getSiteInfo',
+                description: 'Get developer profile, contact details, and site purpose for Jainil Prajapati',
+                inputSchema: {
+                  type: 'object',
+                  properties: {}
+                },
+                execute: async () => ({
+                  name: 'Jainil Prajapati',
+                  role: 'Full-Stack Developer & DevOps Engineer',
+                  site: 'https://jaainil.com',
+                  articlesUrl: 'https://jaainil.com/articles',
+                  llmsTxt: 'https://jaainil.com/llms.txt',
+                  github: 'https://github.com/jaainil'
+                })
+              },
+              {
+                name: 'searchArticles',
+                description: 'Search technical articles published on jaainil.com',
+                inputSchema: {
+                  type: 'object',
+                  properties: {
+                    query: { type: 'string', description: 'Search term or keyword' }
+                  }
+                },
+                execute: async (args) => {
+                  try {
+                    const res = await fetch('/llms.txt');
+                    const text = await res.text();
+                    return { results: text, query: args?.query || '' };
+                  } catch (e) {
+                    return { error: 'Could not retrieve articles index' };
+                  }
+                }
+              }
+            ]
+          });
+        } catch (err) {
+          console.debug('[WebMCP] provideContext initialization:', err);
+        }
+      }
+    </script>
   </body>
 </html>

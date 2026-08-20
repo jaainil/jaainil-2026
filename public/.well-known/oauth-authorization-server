@@ -1,0 +1,35 @@
+{
+  "issuer": "https://jaainil.com",
+  "authorization_endpoint": "https://jaainil.com/auth/authorize",
+  "token_endpoint": "https://jaainil.com/auth/token",
+  "jwks_uri": "https://jaainil.com/.well-known/jwks.json",
+  "response_types_supported": [
+    "code",
+    "token"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "refresh_token"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "scopes_supported": [
+    "read:articles",
+    "read:profile"
+  ],
+  "agent_auth": {
+    "register_uri": "https://jaainil.com/auth/register",
+    "supported_identity_types": [
+      "agent",
+      "user"
+    ],
+    "supported_credential_types": [
+      "client_secret",
+      "jwt"
+    ],
+    "auth_doc": "https://jaainil.com/auth.md"
+  }
+}

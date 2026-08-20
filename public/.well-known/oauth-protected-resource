@@ -1,0 +1,14 @@
+{
+  "resource": "https://jaainil.com",
+  "authorization_servers": [
+    "https://jaainil.com"
+  ],
+  "scopes_supported": [
+    "read:articles",
+    "read:profile"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "resource_documentation": "https://jaainil.com/llms.txt"
+}
