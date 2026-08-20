@@ -1,0 +1,823 @@
+---
+title: "India’s NavIC GPS Problem Explained: Why It Can’t Currently Navigate on Its Own"
+draft: false
+description: "India’s indigenous navigation system NavIC can no longer provide standalone positioning because only three PNT satellites remain operational. Here’s what happened, why it matters, and what ISRO is doing next."
+category: Tech
+publishedAt: "2026-08-20T00:00:00.000Z"
+tags:
+  - NavIC
+  - India GPS system
+  - NavIC vs GPS
+  - NVS-03
+  - Indian navigation system
+  - ISRO NavIC
+---
+
+Imagine spending decades building your own alternative to GPS.
+
+You launch satellites. You put the technology into smartphones, trains, vehicles, fishing boats and critical infrastructure. You call it a step towards technological independence.
+
+Then, one day, the system reaches a point where it no longer has enough working satellites to independently tell you where you are.
+
+That is essentially where India’s NavIC system stands in August 2026.
+
+No, Google Maps has not stopped working.
+
+Your phone is not suddenly lost.
+
+Your Uber driver is not navigating India using paper maps.
+
+But something important has changed.
+
+India's indigenous satellite navigation system, **NavIC**, currently cannot provide **standalone positioning service** because only three satellites are currently providing Positioning, Navigation and Timing services. According to the Government of India, at least four operational satellites are required for basic positioning.
+
+That distinction matters.
+
+NavIC is not simply "dead" or completely offline. Its timing service remains functional, and NavIC continues to be used alongside other global navigation satellite systems. But India currently cannot determine a user's position using NavIC alone.
+
+And for a system originally born out of India's desire to reduce strategic dependence on foreign navigation systems, that is a much bigger problem than it first appears.
+
+***
+
+## Why Did India Build NavIC in the First Place?
+
+To understand why the current situation matters, you have to go back to the **Kargil War of 1999**.
+
+During the conflict, India needed accurate positioning and navigation capabilities in difficult Himalayan terrain. At the time, the United States operated the dominant Global Positioning System, or GPS.
+
+The strategic lesson for India was uncomfortable but obvious:
+
+**A country should not assume that another nation will always provide access to critical infrastructure during a geopolitical crisis.**
+
+Whether we are talking about satellite navigation, semiconductor supply chains, cloud infrastructure or communication networks, dependence works beautifully until political or military interests diverge.
+
+India eventually decided to build its own regional satellite navigation system.
+
+That system became the **Indian Regional Navigation Satellite System**, commonly known today as **NavIC**, short for **Navigation with Indian Constellation**.
+
+The goal was not necessarily to replace GPS across the entire planet.
+
+NavIC was designed primarily to provide Positioning, Navigation and Timing services over India and roughly 1,500 kilometres beyond Indian territory. Its applications include civilian navigation, maritime operations, disaster management, vehicle tracking and other critical infrastructure.
+
+That makes NavIC fundamentally different from America's GPS.
+
+GPS is global.
+
+NavIC is regional.
+
+But within its intended coverage area, NavIC was supposed to give India something strategically valuable:
+
+**The ability to maintain an indigenous navigation capability.**
+
+***
+
+# What Exactly Is NavIC?
+
+Think of NavIC as India's own satellite-based positioning and timing infrastructure.
+
+It serves the same broad purpose as systems such as:
+
+* GPS from the United States
+* GLONASS from Russia
+* Galileo from the European Union
+* BeiDou from China
+
+A receiver such as the one inside your smartphone, vehicle tracker or specialised navigation device listens to signals transmitted by satellites.
+
+Those satellites continuously broadcast highly accurate timing and orbital information.
+
+Your device uses those signals to calculate where it is.
+
+NavIC was designed to provide:
+
+* Positioning
+* Navigation
+* Precise timing
+* Support for transportation
+* Maritime communication
+* Disaster management
+* Vehicle tracking
+* Strategic and security applications
+
+India has been actively expanding NavIC into critical infrastructure. Government data from 2025 indicated that thousands of trains had already been equipped with NavIC alongside other GNSS constellations.
+
+The important phrase there is:
+
+**Alongside other GNSS constellations.**
+
+That phrase explains why your everyday navigation hasn't suddenly collapsed.
+
+But it also hides the underlying weakness.
+
+***
+
+# How Does Satellite Navigation Actually Work?
+
+Here's the simplest way to understand it.
+
+Your phone generally does **not** send a signal into space asking:
+
+> "Hey satellite, where am I?"
+
+Instead, satellites continuously broadcast information.
+
+Think of every satellite repeatedly shouting:
+
+> "This is satellite number X. This is exactly where I am. And this is the precise time."
+
+Your phone listens.
+
+Then it compares the time when a signal was transmitted with the time it was received.
+
+Because radio signals travel at approximately the speed of light, your phone can estimate how far away it is from each satellite.
+
+Now imagine one satellite.
+
+Your phone knows it is somewhere on a huge invisible sphere surrounding that satellite.
+
+Add another satellite, and the possible location becomes narrower.
+
+Add a third, and the receiver can narrow the location down much further.
+
+But there is still another problem.
+
+Your smartphone does not have the same type of extremely precise atomic clock carried by navigation satellites.
+
+Even an incredibly small timing error can produce a significant location error.
+
+So, a fourth satellite helps solve for that timing uncertainty.
+
+That is why a navigation receiver generally needs signals from multiple satellites, and why the Indian government has specifically stated that **at least four operational NavIC satellites are required for basic standalone positioning service**.
+
+And that is exactly where India's problem begins.
+
+***
+
+# NavIC Has Dropped Below the Minimum Needed for Standalone Positioning
+
+On 29 July 2026, the Government of India provided a clear update in Parliament.
+
+After the completion of the 10-year mission life of **IRNSS-1F**, the NavIC constellation was left with only three satellites providing Positioning, Navigation and Timing services:
+
+* IRNSS-1B
+* IRNSS-1I
+* NVS-01
+
+The government explicitly stated that a minimum of four operational satellites is required for basic positioning service.
+
+As a result:
+
+> **NavIC cannot currently provide standalone positioning service.**
+
+However, its timing service remains functional.
+
+This is the most important fact in the entire story.
+
+Calling NavIC simply "offline" is technically misleading.
+
+A more accurate description is:
+
+**NavIC has lost its ability to independently provide standalone positioning because its operational navigation constellation has fallen below the minimum required satellite count.**
+
+That may sound less dramatic.
+
+But strategically, it is arguably more concerning.
+
+***
+
+# So What Went Wrong?
+
+The short answer is:
+
+**Satellite failures, ageing spacecraft, atomic clock problems and setbacks in replacement launches.**
+
+The longer answer is more complicated.
+
+India has launched 11 NavIC satellites over time, but launching 11 satellites does not mean 11 are available for navigation.
+
+By March 2026, the government said that eight satellites were functional in some capacity. However, only three were broadcasting navigation signals, while five were associated with one-way messaging services.
+
+That already showed how thin the navigation margin had become.
+
+Then the situation worsened.
+
+By July 2026, after IRNSS-1F completed its designed mission life, the number of satellites providing PNT services had fallen to three.
+
+For a system that needs four satellites for basic standalone positioning, that is not much of a safety margin.
+
+It is no margin at all.
+
+***
+
+# The Atomic Clock Problem Was a Major Warning Sign
+
+Satellite navigation is ultimately a timing problem.
+
+If you know precisely when a signal left a satellite and precisely when it reached a receiver, you can calculate distance.
+
+That is why navigation satellites carry extremely accurate atomic clocks.
+
+And that technology has been one of NavIC's recurring challenges.
+
+Earlier generations of India's navigation satellites used imported atomic clocks. Several satellites experienced atomic clock failures over the years, reducing the number of satellites capable of providing reliable navigation services.
+
+India's strategy for the next-generation NavIC satellites included the development and use of indigenous space-grade atomic clock technology.
+
+That technological shift is important.
+
+The goal is not simply to replace one satellite with another.
+
+It is to reduce dependence on imported components that can become a single point of failure.
+
+The Indian Space Research Organisation's 2025–26 annual report states that the indigenous atomic clock on NVS-02 had performed beyond specification, even though the satellite itself failed to reach its intended operational orbit.
+
+That distinction is worth remembering.
+
+The indigenous clock technology itself appears to have been a positive development.
+
+The satellite mission around it was the problem.
+
+***
+
+# NVS-02 Was Supposed to Help. Instead, It Created Another Setback.
+
+India successfully launched **NVS-01** in 2023.
+
+But the follow-up mission, **NVS-02**, encountered a propulsion-related problem after its launch in January 2025.
+
+ISRO's annual report states that although NVS-02 was successfully launched, the satellite could not achieve its intended final orbit and could therefore provide only limited PNT services.
+
+That is a painful example of how space programmes work.
+
+A satellite can launch successfully.
+
+The rocket can work.
+
+The spacecraft can communicate.
+
+Its onboard technology can perform correctly.
+
+And yet the mission can still fail to achieve its intended operational purpose.
+
+Space engineering has very little room for "almost."
+
+NVS-02 could not simply be treated as a full replacement for a lost operational navigation satellite.
+
+That meant India's already shrinking constellation did not get the redundancy it needed.
+
+***
+
+# Why Did NVS-03, NVS-04 and NVS-05 Take So Long?
+
+In 2025, the government's roadmap suggested that NVS-03 would launch by the end of that year, followed by NVS-04 and NVS-05 at roughly six-month intervals.
+
+That schedule clearly did not play out as originally expected.
+
+As of the government's July 2026 update:
+
+* **NVS-03 is ready for launch**
+* **NVS-04 is in an advanced stage of realisation**
+* **NVS-05 is in an advanced stage of realisation**
+
+The government has also subsequently indicated plans for another navigation satellite after those missions to help complete the seven-satellite base-layer constellation.
+
+This is actually an important point.
+
+The fix is no longer simply:
+
+> Launch one satellite and forget about the problem.
+
+Yes, launching one successful replacement could restore the minimum four-satellite threshold for basic standalone positioning.
+
+But operating a critical national navigation system with exactly four satellites when four is the minimum would still be fragile.
+
+A robust navigation system needs redundancy.
+
+Satellites age.
+
+Components fail.
+
+Launches can be delayed.
+
+And replacement spacecraft do not magically appear overnight.
+
+***
+
+# Why Your Phone GPS Still Works Perfectly
+
+This is probably the most confusing part.
+
+If NavIC has lost standalone positioning capability, why does Google Maps still know exactly where you are?
+
+Because your phone almost certainly isn't relying only on NavIC.
+
+Modern smartphones use **multi-constellation GNSS**.
+
+Depending on the hardware and region, a phone may receive signals from:
+
+* GPS
+* NavIC
+* Galileo
+* GLONASS
+* BeiDou
+
+Your device can combine available satellite signals.
+
+That is why losing NavIC's standalone capability does not mean your phone suddenly becomes useless.
+
+The Indian government itself has stated that NavIC is used in a multi-constellation environment for most use cases and that there is no vulnerability for users because of the current situation.
+
+So yes:
+
+* Google Maps still works.
+* Phone navigation still works.
+* Vehicle tracking systems using multiple GNSS networks still work.
+* Armed forces can use multi-constellation GNSS, including NavIC.
+
+Your everyday life may not change at all.
+
+But the strategic objective changes.
+
+And that's the real story.
+
+***
+
+# The Real Problem Isn't Google Maps. It's Strategic Independence.
+
+NavIC was never only about helping someone find the nearest Starbucks.
+
+Navigation infrastructure has military, economic and strategic importance.
+
+Satellite navigation supports:
+
+* Military operations
+* Missile and defence systems
+* Aviation
+* Maritime navigation
+* Disaster response
+* Emergency services
+* Transportation
+* Critical infrastructure
+* Telecommunications timing
+* Financial systems
+* Scientific applications
+
+A country that depends entirely on foreign positioning infrastructure has to trust that access will remain available and reliable during a crisis.
+
+Usually, it will.
+
+Until perhaps it doesn't.
+
+That is why the existence of GPS does not make NavIC unnecessary.
+
+In fact, India's current situation demonstrates exactly why NavIC was built.
+
+The uncomfortable part is that India has now discovered that **building an independent navigation system is only the first challenge**.
+
+Maintaining it is a completely different one.
+
+***
+
+# India's NavIC Problem Is Really a Redundancy Problem
+
+This may be the biggest engineering lesson here.
+
+India did not wake up one morning and suddenly "lose GPS."
+
+The problem developed gradually.
+
+Satellites aged.
+
+Atomic clocks failed.
+
+Replacement missions faced delays.
+
+One replacement satellite did not reach its intended orbit.
+
+Eventually, the constellation dropped below the minimum threshold.
+
+This is what happens when critical infrastructure has too little redundancy.
+
+The same principle applies to almost everything engineers build.
+
+A system can work perfectly with:
+
+* One server
+* One database
+* One power line
+* One internet connection
+* One satellite
+
+Until that component fails.
+
+The difference is that replacing a failed cloud server may take minutes.
+
+Replacing a navigation satellite can take years.
+
+And that means redundancy has to be designed into the system before failure happens.
+
+You cannot suddenly manufacture resilience after the infrastructure has already broken.
+
+***
+
+# Is This a Failure of ISRO?
+
+It would be simplistic to say yes.
+
+ISRO has achieved things that many countries would struggle to do at far larger budgets.
+
+NavIC itself exists because India successfully developed and deployed a complex indigenous navigation infrastructure.
+
+India also developed an indigenous space-grade atomic clock, an important step toward reducing external technological dependence.
+
+But admiration should not prevent criticism.
+
+The current situation exposes a genuine weakness in constellation management and replacement planning.
+
+A critical navigation system should ideally have enough operational margin that the failure or retirement of a single satellite does not remove its standalone positioning capability.
+
+The fact that NavIC fell from four positioning satellites to three after IRNSS-1F reached the end of its mission life shows how little operational buffer remained.
+
+That doesn't erase ISRO's achievements.
+
+But it does show that India cannot treat the initial deployment of a strategic space system as the finish line.
+
+Satellites require:
+
+* Continuous replenishment
+* Replacement planning
+* Launch reliability
+* Component reliability
+* Operational redundancy
+* Long-term funding
+* Manufacturing capacity
+
+The difficult part of infrastructure is often not building it.
+
+It's keeping it alive for decades.
+
+***
+
+# What Is ISRO Doing to Fix NavIC?
+
+The immediate priority is clear:
+
+**Launch NVS-03 successfully.**
+
+According to the government's July 2026 update, NVS-03 is ready for launch, while NVS-04 and NVS-05 are in advanced stages of realisation.
+
+A later parliamentary update also indicated that another navigation satellite is planned after NVS-03, NVS-04 and NVS-05 to help complete the seven-satellite NavIC base-layer constellation.
+
+That is encouraging.
+
+But "ready for launch" is not the same thing as "operational."
+
+A satellite still needs:
+
+1. A successful launch.
+2. Correct orbital insertion.
+3. Successful commissioning.
+4. Functional navigation payloads.
+5. Integration into the operational constellation.
+
+After the NVS-02 experience, that distinction matters more than ever.
+
+***
+
+# The Good News: NavIC Can Recover Relatively Quickly If the Next Launch Succeeds
+
+There is an important difference between a dead programme and an under-strength constellation.
+
+NavIC is not abandoned.
+
+Its ground segment remains operational, timing services remain functional, and India has replacement satellites in the pipeline.
+
+The immediate mathematical problem is also straightforward.
+
+India currently has three satellites providing PNT services.
+
+It needs at least four for basic standalone positioning.
+
+So one successful additional satellite could potentially restore that minimum capability.
+
+But India should aim much higher than the minimum.
+
+The real objective should be a constellation with enough redundancy to survive:
+
+* Satellite retirement
+* Atomic clock failures
+* Launch delays
+* Orbital problems
+* Component degradation
+
+Because if a system designed for strategic independence can be disabled by losing one satellite beyond its operational threshold, it is not yet truly resilient.
+
+***
+
+# NavIC vs GPS: The Comparison India Should Actually Care About
+
+The wrong comparison is:
+
+> "Is NavIC better than GPS?"
+
+The more useful question is:
+
+> "Can India maintain an independent, reliable navigation capability?"
+
+GPS is a global system with a much larger constellation and decades of operational experience.
+
+NavIC does not need to replicate GPS satellite-for-satellite to be valuable.
+
+Its value comes from providing reliable regional coverage over India and nearby areas.
+
+The problem is that a regional constellation has less room for failure.
+
+When you operate with a smaller number of satellites, every failure matters more.
+
+A single satellite retirement in a constellation of dozens is inconvenient.
+
+A single satellite retirement in a system already operating near its minimum threshold can become a national infrastructure problem.
+
+That is the difference between capacity and resilience.
+
+***
+
+# The Bigger Question: Should India Build More Than the Minimum?
+
+My answer is absolutely yes.
+
+The government's roadmap to complete a seven-satellite base-layer constellation is therefore important.
+
+But India should think beyond simply restoring the original constellation.
+
+The next generation of NavIC should focus on:
+
+### More operational redundancy
+
+The system should not lose standalone positioning because one satellite reaches the end of its expected life.
+
+### Faster replacement capability
+
+India needs the ability to replace navigation satellites without multi-year gaps.
+
+### More indigenous components
+
+The indigenous atomic clock programme is strategically important and should continue.
+
+### Better launch resilience
+
+A navigation programme depends not just on satellite technology but also on reliable access to launch vehicles.
+
+### Wider civilian adoption
+
+The more NavIC-capable devices and infrastructure India deploys, the greater the incentive to continuously maintain and improve the constellation.
+
+### Security and anti-jamming capability
+
+Navigation systems are increasingly important in modern conflict. A future-proof system needs resilience against interference, spoofing and other threats.
+
+***
+
+# So, Is NavIC Actually "Offline"?
+
+Not exactly.
+
+That phrase is dramatic, but technically inaccurate.
+
+As of the latest official government update in July 2026:
+
+* Three satellites are providing PNT services.
+* The minimum required for basic positioning is four.
+* NavIC therefore cannot provide standalone positioning.
+* Timing services remain functional.
+* Most civilian and operational users rely on multi-constellation GNSS environments.
+* NVS-03 is ready for launch.
+* NVS-04 and NVS-05 are in advanced stages of development.
+
+So the most accurate headline is not:
+
+> **NavIC is completely offline.**
+
+It is:
+
+> **India's NavIC system has lost standalone navigation capability because its operational positioning constellation has fallen below the minimum satellite requirement.**
+
+And honestly, that's serious enough without exaggerating it.
+
+***
+
+# The Bottom Line
+
+India built NavIC because relying entirely on another country's satellite navigation infrastructure was considered strategically risky.
+
+That reasoning still makes sense.
+
+In fact, the current geopolitical environment arguably makes independent infrastructure even more valuable.
+
+But NavIC's current situation reveals an important truth about technological independence:
+
+**Independence is not achieved when you launch the first satellite.**
+
+It is achieved when you can maintain the entire system through failures, ageing hardware, geopolitical pressure, launch setbacks and decades of continuous operation.
+
+Right now, NavIC is still alive.
+
+It still provides timing services.
+
+It is still part of India's multi-constellation navigation ecosystem.
+
+But it cannot independently determine a user's position because the constellation has dropped to three operational PNT satellites, below the minimum of four required for basic positioning.
+
+The next few launches therefore matter enormously.
+
+NVS-03 could restore the missing capability.
+
+NVS-04 and NVS-05 could provide much-needed redundancy.
+
+And the additional planned satellite could help rebuild the full base-layer constellation.
+
+The real test for ISRO and India's space programme isn't whether NavIC can recover.
+
+It probably can.
+
+The bigger test is whether the next version of NavIC is designed so that India never finds itself **one satellite away from losing independent navigation again**.
+
+***
+
+# Key Takeaways
+
+* NavIC is India's indigenous satellite navigation system.
+* It was developed to provide independent Positioning, Navigation and Timing services over India and surrounding regions.
+* As of the government's July 2026 update, only three satellites are providing NavIC PNT services.
+* At least four operational satellites are required for basic standalone positioning.
+* NavIC therefore cannot currently determine a user's position independently.
+* NavIC is **not completely offline**; its timing service remains functional.
+* Your phone's GPS and Google Maps continue to work because modern devices use multiple satellite navigation constellations.
+* The NVS-02 satellite failed to reach its intended operational orbit, delaying constellation restoration.
+* NVS-03 is ready for launch, while NVS-04 and NVS-05 are in advanced stages of realisation.
+* India's long-term challenge is not simply restoring NavIC, but building enough redundancy to make the system resilient.
+
+***
+
+# Frequently Asked Questions
+
+## Is NavIC completely offline?
+
+No. NavIC is not completely offline. The government states that its timing service remains functional. However, with only three satellites currently providing PNT services, NavIC cannot provide standalone positioning because at least four operational satellites are required.
+
+## Does NavIC not working affect Google Maps?
+
+For most users, no. Modern smartphones and navigation devices use multiple satellite constellations, including GPS and other GNSS systems. The government has stated that NavIC is used in a multi-constellation environment for most applications.
+
+## Why does NavIC need four satellites?
+
+Satellite navigation relies on calculating distance using highly precise timing signals. Multiple satellites are needed to determine a receiver's location and correct for timing errors in the receiver.
+
+## Which NavIC satellites are currently providing PNT services?
+
+According to the government's 29 July 2026 update, the three satellites are IRNSS-1B, IRNSS-1I and NVS-01.
+
+## What happened to NVS-02?
+
+NVS-02 was launched successfully in January 2025 but could not achieve its intended final orbit because of a propulsion-related issue. ISRO says it is capable of only limited PNT services.
+
+## When will NavIC be fixed?
+
+The government has confirmed that NVS-03 is ready for launch, while NVS-04 and NVS-05 are in advanced stages of realisation. However, the latest official update did not provide a confirmed launch date for restoring standalone positioning.
+
+## Is NavIC India's replacement for GPS?
+
+Not exactly. NavIC is a regional navigation system designed primarily to provide PNT services over India and approximately 1,500 km beyond Indian territory, whereas GPS is a global navigation system.
+
+***
+
+# Internal Linking Suggestions
+
+Link this article internally to:
+
+* **How GPS Actually Works: From Satellites to Your Smartphone**
+* **Why India Wants to Build Its Own Semiconductor Industry**
+* **ISRO's Biggest Achievements and the Challenges Ahead**
+* **GPS vs NavIC vs Galileo vs BeiDou: How Satellite Navigation Systems Compare**
+* **Why India Is Investing Heavily in Space Technology**
+* **What Happens When Critical Infrastructure Depends on Another Country?**
+
+***
+
+# External Authority Suggestions
+
+Consider referencing:
+
+* [ISRO's official website](https://www.isro.gov.in/?utm_source=chatgpt.com)
+* [Press Information Bureau, Government of India](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2291079\&lang=1\&reg=48\&utm_source=chatgpt.com)
+* [ISRO Annual Report 2025–26](https://www.isro.gov.in/media_isro/pdf/AnnualReport/Annual_Report_2025-26_EN_28042026.pdf?utm_source=chatgpt.com)
+
+***
+
+# Social Media Summary
+
+India's NavIC navigation system hasn't disappeared, and Google Maps isn't going to stop working.
+
+But India has a real GPS problem.
+
+The government has confirmed that only three satellites are currently providing NavIC Positioning, Navigation and Timing services. At least four are required for standalone positioning.
+
+That means NavIC currently can't independently tell you where you are.
+
+NVS-03 is ready for launch, while NVS-04 and NVS-05 are still in development.
+
+The bigger issue isn't whether your phone works today.
+
+It's whether India can maintain truly independent navigation infrastructure when it matters most.
+
+Read the full breakdown.
+
+***
+
+# LinkedIn Summary
+
+India's NavIC situation is an interesting lesson in infrastructure resilience.
+
+The Government of India confirmed in July 2026 that NavIC currently has only three satellites providing Positioning, Navigation and Timing services, while at least four are required for basic standalone positioning.
+
+This does not mean Google Maps has stopped working. Most modern systems use multi-constellation GNSS, including GPS, Galileo, GLONASS, BeiDou and NavIC.
+
+But the strategic problem is real.
+
+NavIC was built partly to give India an indigenous navigation capability. The current situation shows that technological independence requires more than successfully launching infrastructure.
+
+It requires redundancy.
+
+It requires replacement capacity.
+
+And it requires designing systems that can survive individual failures.
+
+NVS-03 is ready for launch, with NVS-04 and NVS-05 in advanced stages of development.
+
+The question now is not just whether India can restore NavIC.
+
+It's whether the next generation will be resilient enough that losing one satellite never removes standalone navigation capability again.
+
+***
+
+# Twitter/X Thread
+
+**1/** India has a GPS problem that most people probably haven't noticed.
+
+NavIC, India's indigenous navigation system, currently cannot provide standalone positioning.
+
+And no, that doesn't mean Google Maps is broken. 🧵
+
+**2/** The Government of India confirmed that only three satellites are currently providing NavIC Positioning, Navigation and Timing services.
+
+The minimum required for basic standalone positioning? Four.
+
+**3/** So NavIC isn't completely "offline."
+
+Its timing service still works.
+
+But India currently can't determine your position using NavIC alone.
+
+**4/** Your phone still works because it doesn't rely on just one satellite system.
+
+Modern devices combine GPS, NavIC, Galileo, GLONASS, BeiDou and others.
+
+**5/** The problem is strategic.
+
+NavIC was built so India wouldn't have to depend entirely on another country for satellite navigation.
+
+But independent infrastructure only matters if you can keep it operational.
+
+**6/** The constellation has faced ageing satellites, atomic clock failures and replacement setbacks.
+
+NVS-02 launched in 2025 but failed to reach its intended operational orbit.
+
+**7/** The good news?
+
+NVS-03 is ready for launch.
+
+NVS-04 and NVS-05 are in advanced stages.
+
+Another satellite is also planned to help rebuild the constellation.
+
+**8/** The bigger lesson is about redundancy.
+
+A critical system should never be one component away from losing its core capability.
+
+That's true for satellites.
+
+And it's true for servers, power grids, networks and almost everything engineers build.
+
+**9/** India can fix NavIC.
+
+The bigger challenge is making sure the next version is resilient enough that India never loses standalone positioning because of one satellite failure again.
+
+Full article below.
+
+***
+
+# Suggested Featured Image Prompt
+
+## Featured Image Prompt: India’s NavIC GPS Crisis
+
+Create a cinematic, realistic editorial illustration showing India from space at night with the Indian subcontinent clearly visible. Above India, show a small constellation of navigation satellites, with only three satellites glowing brightly while several faded or malfunctioning satellites appear dim in the background. Include subtle navigation grid lines, satellite signal waves and a broken location pin hovering over India to symbolise the loss of standalone positioning capability. Add a futuristic but realistic ISRO-inspired space technology aesthetic. Deep space background, detailed Earth atmosphere, dramatic lighting, high contrast, premium technology journalism style, 16:9 composition, no text, no logos, no watermark.
