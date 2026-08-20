@@ -31,7 +31,7 @@ const { items } = Astro.props;
 
 <script define:vars={{ items }}>
   const getActiveId = () => {
-    const scrollY = window.scrollY + 100;
+    const scrollY = window.scrollY + 80;
     
     if (items.length === 0) return;
     
@@ -45,7 +45,7 @@ const { items } = Astro.props;
         const elementTop = rect.top + window.scrollY;
         const distance = Math.abs(elementTop - scrollY);
         
-        if (rect.top <= 100 && distance < closestDistance) {
+        if (rect.top <= 80 && distance < closestDistance) {
           current = item.id;
           closestDistance = distance;
         }
