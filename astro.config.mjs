@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
-import sitemap from '@astrojs/sitemap';
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
 import umami from '@yeskunall/astro-umami';
 import astroLLMsGenerator from 'astro-llms-generate';
@@ -31,29 +31,29 @@ export default defineConfig({
         'https://jaainil.com/llms-full.txt',
       ],
       serialize(item) {
-        // Homepage — highest priority, frequent changes
+        // Homepage — highest priority
         if (item.url === 'https://jaainil.com/' || item.url === 'https://jaainil.com') {
-          item.changefreq = 'daily';
+          item.changefreq = ChangeFreqEnum.DAILY;
           item.priority = 1.0;
           item.lastmod = new Date().toISOString();
           return item;
         }
-        // Articles listing page
+        // Articles catalog page
         if (item.url === 'https://jaainil.com/articles' || item.url === 'https://jaainil.com/articles/') {
-          item.changefreq = 'daily';
+          item.changefreq = ChangeFreqEnum.DAILY;
           item.priority = 0.9;
           item.lastmod = new Date().toISOString();
           return item;
         }
-        // Individual article pages
+        // Individual article deep dives
         if (/jaainil\.com\/articles\/.+/.test(item.url)) {
-          item.changefreq = 'monthly';
+          item.changefreq = ChangeFreqEnum.MONTHLY;
           item.priority = 0.8;
           item.lastmod = new Date().toISOString();
           return item;
         }
-        // About and other static pages
-        item.changefreq = 'monthly';
+        // Static portfolio pages (about, legal, etc.)
+        item.changefreq = ChangeFreqEnum.MONTHLY;
         item.priority = 0.5;
         item.lastmod = new Date().toISOString();
         return item;
