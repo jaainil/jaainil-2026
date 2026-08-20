@@ -263,7 +263,7 @@ const homePageSchema = {
           <div>
             <!-- Status & Location header -->
             <div class="flex flex-wrap items-center gap-3 mb-6">
-              <span class="inline-flex items-center gap-2 px-3 py-1 text-[11px] font-mono uppercase tracking-widest border" style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-primary);">
+              <span class="inline-flex items-center gap-2 px-3 py-1 text-[11px] font-mono uppercase tracking-widest border border-zinc-200 bg-zinc-100/80 text-zinc-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 Open for Engineering Roles & Projects
               </span>
@@ -280,14 +280,14 @@ const homePageSchema = {
             <!-- Titles -->
             <div class="space-y-1.5 mb-6">
               <p class="text-lg sm:text-xl font-mono font-medium tracking-tight" style="color: var(--color-text-primary);">
-                Full-Stack Developer & DevOps Engineer <span class="text-xs font-mono px-2 py-0.5 border ml-2" style="border-color: var(--color-border); color: var(--color-text-secondary);">AI Enthusiast</span>
+                Full-Stack Developer & DevOps Engineer <span class="text-xs font-mono px-2 py-0.5 border ml-2 border-zinc-200 dark:border-zinc-700/80 bg-zinc-100/80 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300">AI Enthusiast</span>
               </p>
               <p class="text-sm sm:text-base font-mono" style="color: var(--color-text-secondary);">
                 Cloud Infrastructure, Linux Administration & Open Source Contributor
               </p>
             </div>
 
-            <!-- Summary Intro (Un-slopped) -->
+            <!-- Summary Intro -->
             <p class="text-base sm:text-lg font-sans leading-relaxed max-w-2xl mb-6" style="color: var(--color-text-secondary);">
               I build full-stack web applications and cloud infrastructure. I created and maintain Writenex CMS on npm, contribute to Dokploy open-source templates, and previously ran Shravonix (5K monthly readers). Currently working at Aexawareinfotech building client applications, Docker container workflows, and CI/CD pipelines.
             </p>
@@ -315,10 +315,7 @@ const homePageSchema = {
                     'Self-Hosting & Homelab',
                   ].map((tech) => (
                     <span
-                      class="px-2.5 py-1 text-xs font-mono border transition-colors cursor-default"
-                      style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-primary);"
-                      onmouseenter="this.style.borderColor='var(--color-text-primary)'"
-                      onmouseleave="this.style.borderColor='var(--color-border)'"
+                      class="px-2.5 py-1 text-xs font-mono border transition-all rounded-none bg-zinc-100/80 hover:bg-zinc-200/80 text-zinc-800 border-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/80 dark:text-zinc-200 dark:border-zinc-700/80 dark:hover:border-zinc-500 cursor-default"
                     >
                       {tech}
                     </span>
@@ -327,9 +324,9 @@ const homePageSchema = {
               </div>
 
               <!-- Compact Live Engineering Focus Status -->
-              <div class="p-3.5 border text-xs font-mono" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="p-4 border text-xs font-mono bg-zinc-100/70 border-zinc-200 dark:bg-zinc-900/90 dark:border-zinc-800">
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] uppercase tracking-wider text-emerald-500 font-bold flex items-center gap-1.5">
+                  <span class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     Current Focus
                   </span>
@@ -347,8 +344,7 @@ const homePageSchema = {
             <div class="flex flex-wrap items-center gap-3">
               <a
                 href="#projects"
-                class="px-6 py-3 text-xs font-mono uppercase tracking-widest font-semibold border transition-colors flex items-center gap-2"
-                style="background-color: var(--color-accent-bg); color: var(--color-accent-text); border-color: var(--color-accent-bg);"
+                class="px-6 py-3 text-xs font-mono uppercase tracking-widest font-semibold border transition-all flex items-center gap-2 bg-zinc-900 text-white border-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100 dark:hover:bg-white dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] shadow-xs"
               >
                 View Projects
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,20 +354,14 @@ const homePageSchema = {
 
               <a
                 href="#experience"
-                class="px-6 py-3 text-xs font-mono uppercase tracking-widest border transition-colors flex items-center gap-2"
-                style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-primary);"
-                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-                onmouseleave="this.style.backgroundColor='var(--color-surface)'"
+                class="px-6 py-3 text-xs font-mono uppercase tracking-widest font-medium border transition-all flex items-center gap-2 bg-white hover:bg-zinc-100 text-zinc-800 border-zinc-300 dark:bg-zinc-800/90 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700 dark:hover:border-zinc-500 shadow-xs"
               >
                 Experience
               </a>
 
               <a
                 href="/articles"
-                class="px-6 py-3 text-xs font-mono uppercase tracking-widest border transition-colors flex items-center gap-2"
-                style="border-color: var(--color-border); background-color: var(--color-surface); color: var(--color-text-secondary);"
-                onmouseenter="this.style.backgroundColor='var(--color-hover)';this.style.color='var(--color-text-primary)'"
-                onmouseleave="this.style.backgroundColor='var(--color-surface)';this.style.color='var(--color-text-secondary)'"
+                class="px-6 py-3 text-xs font-mono uppercase tracking-widest font-medium border transition-all flex items-center gap-2 bg-white hover:bg-zinc-100 text-zinc-800 border-zinc-300 dark:bg-zinc-800/90 dark:hover:bg-zinc-700 dark:text-zinc-200 dark:border-zinc-700 dark:hover:border-zinc-500 shadow-xs"
               >
                 Articles & Blog ({totalArticlesCount})
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -411,8 +401,8 @@ const homePageSchema = {
         <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-surface);">
           <div>
             <!-- Profile Photo Box -->
-            <div class="border p-4 mb-6 relative group" style="border-color: var(--color-border); background-color: var(--color-bg);">
-              <div class="aspect-square overflow-hidden border mb-3" style="border-color: var(--color-border);">
+            <div class="border p-4 mb-6 relative group bg-zinc-100/60 border-zinc-200 dark:bg-zinc-900/90 dark:border-zinc-800 shadow-xs">
+              <div class="aspect-square overflow-hidden border mb-3 border-zinc-200 dark:border-zinc-800">
                 <img
                   src="/profile.png"
                   alt="Jainil Prajapati"
@@ -423,14 +413,14 @@ const homePageSchema = {
                   decoding="async"
                 />
               </div>
-              <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
+              <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
                 <span>// ID: JAINIL_PRAJAPATI</span>
-                <span class="text-emerald-500 font-bold">ONLINE</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">ONLINE</span>
               </div>
             </div>
 
             <!-- Profile Info Key-Value Table -->
-            <div class="border divide-y text-xs font-mono" style="border-color: var(--color-border); divide-color: var(--color-border);">
+            <div class="border divide-y text-xs font-mono border-zinc-200 divide-zinc-200 dark:border-zinc-800 dark:divide-zinc-800 bg-white/60 dark:bg-zinc-900/40">
               <div class="p-3 flex justify-between">
                 <span style="color: var(--color-text-muted);">ROLE</span>
                 <span class="font-medium text-right" style="color: var(--color-text-primary);">Full Stack & DevOps</span>
@@ -441,7 +431,7 @@ const homePageSchema = {
               </div>
               <div class="p-3 flex justify-between">
                 <span style="color: var(--color-text-muted);">OPEN SOURCE</span>
-                <span class="font-medium text-right text-emerald-500 font-semibold">Dokploy (10+ PRs)</span>
+                <span class="font-medium text-right text-emerald-600 dark:text-emerald-400 font-semibold">Dokploy (10+ PRs)</span>
               </div>
               <div class="p-3 flex justify-between">
                 <span style="color: var(--color-text-muted);">NPM PACKAGE</span>
@@ -464,10 +454,7 @@ const homePageSchema = {
               href="https://github.com/jaainil"
               target="_blank"
               rel="noopener noreferrer"
-              class="p-2.5 border transition-colors flex flex-col items-center gap-1.5"
-              style="border-color: var(--color-border);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor=''"
+              class="p-2.5 border transition-all flex flex-col items-center gap-1.5 bg-zinc-100/60 hover:bg-zinc-200/80 text-zinc-700 hover:text-zinc-950 border-zinc-200 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:hover:text-white dark:border-zinc-700/80 dark:hover:border-zinc-500 shadow-xs"
             >
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -479,10 +466,7 @@ const homePageSchema = {
               href="https://www.linkedin.com/in/jaainil/"
               target="_blank"
               rel="noopener noreferrer"
-              class="p-2.5 border transition-colors flex flex-col items-center gap-1.5"
-              style="border-color: var(--color-border);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor=''"
+              class="p-2.5 border transition-all flex flex-col items-center gap-1.5 bg-zinc-100/60 hover:bg-zinc-200/80 text-zinc-700 hover:text-zinc-950 border-zinc-200 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:hover:text-white dark:border-zinc-700/80 dark:hover:border-zinc-500 shadow-xs"
             >
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
@@ -494,10 +478,7 @@ const homePageSchema = {
               href="https://www.npmjs.com/~imjp"
               target="_blank"
               rel="noopener noreferrer"
-              class="p-2.5 border transition-colors flex flex-col items-center gap-1.5"
-              style="border-color: var(--color-border);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor=''"
+              class="p-2.5 border transition-all flex flex-col items-center gap-1.5 bg-zinc-100/60 hover:bg-zinc-200/80 text-zinc-700 hover:text-zinc-950 border-zinc-200 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:hover:text-white dark:border-zinc-700/80 dark:hover:border-zinc-500 shadow-xs"
             >
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.666H4V9.999h2.666v4.001zm4 0H9.333V9.999h1.333v4.001zm10.667 0h-2.667v-4.001h-2.666v4.001h-2.667V9.999h8v4.001z"/>
@@ -511,7 +492,7 @@ const homePageSchema = {
     </section>
 
     <!-- METRICS STRIP -->
-    <section class="border-b grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border); background-color: var(--color-surface);">
+    <section class="border-b grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x border-zinc-200 divide-zinc-200 dark:border-zinc-800 dark:divide-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40">
       <div class="p-6 md:p-8">
         <p class="text-3xl sm:text-4xl font-display font-bold tracking-tight mb-1" style="color: var(--color-text-primary);">10+</p>
         <p class="text-xs font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">Merged PRs on Dokploy</p>
@@ -544,15 +525,15 @@ const homePageSchema = {
       </div>
 
       <!-- Experience Item -->
-      <div class="p-6 md:p-10" style="border-color: var(--color-border);">
-        <div class="border p-6 md:p-8" style="border-color: var(--color-border); background-color: var(--color-surface);">
-          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4 border-b pb-6 mb-6" style="border-color: var(--color-border);">
+      <div class="p-6 md:p-10">
+        <div class="border p-6 md:p-8 bg-zinc-50/70 border-zinc-200 dark:bg-zinc-900/60 dark:border-zinc-800 shadow-xs">
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6 mb-6">
             <div>
               <div class="flex items-center gap-3 mb-2">
                 <h3 class="text-xl sm:text-2xl font-display font-bold" style="color: var(--color-text-primary);">
                   Full Stack & DevOps Engineer
                 </h3>
-                <span class="px-2.5 py-0.5 text-[11px] font-mono uppercase tracking-widest border font-semibold" style="border-color: var(--color-accent-bg); background-color: var(--color-accent-bg); color: var(--color-accent-text);">
+                <span class="px-2.5 py-0.5 text-[11px] font-mono uppercase tracking-widest border font-semibold bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40">
                   Current
                 </span>
               </div>
@@ -568,10 +549,7 @@ const homePageSchema = {
               href="https://aexaware.com"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-xs font-mono uppercase tracking-widest px-4 py-2 border inline-flex items-center gap-1.5 self-start transition-colors"
-              style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+              class="text-xs font-mono uppercase tracking-widest px-4 py-2 border inline-flex items-center gap-1.5 self-start transition-all font-medium bg-white hover:bg-zinc-100 text-zinc-900 border-zinc-300 dark:bg-zinc-800/90 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700 dark:hover:border-zinc-500 shadow-xs"
             >
               aexaware.com ↗
             </a>
@@ -585,15 +563,15 @@ const homePageSchema = {
               </h4>
               <ul class="space-y-2.5 text-sm font-sans leading-relaxed" style="color: var(--color-text-secondary);">
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Managed client communication and translated requirements into production-ready web applications.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Built and shipped full-stack web applications using Next.js, Node.js, and Prisma under tight deadlines.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Handled end-to-end product delivery from schema design to deployment across multiple client projects.</span>
                 </li>
               </ul>
@@ -605,19 +583,19 @@ const homePageSchema = {
               </h4>
               <ul class="space-y-2.5 text-sm font-sans leading-relaxed" style="color: var(--color-text-secondary);">
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Built and maintained GitHub Actions CI/CD workflows to automate tests, container builds, and deployments.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Containerized applications with Docker and Docker Compose for consistent multi-environment setups.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Configured Nginx reverse proxies, SSL certificates, and firewall rules on Linux production servers.</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="font-mono text-xs mt-1" style="color: var(--color-text-muted);">▸</span>
+                  <span class="font-mono text-xs mt-1 text-emerald-500">▸</span>
                   <span>Managed database migrations, environment variables, and rollback strategies across client systems.</span>
                 </li>
               </ul>
@@ -625,10 +603,10 @@ const homePageSchema = {
           </div>
 
           <!-- Tech tags -->
-          <div class="mt-8 pt-6 border-t flex flex-wrap items-center gap-2" style="border-color: var(--color-border);">
+          <div class="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center gap-2">
             <span class="text-xs font-mono uppercase tracking-widest mr-2" style="color: var(--color-text-muted);">Tech:</span>
             {['Next.js', 'Node.js', 'Prisma ORM', 'Docker', 'Docker Compose', 'GitHub Actions', 'Nginx', 'Linux', 'PostgreSQL'].map((tag) => (
-              <span class="px-2.5 py-1 text-xs font-mono border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-secondary);">
+              <span class="px-2.5 py-1 text-xs font-mono border bg-zinc-100/80 text-zinc-800 border-zinc-200 dark:bg-zinc-800/80 dark:text-zinc-200 dark:border-zinc-700/80">
                 {tag}
               </span>
             ))}
@@ -654,12 +632,12 @@ const homePageSchema = {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0" style="border-color: var(--color-border);">
         {projects.map((p, index) => (
           <div
-            class={`p-6 sm:p-8 flex flex-col justify-between border-b ${index % 2 === 0 ? 'md:border-r' : 'md:border-r-0'} ${(index + 1) % 3 !== 0 ? 'lg:border-r' : 'lg:border-r-0'} ${index >= 3 ? 'lg:border-b-0' : ''} ${index >= 4 ? 'md:border-b-0' : ''}`}
-            style="background-color: var(--color-surface); border-color: var(--color-border);"
+            class={`p-6 sm:p-8 flex flex-col justify-between border-b ${index % 2 === 0 ? 'md:border-r' : 'md:border-r-0'} ${(index + 1) % 3 !== 0 ? 'lg:border-r' : 'lg:border-r-0'} ${index >= 3 ? 'lg:border-b-0' : ''} ${index >= 4 ? 'md:border-b-0' : ''} bg-white dark:bg-zinc-900/40 hover:dark:bg-zinc-900/70 transition-colors`}
+            style="border-color: var(--color-border);"
           >
             <div>
               <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border" style="border-color: var(--color-border); color: var(--color-text-muted); background-color: var(--color-bg);">
+                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800/80 dark:text-zinc-300 dark:border-zinc-700">
                   {p.badge}
                 </span>
                 <span class="text-[11px] font-mono" style="color: var(--color-text-muted);">{p.period}</span>
@@ -675,7 +653,7 @@ const homePageSchema = {
               <ul class="space-y-2 mb-6 text-xs font-sans leading-relaxed" style="color: var(--color-text-secondary);">
                 {p.points.map((pt: string) => (
                   <li class="flex items-start gap-1.5">
-                    <span class="font-mono text-xs mt-0.5" style="color: var(--color-text-muted);">▸</span>
+                    <span class="font-mono text-xs mt-0.5 text-emerald-500">▸</span>
                     <span>{pt}</span>
                   </li>
                 ))}
@@ -683,9 +661,9 @@ const homePageSchema = {
             </div>
 
             <div>
-              <div class="flex flex-wrap gap-1.5 mb-6 pt-4 border-t" style="border-color: var(--color-border);">
+              <div class="flex flex-wrap gap-1.5 mb-6 pt-4 border-t border-zinc-200 dark:border-zinc-800">
                 {p.tags.map((tag: string) => (
-                  <span class="text-[11px] font-mono px-2 py-0.5 border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-muted);">
+                  <span class="text-[11px] font-mono px-2 py-0.5 border bg-zinc-100/70 text-zinc-700 border-zinc-200 dark:bg-zinc-800/70 dark:text-zinc-300 dark:border-zinc-700/70">
                     {tag}
                   </span>
                 ))}
@@ -695,10 +673,7 @@ const homePageSchema = {
                 href={p.url}
                 target={p.external ? "_blank" : "_self"}
                 rel={p.external ? "noopener noreferrer" : undefined}
-                class="w-full text-center block text-xs font-mono uppercase tracking-widest py-2.5 px-4 border font-medium transition-colors"
-                style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
-                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+                class="w-full text-center block text-xs font-mono uppercase tracking-widest py-2.5 px-4 border font-medium transition-all bg-white hover:bg-zinc-100 text-zinc-900 border-zinc-300 dark:bg-zinc-800/90 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700 dark:hover:border-zinc-500 shadow-xs"
               >
                 {p.linkLabel} {p.external ? '↗' : '→'}
               </a>
@@ -725,13 +700,13 @@ const homePageSchema = {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0" style="border-color: var(--color-border);">
         {skillCategories.map((cat, index) => (
           <div
-            class={`p-6 border-b ${index % 2 === 0 ? 'sm:border-r' : 'sm:border-r-0'} ${(index + 1) % 4 !== 0 ? 'lg:border-r' : 'lg:border-r-0'} ${index >= 4 ? 'lg:border-b-0' : ''} ${index >= 6 ? 'sm:border-b-0' : ''} flex flex-col justify-between`}
-            style="border-color: var(--color-border); background-color: var(--color-surface);"
+            class={`p-6 border-b ${index % 2 === 0 ? 'sm:border-r' : 'sm:border-r-0'} ${(index + 1) % 4 !== 0 ? 'lg:border-r' : 'lg:border-r-0'} ${index >= 4 ? 'lg:border-b-0' : ''} ${index >= 6 ? 'sm:border-b-0' : ''} flex flex-col justify-between bg-white dark:bg-zinc-900/40`}
+            style="border-color: var(--color-border);"
           >
             <div>
-              <div class="flex items-center gap-2.5 mb-5 pb-3 border-b" style="border-color: var(--color-border);">
-                <div class="p-1.5 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
-                  <Icon name={cat.categoryIcon} class="w-4 h-4" style="color: var(--color-text-primary);" />
+              <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+                <div class="p-1.5 border bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100">
+                  <Icon name={cat.categoryIcon} class="w-4 h-4" />
                 </div>
                 <h3 class="text-xs font-mono font-bold uppercase tracking-wider" style="color: var(--color-text-primary);">
                   {cat.title}
@@ -741,8 +716,7 @@ const homePageSchema = {
               <div class="flex flex-wrap gap-1.5">
                 {cat.skills.map((skill) => (
                   <span
-                    class="inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-mono border transition-colors hover:border-zinc-500"
-                    style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-mono border transition-all bg-zinc-100/80 hover:bg-zinc-200/80 text-zinc-800 border-zinc-200/90 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/80 dark:text-zinc-200 dark:border-zinc-700/80 dark:hover:border-zinc-500 shadow-2xs"
                   >
                     <Icon name={skill.icon} class="w-3.5 h-3.5 shrink-0 opacity-80" />
                     <span>{skill.name}</span>
@@ -751,9 +725,9 @@ const homePageSchema = {
               </div>
             </div>
 
-            <div class="mt-5 pt-3 border-t flex items-center justify-between text-[10px] font-mono" style="border-color: var(--color-border); color: var(--color-text-muted);">
+            <div class="mt-5 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono" style="color: var(--color-text-muted);">
               <span>STATUS</span>
-              <span class="text-emerald-500 font-semibold flex items-center gap-1">
+              <span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 ACTIVE
               </span>
@@ -791,11 +765,11 @@ const homePageSchema = {
       <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border);">
         
         <!-- Dokploy Core Contribution (8 cols) -->
-        <div class="lg:col-span-8 p-6 sm:p-8 md:p-10 flex flex-col justify-between" style="background-color: var(--color-surface);">
+        <div class="lg:col-span-8 p-6 sm:p-8 md:p-10 flex flex-col justify-between bg-white dark:bg-zinc-900/50">
           <div>
             <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 text-xs font-mono font-semibold border" style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);">
+                <span class="px-2.5 py-0.5 text-xs font-mono font-semibold border bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40">
                   Core Contributor
                 </span>
                 <h3 class="text-xl font-display font-bold" style="color: var(--color-text-primary);">
@@ -811,7 +785,7 @@ const homePageSchema = {
 
             <!-- Detailed contributions list -->
             <div class="space-y-3 mb-6">
-              <div class="p-4 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="p-4 border transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80 hover:dark:border-zinc-600">
                 <h4 class="text-xs font-mono font-bold uppercase tracking-wider mb-1" style="color: var(--color-text-primary);">
                   meta.json Automation Suite & CLI
                 </h4>
@@ -820,7 +794,7 @@ const homePageSchema = {
                 </p>
               </div>
 
-              <div class="p-4 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="p-4 border transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80 hover:dark:border-zinc-600">
                 <h4 class="text-xs font-mono font-bold uppercase tracking-wider mb-1" style="color: var(--color-text-primary);">
                   GitHub Actions CI Pipeline
                 </h4>
@@ -829,7 +803,7 @@ const homePageSchema = {
                 </p>
               </div>
 
-              <div class="p-4 border" style="border-color: var(--color-border); background-color: var(--color-bg);">
+              <div class="p-4 border transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80 hover:dark:border-zinc-600">
                 <h4 class="text-xs font-mono font-bold uppercase tracking-wider mb-1" style="color: var(--color-text-primary);">
                   New Application Blueprints
                 </h4>
@@ -844,10 +818,7 @@ const homePageSchema = {
             href="https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest font-semibold px-4 py-2.5 border transition-colors self-start"
-            style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
-            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-            onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+            class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest font-semibold px-4 py-2.5 border transition-all self-start bg-white hover:bg-zinc-100 text-zinc-900 border-zinc-300 dark:bg-zinc-800/90 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700 dark:hover:border-zinc-500 shadow-xs"
           >
             Review Merged PRs on GitHub
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -857,7 +828,7 @@ const homePageSchema = {
         </div>
 
         <!-- Additional Repositories & npm (4 cols) -->
-        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-surface);">
+        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between bg-zinc-50/50 dark:bg-zinc-900/60">
           <div>
             <h4 class="text-xs font-mono font-bold uppercase tracking-widest mb-4" style="color: var(--color-text-muted);">
               // Published Packages & Repos
@@ -868,10 +839,7 @@ const homePageSchema = {
                 href="https://writenex-writenex.vercel.app/astro"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="block p-4 border transition-colors group"
-                style="border-color: var(--color-border); background-color: var(--color-bg);"
-                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+                class="block p-4 border transition-all group bg-zinc-50/70 hover:bg-zinc-100/80 border-zinc-200 dark:bg-zinc-800/60 dark:hover:bg-zinc-800/90 dark:border-zinc-700/80 dark:hover:border-zinc-600 shadow-xs"
               >
                 <div class="flex items-center justify-between mb-1">
                   <span class="text-xs font-mono font-bold text-red-500">npm package</span>
@@ -889,10 +857,7 @@ const homePageSchema = {
                 href="https://github.com/jaainil"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="block p-4 border transition-colors group"
-                style="border-color: var(--color-border); background-color: var(--color-bg);"
-                onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-                onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+                class="block p-4 border transition-all group bg-zinc-50/70 hover:bg-zinc-100/80 border-zinc-200 dark:bg-zinc-800/60 dark:hover:bg-zinc-800/90 dark:border-zinc-700/80 dark:hover:border-zinc-600 shadow-xs"
               >
                 <div class="flex items-center justify-between mb-1">
                   <span class="text-xs font-mono font-bold text-emerald-500">github repository</span>
@@ -908,7 +873,7 @@ const homePageSchema = {
             </div>
           </div>
 
-          <div class="pt-6 border-t mt-6 text-xs font-mono" style="border-color: var(--color-border); color: var(--color-text-muted);">
+          <div class="pt-6 border-t mt-6 text-xs font-mono border-zinc-200 dark:border-zinc-800" style="color: var(--color-text-muted);">
             <p>GitHub handle: <span class="font-bold" style="color: var(--color-text-primary);">@jaainil</span></p>
             <p>npm handle: <span class="font-bold" style="color: var(--color-text-primary);">~imjp</span></p>
           </div>
@@ -943,10 +908,10 @@ const homePageSchema = {
           </div>
 
           <div class="space-y-6">
-            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="border p-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
               <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
                 <span>2021 - Present</span>
-                <span class="text-emerald-500 font-bold">CGPA: 7.03</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">CGPA: 7.03</span>
               </div>
               <h4 class="text-sm font-display font-bold mb-1" style="color: var(--color-text-primary);">
                 B.E. Information Technology
@@ -956,10 +921,10 @@ const homePageSchema = {
               </p>
             </div>
 
-            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="border p-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
               <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
                 <span>2020 - 2021</span>
-                <span class="text-emerald-500 font-bold">Score: 75%</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">Score: 75%</span>
               </div>
               <h4 class="text-sm font-display font-bold mb-1" style="color: var(--color-text-primary);">
                 Higher Secondary (12th Science)
@@ -981,10 +946,10 @@ const homePageSchema = {
           </div>
 
           <div class="space-y-4">
-            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="border p-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
               <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
                 <span>SVIT • 2024</span>
-                <span class="text-amber-500 font-mono text-[10px] uppercase font-bold">Finalist</span>
+                <span class="text-amber-700 dark:text-amber-400 font-mono text-[10px] uppercase font-bold px-2 py-0.5 border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 dark:border-amber-500/40">Finalist</span>
               </div>
               <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
                 MECIA Hacks Participant & Finalist
@@ -994,10 +959,10 @@ const homePageSchema = {
               </p>
             </div>
 
-            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="border p-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
               <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
                 <span>Hack2skill</span>
-                <span class="text-amber-500 font-mono text-[10px] uppercase font-bold">AR Hackathon</span>
+                <span class="text-amber-700 dark:text-amber-400 font-mono text-[10px] uppercase font-bold px-2 py-0.5 border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 dark:border-amber-500/40">AR Hackathon</span>
               </div>
               <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
                 Snap AR Lens Creation Hackathon
@@ -1007,10 +972,10 @@ const homePageSchema = {
               </p>
             </div>
 
-            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="border p-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
               <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
                 <span>Web3Dev</span>
-                <span class="text-emerald-500 font-mono text-[10px] uppercase font-bold">Bootcamp</span>
+                <span class="text-emerald-700 dark:text-emerald-400 font-mono text-[10px] uppercase font-bold px-2 py-0.5 border border-emerald-500/30 bg-emerald-500/10 dark:bg-emerald-500/20 dark:border-emerald-500/40">Bootcamp</span>
               </div>
               <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
                 Web Development Bootcamp
@@ -1020,10 +985,10 @@ const homePageSchema = {
               </p>
             </div>
 
-            <div class="border p-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+            <div class="border p-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
               <div class="flex items-center justify-between text-xs font-mono mb-1" style="color: var(--color-text-muted);">
                 <span>freeCodeCamp</span>
-                <span class="text-emerald-500 font-mono text-[10px] uppercase font-bold">Certified</span>
+                <span class="text-emerald-700 dark:text-emerald-400 font-mono text-[10px] uppercase font-bold px-2 py-0.5 border border-emerald-500/30 bg-emerald-500/10 dark:bg-emerald-500/20 dark:border-emerald-500/40">Certified</span>
               </div>
               <h4 class="text-xs font-mono font-bold" style="color: var(--color-text-primary);">
                 Responsive Web Design
@@ -1044,9 +1009,9 @@ const homePageSchema = {
             </h3>
           </div>
 
-          <div class="border p-5 mb-4" style="border-color: var(--color-border); background-color: var(--color-bg);">
+          <div class="border p-5 mb-4 transition-colors bg-zinc-50/70 border-zinc-200 dark:bg-zinc-800/60 dark:border-zinc-700/80">
             <div class="flex items-center justify-between text-xs font-mono mb-2">
-              <span class="text-emerald-500 font-bold">r/AI_India</span>
+              <span class="text-emerald-600 dark:text-emerald-400 font-bold">r/AI_India</span>
               <span style="color: var(--color-text-muted);">Past Moderator</span>
             </div>
             <h4 class="text-base font-display font-bold mb-2" style="color: var(--color-text-primary);">
@@ -1066,13 +1031,12 @@ const homePageSchema = {
               </li>
             </ul>
 
-            <div class="mt-4 pt-4 border-t" style="border-color: var(--color-border);">
+            <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
               <a
                 href="https://www.reddit.com/r/AI_India/"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-xs font-mono uppercase tracking-widest hover:underline flex items-center gap-1.5"
-                style="color: var(--color-text-primary);"
+                class="text-xs font-mono uppercase tracking-widest hover:underline flex items-center gap-1.5 text-zinc-900 dark:text-zinc-100"
               >
                 Visit r/AI_India ↗
               </a>
@@ -1110,14 +1074,11 @@ const homePageSchema = {
         {latestArticles.map((article: Article) => (
           <a
             href={`/articles/${article.id}`}
-            class="p-6 sm:p-8 flex flex-col justify-between transition-colors group"
-            style="background-color: var(--color-surface);"
-            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-            onmouseleave="this.style.backgroundColor='var(--color-surface)'"
+            class="p-6 sm:p-8 flex flex-col justify-between transition-all group bg-white hover:bg-zinc-50/80 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/80"
           >
             <div>
               <div class="flex items-center justify-between gap-2 mb-4">
-                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border" style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-bg);">
+                <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 border bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800/80 dark:text-zinc-300 dark:border-zinc-700">
                   {article.category}
                 </span>
                 <span class="text-xs font-mono" style="color: var(--color-text-muted);">
@@ -1126,7 +1087,7 @@ const homePageSchema = {
               </div>
 
               {article.imageUrl && (
-                <div class="aspect-video overflow-hidden border mb-4" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
+                <div class="aspect-video overflow-hidden border mb-4 border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
                   <Image
                     src={article.imageUrl}
                     alt={article.title}
@@ -1148,7 +1109,7 @@ const homePageSchema = {
               </p>
             </div>
 
-            <div class="flex items-center justify-between text-xs font-mono pt-4 border-t" style="border-color: var(--color-border); color: var(--color-text-muted);">
+            <div class="flex items-center justify-between text-xs font-mono pt-4 border-t border-zinc-200 dark:border-zinc-800" style="color: var(--color-text-muted);">
               <span>{article.readingTime || '5 min read'}</span>
               <span class="group-hover:translate-x-1 transition-transform" style="color: var(--color-text-primary);">Read Archive →</span>
             </div>
@@ -1162,7 +1123,7 @@ const homePageSchema = {
       <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x" style="border-color: var(--color-border); divide-color: var(--color-border);">
         
         <!-- Left Contact CTA (8 cols) -->
-        <div class="lg:col-span-8 p-6 sm:p-8 md:p-12 flex flex-col justify-between" style="background-color: var(--color-surface);">
+        <div class="lg:col-span-8 p-6 sm:p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-zinc-900/50">
           <div>
             <div class="flex items-center gap-2 mb-4">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -1178,11 +1139,10 @@ const homePageSchema = {
             </p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-4 pt-6 border-t" style="border-color: var(--color-border);">
+          <div class="flex flex-wrap items-center gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
             <a
               href="mailto:jainilprajapati9@gmail.com"
-              class="px-6 py-3.5 text-xs font-mono uppercase tracking-widest font-semibold border transition-colors flex items-center gap-2"
-              style="background-color: var(--color-accent-bg); color: var(--color-accent-text); border-color: var(--color-accent-bg);"
+              class="px-6 py-3.5 text-xs font-mono uppercase tracking-widest font-semibold border transition-all flex items-center gap-2 bg-zinc-900 text-white border-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100 dark:hover:bg-white dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] shadow-xs"
             >
               Send an Email
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1194,10 +1154,7 @@ const homePageSchema = {
               href="https://www.linkedin.com/in/jaainil/"
               target="_blank"
               rel="noopener noreferrer"
-              class="px-6 py-3.5 text-xs font-mono uppercase tracking-widest border transition-colors flex items-center gap-2"
-              style="border-color: var(--color-border); background-color: var(--color-bg); color: var(--color-text-primary);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor='var(--color-bg)'"
+              class="px-6 py-3.5 text-xs font-mono uppercase tracking-widest font-medium border transition-all flex items-center gap-2 bg-white hover:bg-zinc-100 text-zinc-900 border-zinc-300 dark:bg-zinc-800/90 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700 dark:hover:border-zinc-500 shadow-xs"
             >
               Connect on LinkedIn
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1208,7 +1165,7 @@ const homePageSchema = {
         </div>
 
         <!-- Right Quick Info Box (4 cols) -->
-        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between" style="background-color: var(--color-bg);">
+        <div class="lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between bg-zinc-50/50 dark:bg-zinc-900/30">
           <div class="space-y-6">
             <div>
               <h3 class="text-xs font-mono font-bold uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
@@ -1227,7 +1184,7 @@ const homePageSchema = {
               </div>
             </div>
 
-            <div class="pt-6 border-t" style="border-color: var(--color-border);">
+            <div class="pt-6 border-t border-zinc-200 dark:border-zinc-800">
               <h3 class="text-xs font-mono font-bold uppercase tracking-widest mb-3" style="color: var(--color-text-muted);">
                 // Online Profiles
               </h3>
@@ -1260,7 +1217,7 @@ const homePageSchema = {
             </div>
           </div>
 
-          <div class="pt-6 border-t mt-6 text-[11px] font-mono uppercase tracking-widest" style="border-color: var(--color-border); color: var(--color-text-muted);">
+          <div class="pt-6 border-t mt-6 text-[11px] font-mono uppercase tracking-widest border-zinc-200 dark:border-zinc-800" style="color: var(--color-text-muted);">
             Available for remote and on-site opportunities.
           </div>
         </div>
