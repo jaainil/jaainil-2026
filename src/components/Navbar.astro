@@ -22,20 +22,23 @@ const links = [
         <span class="font-extrabold text-lg tracking-tight" style="color: var(--ink);">Jainil Prajapati</span>
       </a>
 
-      <nav class="hidden md:flex items-center gap-2" aria-label="Main">
-        {links.map((l) => (
-          <a
-            href={l.href}
-            class="px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors hover:-translate-y-0.5"
-            style="color: var(--ink); border: 2px solid var(--keyline); background: var(--paper); box-shadow: 0 2px 0 var(--keyline);"
-          >
-            {l.label}
-          </a>
-        ))}
+      <div class="flex items-center gap-2">
+        <nav class="hidden md:flex items-center gap-2" aria-label="Main">
+          {links.map((l) => (
+            <a
+              href={l.href}
+              class="px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors hover:-translate-y-0.5"
+              style="color: var(--ink); border: 2px solid var(--keyline); background: var(--paper); box-shadow: 0 2px 0 var(--keyline);"
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
         <button
           id="theme-toggle"
           aria-label="Toggle dark mode"
-          class="grid place-items-center w-10 h-10 ml-1 rounded-lg cursor-pointer transition-colors"
+          class="grid place-items-center w-10 h-10 rounded-lg cursor-pointer transition-colors"
           style="border: 2px solid var(--keyline); background: var(--marker); box-shadow: 0 2px 0 var(--keyline); color: #10151b;"
         >
           <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
@@ -45,6 +48,7 @@ const links = [
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
           </svg>
         </button>
+
         <button
           id="mobile-menu-btn"
           aria-label="Toggle menu"
@@ -59,21 +63,7 @@ const links = [
             <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-      </nav>
-
-      <button
-        id="theme-toggle-mobile"
-        aria-label="Toggle dark mode"
-        class="md:hidden grid place-items-center w-10 h-10 self-center rounded-lg cursor-pointer"
-        style="border: 2px solid var(--keyline); background: var(--marker); box-shadow: 0 2px 0 var(--keyline); color: #10151b;"
-      >
-        <svg class="theme-icon-sun w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" d="M12 4v2m0 12v2m8-8h-2M6 12H4m12.24-5.24l-1.42 1.42M9.18 14.82l-1.42 1.42m8.48 0l-1.42-1.42M9.18 9.18L7.76 7.76M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" />
-        </svg>
-        <svg class="theme-icon-moon w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-        </svg>
-      </button>
+      </div>
     </div>
   </div>
 
@@ -95,7 +85,7 @@ const links = [
 <script>
   function initThemeToggle() {
     const html = document.documentElement;
-    const toggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+    const toggles = document.querySelectorAll('#theme-toggle');
 
     function updateIcons() {
       const isDark = html.classList.contains('dark');
