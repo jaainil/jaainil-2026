@@ -25,7 +25,7 @@ export default function BackToTop() {
   return (
     <button
       onClick={scrollToTop}
-      className="fixed right-4 bottom-24 md:right-6 md:bottom-6 z-40 w-12 h-12 flex items-center justify-center transition-transform hover:-translate-y-1 cursor-pointer"
+      className="fixed right-4 bottom-36 md:right-6 md:bottom-6 z-30 w-12 h-12 flex items-center justify-center transition-transform hover:-translate-y-1 cursor-pointer"
       style={{
         backgroundColor: 'var(--marker)',
         color: '#10151b',

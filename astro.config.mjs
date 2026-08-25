@@ -3,6 +3,7 @@ import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 
 import aeo from 'astro-aeo';
 import umami from '@yeskunall/astro-umami';
@@ -115,4 +116,5 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  adapter: vercel(),
 });

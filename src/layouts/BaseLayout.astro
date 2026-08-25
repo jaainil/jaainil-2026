@@ -3,6 +3,7 @@ import '@fontsource-variable/rubik';
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import JainilsRAGChat from '../components/rag/JainilsRAGChat';
 import { SEO } from 'astro-seo';
 import { Schema } from 'astro-seo-schema';
 import '../styles/global.css';
@@ -61,6 +62,7 @@ const personSchema = {
   sameAs: [
     'https://www.linkedin.com/in/jaainil/',
     'https://github.com/jaainil',
+    'https://www.instagram.com/jaainil/',
     'https://www.npmjs.com/~imjp',
     'https://www.reddit.com/user/enough_jainil/',
   ],
@@ -242,6 +244,7 @@ const articleSchema = articleData ? {
             <slot />
           </main>
           <Footer />
+          <JainilsRAGChat client:load />
         </div>
     </div>
     <script is:inline>

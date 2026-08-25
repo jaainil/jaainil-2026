@@ -1,17 +1,14 @@
-# ⚡ Jainil Prajapati — Portfolio & Shravonix Tech Platform
+# 🧠 Jainil's RAG — Architecture, Robustness & Evaluation Guide
 
-> **Live Website:** [jaainil.com](https://jaainil.com) / [shravonix.com](https://shravonix.com)  
-> **Author:** Jainil Prajapati (Full-Stack & DevOps Engineer, Creator of [Writenex CMS](https://github.com/imjp9/writenex-astro), Contributor to [Dokploy/templates](https://github.com/Dokploy/templates))
+Technical documentation for **Jainil's RAG**, a multi-tiered Retrieval-Augmented Generation system for **[jaainil.com](https://jaainil.com)** and **Shravonix**.
 
----
+> **Verified 2026-08-25.** The performance numbers below come from a live `npm run rag:eval` run against the production VPS database after the fix round (intent word-boundary matching, `models.generateContent` LLM calls, citation regex for grouped sources, about-page indexing from built HTML, reranker timeout 4500ms). Earlier documented numbers did not reproduce and were replaced.
 
-## 🌟 Overview
-
-**Shravonix** is a high-performance personal engineering blog and portfolio platform built with **Astro 6**, **React 19**, and **Tailwind CSS 4**, featuring **Jainil's RAG** — a production-grade, multi-tiered Retrieval-Augmented Generation AI system running on PostgreSQL (`pgvector`), Dragonfly Redis, Google Gemini Interactions API, and OpenRouter.
+Welcome to the comprehensive technical documentation for **Jainil's RAG**, a production-grade, multi-tiered Retrieval-Augmented Generation system designed for **[jaainil.com](https://jaainil.com)** and **Shravonix**.
 
 ---
 
-## 🧠 Jainil's RAG System Architecture
+## 🏛️ 1. Complete System Architecture Specification
 
 ```text
                                      USER QUESTION
@@ -122,22 +119,62 @@
 
 ---
 
-## 🛡️ Production Robustness Features
+## 🛡️ 2. Production Robustness & Resiliency Specification
 
-1. **Multi-Feature Confidence Estimator (`src/lib/rag/confidence.ts`)**:
-   - Evaluates vector cosine score, score margin ($\Delta$), PostgreSQL FTS rank, vector/FTS agreement, fused RRF score, and intent matching.
-2. **Conservative Early Refusal Gate**:
-   - Out-of-domain queries (e.g., cookie recipes, world trivia, plumbing) are rejected in **~60–90ms** spending **0 LLM tokens**.
-3. **Singleflight Request Coalescing (`src/lib/rag/cache.ts`)**:
-   - Tokenized distributed mutex locks (`rag:lock:<hash>`) with atomic Lua releases prevent redundant concurrent generation calls during cache misses.
-4. **Half-Open Circuit Breakers (`src/lib/rag/circuit.ts`)**:
-   - Independent circuit breakers for reranking and primary LLM with 1-request probe gating to isolate provider outages.
-5. **Citation Integrity & Response Quality Gate (`src/lib/rag/chat.ts`)**:
-   - Validates that every citation maps directly to retrieved knowledge sources and strips unmapped tags before persisting answers to cache.
+### A. Safe Tokenized Singleflight Mutex (`src/lib/rag/cache.ts`)
+* Uses atomic ownership token check (`SET rag:lock:<hash> <token> EX 15 NX`).
+* Atomic release via Lua script:
+  ```lua
+  if redis.call("get", KEYS[1]) == ARGV[1] then
+    return redis.call("del", KEYS[1])
+  else
+    return 0
+  end
+  ```
+* Concurrent requests poll the Answer Cache every 150ms up to 3.0s. If the answer appears, it returns immediately; if still missing after 3.0s, it attempts to re-acquire the lock before executing.
+
+### B. Circuit Breakers with Half-Open State Probing (`src/lib/rag/circuit.ts`)
+* **State Transition Logic**:
+  - `CLOSED`: Normal operation.
+  - `OPEN`: Triggered after 3 consecutive failures (Cooldown: 45s for reranker, 30s for primary LLM).
+  - `HALF_OPEN`: Allows **exactly 1 probe request** through. If probe succeeds $\rightarrow$ resets to `CLOSED`. If probe fails $\rightarrow$ trips back to `OPEN`.
+
+### C. Citation Integrity & Response Quality Gate (`src/lib/rag/chat.ts`)
+* **Integrity Checks**:
+  1. Validates that every cited `[SOURCE: N]` tag maps to an actual candidate document.
+  2. Formats citations into verified markdown hyperlinks `[Title (Section)](URL)`.
+  3. Strips unmapped/dangling source tags.
+  4. Response is validated against empty, partial, or fallback-error strings before Tier 1 caching.
 
 ---
 
-## 📊 Benchmark Evaluation Report (`npm run rag:eval`)
+## 💻 3. CLI Commands Reference
+
+All commands are configured in [`package.json`](file:///home/jainil/Downloads/jaainil-2026/package.json):
+
+```bash
+# 1. Automated Evaluation Benchmark (Regression Suite)
+npm run rag:eval
+
+# 2. Interactive Terminal Chat (Continuous REPL with live streaming)
+npm run rag:chat
+
+# 3. Single Question Q&A
+npm run rag:chat "What open source projects has Jainil contributed to?"
+
+# 4. Raw Hybrid Search Inspection
+npm run rag:search "Dokploy templates"
+
+# 5. Check Live VPS Database & Cache Health
+npm run rag:stats
+
+# 6. Incremental Knowledge Base Ingestion
+npm run rag:index
+```
+
+---
+
+## 🧪 4. Evaluation Benchmark Report (`npm run rag:eval`)
 
 ```text
 ──────────────────────────────────────────────────────
@@ -171,123 +208,14 @@ Deep-Path P50:          2954ms
 Overall P50:            290ms
 Overall Average:        772ms
 Overall P95:            3092ms
+
+📂 CATEGORY PERFORMANCE
+- profile     : 100% (3/3)
+- projects    : 100% (3/3)
+- experience  : 100% (1/1)
+- skills      : 100% (2/2)
+- article     : 90% (9/10)
+- negative    : 100% (5/5)
 ──────────────────────────────────────────────────────
 🎉 EVALUATION PASSED: All regression quality gates met!
 ```
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Frontend & SSG** | Astro 6, React 19, Tailwind CSS 4, Lucide Icons |
-| **Database & Search** | PostgreSQL 18, `pgvector` (1536-dim vector HNSW index), English tsvector GIN index |
-| **Caching & Locking** | Dragonfly (Redis-compatible multi-threaded cache on VPS) |
-| **Embedding Model** | `text-embedding-3-small` (1536-dimension vectors) |
-| **Generation Model** | Google Gemini 3.5 Flash Lite (via `@google/genai` Interactions API) |
-| **Fallback & Rerank** | OpenRouter SDK (`nvidia/nemotron-3-super-120b-a12b:free`, `gemini-3.5-flash`) |
-| **SEO & AEO Engine** | `astro-seo`, XML Sitemaps, `llms.txt`, JSON-LD schema, OpenGraph |
-
----
-
-## 💻 CLI Commands & Scripts
-
-```bash
-# 1. Start Astro Development Server
-npm run dev
-
-# 2. Build Static Site for Production
-npm run build
-
-# 3. Run Automated RAG Evaluation Benchmark
-npm run rag:eval
-
-# 4. Interactive Terminal AI Chat (Continuous REPL with live streaming)
-npm run rag:chat
-
-# 5. Ask Single Question via CLI
-npm run rag:chat "What did Jainil contribute to Dokploy?"
-
-# 6. Raw Hybrid Search Inspection (pgvector + FTS + RRF)
-npm run rag:search "Writenex Astro CMS"
-
-# 7. Check VPS Database & Cache Health Stats
-npm run rag:stats
-
-# 8. Incremental Knowledge Base Ingestion
-npm run rag:index
-```
-
----
-
-## ⚙️ Environment Configuration
-
-Create a `.env` file in the root directory:
-
-```env
-# Google Gemini API
-GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.5-flash-lite
-
-# OpenRouter API
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-EMBEDDING_PROVIDER=openrouter
-EMBEDDING_MODEL=text-embedding-3-small
-EMBEDDING_DIMENSION=1536
-RERANK_MODEL=nvidia/nemotron-3-super-120b-a12b:free
-
-# Database & Cache (PostgreSQL + Dragonfly on VPS)
-DATABASE_URL=postgres://postgres:password@your-vps-ip:4321/postgres
-DRAGONFLY_URL=redis://:password@your-vps-ip:4322/0
-
-# Knowledge Base Version
-KB_VERSION=20260825_1
-
-# Analytics
-UMAMI_WEBSITE_ID=your_umami_id_here
-```
-
----
-
-## 📁 Project Structure
-
-```
-├── public/                 # Static assets, fonts, resume PDF & MD
-├── scripts/
-│   └── rag/                # Evaluation suite, CLI chat, indexing runner
-├── src/
-│   ├── components/         # Astro & React UI components (Search modal, TOC, etc.)
-│   ├── content/
-│   │   └── articles/       # MDX technical articles
-│   ├── layouts/            # Page layouts & metadata wrappers
-│   ├── lib/
-│   │   └── rag/            # Complete RAG Pipeline Modules
-│   │       ├── cache.ts    # Dragonfly multi-tier cache & singleflight mutex
-│   │       ├── circuit.ts  # Half-Open Circuit Breakers
-│   │       ├── chunk.ts    # Semantic & hierarchical markdown chunker
-│   │       ├── cleaner.ts  # MDX frontmatter & JSX cleaner
-│   │       ├── clients.ts  # Unified Google GenAI & OpenRouter SDK clients
-│   │       ├── confidence.ts# Multi-signal confidence estimator
-│   │       ├── db.ts       # PostgreSQL + pgvector schema & queries
-│   │       ├── embeddings.ts# Vector generator & embedding cache
-│   │       ├── ingest.ts   # Incremental content hasher & indexer
-│   │       ├── intent.ts   # Zero-latency query intent classifier
-│   │       ├── rerank.ts   # LLM-assisted candidate reranker
-│   │       ├── search.ts   # Parallel hybrid search (pgvector HNSW + FTS + RRF)
-│   │       ├── chat.ts     # Generation, fallback LLMs & quality gate
-│   │       └── types.ts    # TypeScript types & interfaces
-│   ├── pages/              # Astro routes (/articles, /about, /rss.xml)
-│   └── styles/             # Tailwind CSS & global styling
-├── tests/
-│   └── rag/
-│       └── eval.json       # 24-question benchmark evaluation dataset
-├── RAG.md                  # Comprehensive Technical Architecture Guide
-└── package.json            # Scripts & project dependencies
-```
-
----
-
-## 📄 License
-
-MIT License © [Jainil Prajapati](https://jaainil.com)

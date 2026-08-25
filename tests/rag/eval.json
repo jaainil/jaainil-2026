@@ -1,0 +1,194 @@
+[
+  {
+    "id": "profile_01",
+    "question": "Who is Jainil Prajapati?",
+    "category": "profile",
+    "expected_sources": ["/about", "/resume/Jainil.pdf"],
+    "expected_keywords": ["Full-Stack", "DevOps", "Aexaware"],
+    "should_refuse": false
+  },
+  {
+    "id": "profile_02",
+    "question": "Where is Jainil located and what is his educational background?",
+    "category": "profile",
+    "expected_sources": ["/about", "/resume/Jainil.pdf"],
+    "expected_keywords": ["Vadodara", "SVIT", "Gujarat"],
+    "should_refuse": false
+  },
+  {
+    "id": "profile_03",
+    "question": "How can I contact Jainil or download his resume?",
+    "category": "profile",
+    "expected_sources": ["/resume/Jainil.pdf", "/about"],
+    "expected_keywords": ["jainilprajapati9@gmail.com", "Resume"],
+    "should_refuse": false
+  },
+  {
+    "id": "projects_01",
+    "question": "What is Writenex CMS?",
+    "category": "projects",
+    "expected_sources": ["/resume/Jainil.pdf", "/about"],
+    "expected_keywords": ["Writenex", "Astro", "@imjp/writenex-astro"],
+    "should_refuse": false
+  },
+  {
+    "id": "projects_02",
+    "question": "What did Jainil contribute to Dokploy open source templates?",
+    "category": "projects",
+    "expected_sources": ["/resume/Jainil.pdf"],
+    "expected_keywords": ["Dokploy", "PR", "meta.json", "templates"],
+    "should_refuse": false
+  },
+  {
+    "id": "projects_03",
+    "question": "Tell me about Blog Maker and Shravonix.",
+    "category": "projects",
+    "expected_sources": ["/resume/Jainil.pdf", "/about"],
+    "expected_keywords": ["Blog Maker", "Astro", "Tailwind"],
+    "should_refuse": false
+  },
+  {
+    "id": "experience_01",
+    "question": "Where does Jainil work and what are his daily responsibilities?",
+    "category": "experience",
+    "expected_sources": ["/resume/Jainil.pdf", "/about"],
+    "expected_keywords": ["Aexaware Infotech", "Full-Stack", "DevOps"],
+    "should_refuse": false
+  },
+  {
+    "id": "skills_01",
+    "question": "What tools and technologies does Jainil use for DevOps and Infrastructure?",
+    "category": "skills",
+    "expected_sources": ["/about", "/resume/Jainil.pdf"],
+    "expected_keywords": ["Docker", "Linux", "Proxmox", "CI/CD"],
+    "should_refuse": false
+  },
+  {
+    "id": "skills_02",
+    "question": "What frontend and backend tech stack does Jainil specialize in?",
+    "category": "skills",
+    "expected_sources": ["/resume/Jainil.pdf", "/about"],
+    "expected_keywords": ["React", "TypeScript", "Node.js", "PostgreSQL"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_01",
+    "question": "What leaked in Claude Code and what is Kairos Mode?",
+    "category": "article",
+    "expected_sources": ["/articles/claude-code-source-leak-what-390k-lines-expose-about-ais-secret-sauce"],
+    "expected_keywords": ["390K", "source map", "Kairos"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_02",
+    "question": "Why can't India's NavIC GPS navigate on its own currently?",
+    "category": "article",
+    "expected_sources": ["/articles/indias-navic-gps-problem-explained-why-it-cant-currently-navigate-on-its-own"],
+    "expected_keywords": ["NavIC", "atomic", "satellite", "clock"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_03",
+    "question": "How does JioHotstar manage feature flags at high scale?",
+    "category": "article",
+    "expected_sources": ["/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale"],
+    "expected_keywords": ["feature flag", "scale", "Jio"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_04",
+    "question": "Why are big tech companies moving AI compute infrastructure to India?",
+    "category": "article",
+    "expected_sources": ["/articles/the-geopolitics-of-compute-why-big-tech-is-moving-the-ai-stack-to-india"],
+    "expected_keywords": ["India", "compute", "datacenter", "energy"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_05",
+    "question": "What is the bitter truth about India's E20 ethanol blending revolution?",
+    "category": "article",
+    "expected_sources": ["/articles/the-bitter-truth-behind-indias-ethanol-revolution-what-e20-is-secretly-costing-you"],
+    "expected_keywords": ["ethanol", "E20", "fuel", "engine"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_06",
+    "question": "What is OpenClaw and what are its security implications?",
+    "category": "article",
+    "expected_sources": ["/articles/open-claw-the-linux-of-ai-agents-or-a-security-nightmare"],
+    "expected_keywords": ["OpenClaw", "agent", "security"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_07",
+    "question": "What is happening with Rust in the Linux Kernel one year later?",
+    "category": "article",
+    "expected_sources": ["/articles/rust-in-linux-kernel"],
+    "expected_keywords": ["Rust", "Linux", "kernel"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_08",
+    "question": "Why did Qwen become one of the most downloaded AI models?",
+    "category": "article",
+    "expected_sources": ["/articles/qwen-just-became-the-most-downloaded-ai-model-heres-why-nobodys-talking-about-it"],
+    "expected_keywords": ["Qwen", "Alibaba", "open source"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_09",
+    "question": "What is VoidZero and npmx building together for Vite?",
+    "category": "article",
+    "expected_sources": ["/articles/web-frameworks-benchmark"],
+    "expected_keywords": ["VoidZero", "npmx", "Vite"],
+    "should_refuse": false
+  },
+  {
+    "id": "article_10",
+    "question": "Why do Indian roads crumble during every monsoon season?",
+    "category": "article",
+    "expected_sources": ["/articles/why-do-indian-bitumen-roads-break-so-quickly-the-engineering-truth"],
+    "expected_keywords": ["roads", "monsoon", "drainage", "bitumen"],
+    "should_refuse": false
+  },
+  {
+    "id": "negative_01",
+    "question": "How do I bake chocolate chip cookies at home?",
+    "category": "negative",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "negative_02",
+    "question": "What is the capital of France and its current population?",
+    "category": "negative",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "negative_03",
+    "question": "Can you give me a recipe for authentic Italian pizza dough?",
+    "category": "negative",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "negative_04",
+    "question": "Who won the FIFA World Cup football tournament in 1998?",
+    "category": "negative",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "negative_05",
+    "question": "How do I fix a dripping water faucet in my kitchen bathroom?",
+    "category": "negative",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  }
+]
