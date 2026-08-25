@@ -243,26 +243,26 @@ Citation & Grounding Rules:
     if (!rawAnswer) {
       try {
         const fallbackRes = await googleGenAI.models.generateContent({
-          model: 'gemini-flash-latest',
+          model: GEMINI_FALLBACK_MODEL,
           contents: inputPrompt,
           config: { temperature: 0.1 },
         });
         if (fallbackRes.text) {
           rawAnswer = fallbackRes.text.trim();
-          usedModel = 'google/gemini-flash-latest';
+          usedModel = `google/${GEMINI_FALLBACK_MODEL}`;
         }
       } catch {
         try {
-          const chat = await openrouter.chat.send({
+          const chat: any = await openrouter.chat.send({
             chatRequest: {
-              model: 'nvidia/nemotron-3-super-120b-a12b:free',
+              model: OPENROUTER_FALLBACK_MODEL,
               messages: [{ role: 'user', content: inputPrompt }],
               temperature: 0.1,
             },
           });
           if (chat.choices?.[0]?.message?.content) {
             rawAnswer = chat.choices[0].message.content.trim();
-            usedModel = 'nvidia/nemotron-3-super-120b-a12b:free';
+            usedModel = OPENROUTER_FALLBACK_MODEL;
           }
         } catch {}
       }

@@ -31,14 +31,14 @@ export async function embedText(
 
   let attempts = 0;
   while (attempts < 5) {
-    attempts++;
-    try {
-      const res = await openrouter.embeddings.generate({
-        requestBody: {
-          model: EMBEDDING_MODEL,
-          input: cleanText,
-        },
-      });
+      attempts++;
+      try {
+        const res: any = await openrouter.embeddings.generate({
+          requestBody: {
+            model: EMBEDDING_MODEL,
+            input: cleanText,
+          },
+        });
 
       const vector = res.data?.[0]?.embedding;
       if (!vector || vector.length !== EMBEDDING_DIMENSION) {
@@ -81,7 +81,7 @@ export async function embedBatch(
     while (attempts < 4 && !batchSucceeded) {
       attempts++;
       try {
-        const res = await openrouter.embeddings.generate({
+        const res: any = await openrouter.embeddings.generate({
           requestBody: {
             model: EMBEDDING_MODEL,
             input: slice,
@@ -89,7 +89,7 @@ export async function embedBatch(
         });
 
         if (res.data && res.data.length === slice.length) {
-          batchValues = res.data.map((d) => d.embedding);
+          batchValues = res.data.map((d: any) => d.embedding);
           batchSucceeded = true;
         }
       } catch {

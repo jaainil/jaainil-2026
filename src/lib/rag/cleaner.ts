@@ -61,7 +61,8 @@ export function extractFrontmatterAndBody(rawSource: string): { frontmatter: Rec
         } else {
           // Clean quotes
           value = value.replace(/^['"](.*)['"]$/, '$1');
-          frontmatter[key] = value;
+          // Coerce bare booleans so checks like `frontmatter.draft === true` work
+          frontmatter[key] = value === 'true' ? true : value === 'false' ? false : value;
           currentKey = key;
           inArray = false;
         }

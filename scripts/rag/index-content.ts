@@ -5,11 +5,7 @@ import { closeCache } from '../../src/lib/rag/cache.js';
 async function main() {
   console.log("🚀 Starting Jainil's RAG Ingestion Pipeline...\n");
   try {
-    const res = await ingestAllArticles({
-      onProgress(title, current, total) {
-        console.log(`[${current}/${total}] 📖 ${title}`);
-      },
-    });
+    const res = await ingestAllArticles();
 
     const stats = await getDatabaseStats();
     console.log("\n📊 Jainil's RAG Database State:");

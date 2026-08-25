@@ -10,6 +10,28 @@ import type { ChunkRecord } from './types.js';
 const CONTENT_DIR = path.resolve(process.cwd(), 'src/content/articles');
 const RESUME_MD_PATH = path.resolve(process.cwd(), 'public/resume/Jainil.md');
 const ABOUT_PAGE_PATH = path.resolve(process.cwd(), 'src/pages/about.astro');
+const KNOWLEDGE_DIRS = [
+  path.resolve(process.cwd(), 'src/content/knowledge'),
+  path.resolve(process.cwd(), 'knowledge'),
+];
+
+/**
+ * Recursively retrieves all .md and .mdx files within a directory.
+ */
+function getAllMarkdownFiles(dir: string, fileList: string[] = []): string[] {
+  if (!fs.existsSync(dir)) return fileList;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      getAllMarkdownFiles(fullPath, fileList);
+    } else if (entry.name.endsWith('.md') || entry.name.endsWith('.mdx')) {
+      fileList.push(fullPath);
+    }
+  }
+  return fileList;
+}
 
 /**
  * Indexes Jainil's Profile, Resume, and About page with incremental hash checking.
@@ -126,6 +148,85 @@ export async function ingestProfilePages(): Promise<number> {
 }
 
 /**
+ * Ingests all standalone Markdown/MDX documents from knowledge folders automatically.
+ */
+export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; totalChunks: number; skippedDocuments: number }> {
+  let totalDocuments = 0;
+  let totalChunks = 0;
+  let skippedDocuments = 0;
+
+  for (const knowledgeDir of KNOWLEDGE_DIRS) {
+    if (!fs.existsSync(knowledgeDir)) continue;
+    const files = getAllMarkdownFiles(knowledgeDir);
+
+    for (const filePath of files) {
+      const rawContent = fs.readFileSync(filePath, 'utf-8');
+      const { frontmatter, cleanContent } = extractFrontmatterAndClean(rawContent);
+
+      if (frontmatter.draft === true) continue;
+
+      const relPath = path.relative(knowledgeDir, filePath).replace(/\\/g, '/').replace(/\.(md|mdx)$/, '');
+      const url = frontmatter.url || `/knowledge/${relPath}`;
+
+      const title = frontmatter.title || 
+        cleanContent.match(/^#\s+(.+)$/m)?.[1] || 
+        path.basename(filePath, path.extname(filePath)).replace(/[-_]/g, ' ');
+
+      let fmTags = frontmatter.tags as string[] | string | undefined;
+      if (typeof fmTags === 'string') fmTags = fmTags.split(',').map((t) => t.trim()).filter(Boolean);
+      if (!Array.isArray(fmTags) || fmTags.length === 0) fmTags = ['knowledge'];
+
+      const sourceHash = hashString(rawContent);
+      const existingDoc = await getDocumentByUrl(url);
+
+      if (existingDoc && existingDoc.sourceHash === sourceHash) {
+        skippedDocuments++;
+        continue;
+      }
+
+      totalDocuments++;
+      const docId = await upsertDocument({
+        url,
+        title,
+        type: frontmatter.type || 'page',
+        category: frontmatter.category || 'Knowledge',
+        description: frontmatter.description || title,
+        tags: fmTags,
+        sourceHash,
+        publishedAt: frontmatter.publishedAt ? new Date(frontmatter.publishedAt) : new Date(),
+      });
+
+      const rawChunks = chunkDocument(cleanContent, title);
+      if (rawChunks.length === 0) continue;
+
+      const textsToEmbed = rawChunks.map((c) => c.content);
+      const embeddings = await embedBatch(textsToEmbed, 'RETRIEVAL_DOCUMENT');
+
+      const chunkRecords: ChunkRecord[] = rawChunks.map((chunk, idx) => ({
+        documentId: docId,
+        heading: chunk.heading || null,
+        chunkIndex: idx,
+        content: chunk.content,
+        embedding: embeddings[idx],
+        embeddingModel: EMBEDDING_MODEL,
+        metadata: {
+          charCount: chunk.content.length,
+          category: frontmatter.category || 'Knowledge',
+          type: frontmatter.type || 'page',
+          url,
+        },
+      }));
+
+      await replaceDocumentChunks(docId, chunkRecords);
+      totalChunks += chunkRecords.length;
+      console.log(`✅ [Knowledge] Indexed "${title.slice(0, 38)}" (${chunkRecords.length} chunks)`);
+    }
+  }
+
+  return { totalDocuments, totalChunks, skippedDocuments };
+}
+
+/**
  * Ingests all Markdown/MDX technical articles into pgvector and PostgreSQL FTS.
  */
 export async function ingestAllArticles(): Promise<{ totalDocuments: number; totalChunks: number; skippedDocuments: number }> {
@@ -136,9 +237,15 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
   let totalChunks = 0;
   let skippedDocuments = 0;
 
-  // Ingest Profile & Resume
+  // 1. Ingest Profile & Resume
   const profileChunks = await ingestProfilePages();
   totalChunks += profileChunks;
+
+  // 2. Ingest Knowledge Parent Folder Documents
+  const knowledgeRes = await ingestKnowledgeDocs();
+  totalDocuments += knowledgeRes.totalDocuments;
+  totalChunks += knowledgeRes.totalChunks;
+  skippedDocuments += knowledgeRes.skippedDocuments;
 
   // Scan directory for technical articles
   const entries = fs.readdirSync(CONTENT_DIR, { withFileTypes: true });
@@ -216,7 +323,7 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
   console.log(`- Rolled Knowledge Version:  ${newVersion}\n`);
 
   const stats = await getDatabaseStats();
-  console.log(`📊 Current Knowledge Base Stats: ${stats.totalDocuments} documents, ${stats.totalChunks} chunks in pgvector.`);
+  console.log(`📊 Current Knowledge Base Stats: ${stats.documentCount} documents, ${stats.chunkCount} chunks in pgvector.`);
 
   return { totalDocuments, totalChunks, skippedDocuments };
 }

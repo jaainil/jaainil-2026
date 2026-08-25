@@ -3,10 +3,25 @@ import 'dotenv/config';
 export const prerender = false;
 
 import { askRag } from '../../../lib/rag/chat.js';
+import { checkRateLimit } from '../../../lib/rag/cache.js';
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || 'anonymous';
+    const rate = await checkRateLimit(`chat:${ip}`, 20, 60);
+    if (!rate.allowed) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again shortly.' }), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': String(Math.max(1, rate.reset - Math.floor(Date.now() / 1000))),
+        },
+      });
+    }
+
     const body = await request.json().catch(() => null);
     const question = (body?.question ?? '').trim();
     if (!question) {

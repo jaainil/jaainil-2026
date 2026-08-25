@@ -55,8 +55,10 @@ export class CircuitBreaker {
   public recordFailure(): void {
     this.failureCount++;
     this.lastFailureTime = Date.now();
-    this.state = 'OPEN';
-    this.halfOpenProbeInFlight = false;
+    if (this.state === 'HALF_OPEN' || this.failureCount >= this.failureThreshold) {
+      this.state = 'OPEN';
+      this.halfOpenProbeInFlight = false;
+    }
   }
 
   public getState(): 'CLOSED' | 'OPEN' | 'HALF_OPEN' {

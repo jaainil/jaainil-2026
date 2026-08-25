@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import crypto from 'node:crypto';
 
 let redisClient: Redis | null = null;
@@ -163,14 +163,15 @@ export async function checkRateLimit(
   const key = `rag:ratelimit:${identifier}`;
   try {
     const count = await client.incr(key);
-    if (count === 1) {
+    let ttl = await client.ttl(key);
+    if (count === 1 || ttl < 0) {
       await client.expire(key, windowSeconds);
+      ttl = windowSeconds;
     }
-    const ttl = await client.ttl(key);
     return {
       allowed: count <= limit,
       remaining: Math.max(0, limit - count),
-      reset: now + (ttl > 0 ? ttl : windowSeconds),
+      reset: now + ttl,
     };
   } catch {
     return { allowed: true, remaining: limit, reset: now + windowSeconds };

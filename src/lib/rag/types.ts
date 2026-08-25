@@ -23,8 +23,8 @@ export interface ChunkRecord {
   contentHash?: string;
   metadata?: Record<string, any>;
   embedding?: number[];
-  embeddingModel: string;
-  embeddingDimension: number;
+  embeddingModel?: string;
+  embeddingDimension?: number;
 }
 
 export interface SearchResult {
