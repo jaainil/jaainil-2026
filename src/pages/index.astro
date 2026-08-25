@@ -80,8 +80,8 @@ scene += brick(org(0.4, 3.4), 2.6, 2.6, 56, red, -104, 'piece-drop');           
 const seatX = O.x + (1.7 - 4.7) * ISO_X * U;
 const seatY = O.y + (1.7 + 4.7) * ISO_Y * U;
 scene += `<polygon points="${iso(O, 0.4, 3.4, 1)} ${iso(O, 3.0, 3.4, 1)} ${iso(O, 3.0, 6.0, 1)} ${iso(O, 0.4, 6.0, 1)}" fill="rgba(229,57,53,0.14)" stroke="var(--piece)" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round"/>`;
-scene += `<line x1="${seatX.toFixed(1)}" y1="${(seatY - 96).toFixed(1)}" x2="${seatX.toFixed(1)}" y2="${(seatY - 34).toFixed(1)}" stroke="var(--piece)" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"/>`;
-scene += `<polygon points="${seatX.toFixed(1)},${(seatY - 26).toFixed(1)} ${(seatX - 9).toFixed(1)},${(seatY - 42).toFixed(1)} ${(seatX + 9).toFixed(1)},${(seatY - 42).toFixed(1)}" fill="var(--piece)" stroke="var(--keyline)" stroke-width="2" stroke-linejoin="round"/>`;
+scene += `<line x1="${seatX.toFixed(1)}" y1="${(seatY - 40).toFixed(1)}" x2="${seatX.toFixed(1)}" y2="${(seatY - 14).toFixed(1)}" stroke="var(--piece)" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"/>`;
+scene += `<polygon points="${seatX.toFixed(1)},${(seatY - 6).toFixed(1)} ${(seatX - 9).toFixed(1)},${(seatY - 20).toFixed(1)} ${(seatX + 9).toFixed(1)},${(seatY - 20).toFixed(1)}" fill="var(--piece)" stroke="var(--keyline)" stroke-width="2" stroke-linejoin="round"/>`;
 
 // leader-line labels, annotated directly on the drawing
 const label = (x: number, y: number, tx: number, ty: number, text: string, anchor: 'start' | 'end') => {
@@ -211,6 +211,16 @@ const stamps = [
   { issuer: 'freeCodeCamp', name: 'Responsive Web Design', detail: 'Certified. Responsive layouts and flexbox standards.' },
 ];
 
+const inventory = [
+  { color: 'var(--action)', name: 'Frontend', parts: ['Astro', 'React', 'Next.js', 'Remix', 'Vite', 'Tailwind CSS', 'TypeScript', 'Radix UI'] },
+  { color: 'var(--piece)', name: 'Backend & data', parts: ['Node.js', 'Express', 'Prisma ORM', 'PostgreSQL', 'MongoDB', 'Redis', 'Stripe'] },
+  { color: 'var(--marker)', name: 'DevOps & infra', parts: ['Docker', 'Docker Compose', 'GitHub Actions', 'Linux (Debian)', 'Proxmox VE', 'Nginx', 'Vercel'] },
+  { color: 'var(--action)', name: 'Networking', parts: ['TCP/IP & DNS', 'DHCP & subnetting', 'UFW firewalls', 'Reverse proxies', 'SSL'] },
+  { color: 'var(--piece)', name: 'AI & automation', parts: ['LLM integrations', 'LangChain basics', 'Webhooks', 'Fuse.js search'] },
+  { color: 'var(--marker)', name: 'Design & media', parts: ['Figma', 'Photoshop', 'Illustrator', 'Premiere Pro', 'After Effects'] },
+  { color: 'var(--action)', name: 'Workbench', parts: ['Git & GitHub', 'Bash', 'Postman', 'SSH'] },
+];
+
 const elsewhere = [
   { label: 'GitHub', handle: '@jaainil', href: 'https://github.com/jaainil' },
   { label: 'LinkedIn', handle: '/in/jaainil', href: 'https://www.linkedin.com/in/jaainil/' },
@@ -300,7 +310,8 @@ const homePageSchema = {
   </section>
 
   <!-- THE BUILD SO FAR -->
-  <section id="build" class="mx-auto max-w-6xl px-4 sm:px-6 py-14" style="border-top: 2px solid var(--keyline);">
+  <section id="build" class="border-t-2 py-14" style="border-color: var(--keyline);">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
     <div class="max-w-2xl mb-10">
       <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-3" style="color: var(--ink);">The build so far</h2>
       <p class="text-lg leading-relaxed" style="color: var(--color-text-secondary);">
@@ -350,6 +361,7 @@ const homePageSchema = {
         </li>
       ))}
     </ol>
+    </div>
   </section>
 
   <!-- STAMPS -->
@@ -429,8 +441,42 @@ const homePageSchema = {
     </div>
   </section>
 
+  <!-- PARTS INVENTORY -->
+  <section id="inventory" class="border-t-2 py-14" style="border-color: var(--keyline);">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="max-w-2xl mb-8">
+      <h2 class="text-2xl sm:text-3xl font-black tracking-tight mb-2" style="color: var(--ink);">Parts in the kit</h2>
+      <p class="text-base leading-relaxed" style="color: var(--color-text-secondary);">The full inventory, sorted by where each part goes. No filler pieces.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0.5 rounded-2xl overflow-hidden" style="background: var(--keyline); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+      {inventory.map((comp) => (
+        <div class="p-5" style="background: var(--paper);">
+          <div class="flex items-center justify-between mb-3">
+            <p class="flex items-center gap-2 text-xs font-black uppercase tracking-wide" style="color: var(--ink);">
+              <span class="w-3 h-3 rounded-[3px] shrink-0" style={`background: ${comp.color}; border: 2px solid var(--keyline);`}></span>
+              {comp.name}
+            </p>
+            <span class="text-[11px] font-black px-1.5 py-0.5 rounded" style="border: 2px solid var(--keyline); background: var(--color-surface-elevated); color: var(--color-text-muted);">{comp.parts.length} pcs</span>
+          </div>
+          <p class="text-sm leading-relaxed font-medium" style="color: var(--color-text-secondary);">
+            {comp.parts.join(' · ')}
+          </p>
+        </div>
+      ))}
+      <!-- Last compartment: the honest note, spanning the leftover slots -->
+      <div class="p-5 flex items-center sm:col-span-1 lg:col-span-2" style="background: var(--color-surface-elevated);">
+        <p class="text-sm leading-relaxed font-medium" style="color: var(--color-text-muted);">
+          Depth over breadth: I'd rather ship one Postgres schema at 2am than list thirty logos.
+        </p>
+      </div>
+    </div>
+    </div>
+  </section>
+
   <!-- FIELD NOTES -->
-  <section id="notes" class="mx-auto max-w-6xl px-4 sm:px-6 py-14" style="border-top: 2px solid var(--keyline);">
+  <section id="notes" class="border-t-2 py-14" style="border-color: var(--keyline);">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
     <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
       <div class="max-w-2xl">
         <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-3" style="color: var(--ink);">Field notes</h2>
@@ -459,6 +505,7 @@ const homePageSchema = {
           <svg class="w-5 h-5 shrink-0 hidden sm:block" fill="none" stroke="var(--ink)" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
         </a>
       ))}
+    </div>
     </div>
   </section>
 
@@ -520,7 +567,7 @@ const homePageSchema = {
     --r-t: #f2685c;
     --r-r: #e53935;
     --r-l: #b3211e;
-    --p-t: #eef0f2;
+    --p-t: #e6e9ec;
     --p-r: #cdd2d7;
     --p-l: #aab0b7;
   }
