@@ -6,7 +6,6 @@ import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
 import aeo from 'astro-aeo';
 import umami from '@yeskunall/astro-umami';
-import compress from '@playform/compress';
 import writenex from '@imjp/writenex-astro';
 import icon from 'astro-icon';
 
@@ -111,9 +110,6 @@ export default defineConfig({
       schema: {
         autoInject: false,
       },
-    }),
-    compress({
-      CSS: false,
     }),
   ],
   vite: {
