@@ -176,6 +176,39 @@ const builds = [
     callout: { value: '150+', label: 'organizations tracked' },
     link: { href: 'https://india-ai-tracker.vercel.app', label: 'Open the dashboard' },
   },
+  {
+    n: '05',
+    name: 'MemoryView',
+    desc: 'A searchable directory of AI and ML learning resources for developers and students.',
+    steps: [
+      'Curated 150-plus resources, sorted by what each one actually teaches.',
+      'Wired Fuse.js for instant fuzzy search, no server round trips.',
+      'Rendered it server-side with Remix for fast loads and clean indexing.',
+    ],
+    pieces: ['Remix', 'Fuse.js', 'Tailwind'],
+    callout: { value: '150+', label: 'resources cataloged' },
+    link: { href: 'https://remix-llm-resoures.vercel.app/', label: 'Open the directory' },
+  },
+  {
+    n: '06',
+    name: 'Shravonix',
+    desc: 'The publication you are reading right now: independent technical writing on Linux, AI and infrastructure.',
+    steps: [
+      'Founded it and grew it to 5,000 monthly readers at peak.',
+      'Built on Astro with static pages behind an edge CDN.',
+      'Migrated the full archive to this site, and still publishing.',
+    ],
+    pieces: ['Astro', 'MDX', 'Edge CDN'],
+    callout: { value: '25+', label: 'deep dives published' },
+    link: { href: '/articles', label: 'Read the publication' },
+  },
+];
+
+const stamps = [
+  { issuer: 'SVIT · 2024', name: 'MECIA Hacks', detail: 'Finalist. Built and shipped an AI-assisted web app in 24 hours.' },
+  { issuer: 'Hack2skill', name: 'Snap AR Lens Hackathon', detail: 'Built an interactive Snapchat lens with custom 3D elements.' },
+  { issuer: 'Web3Dev', name: 'Web Development Bootcamp', detail: 'Hands-on training in JavaScript and full-stack architecture.' },
+  { issuer: 'freeCodeCamp', name: 'Responsive Web Design', detail: 'Certified. Responsive layouts and flexbox standards.' },
 ];
 
 const elsewhere = [
@@ -317,6 +350,29 @@ const homePageSchema = {
         </li>
       ))}
     </ol>
+  </section>
+
+  <!-- STAMPS -->
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-14">
+    <div class="max-w-2xl mb-8">
+      <h2 class="text-2xl sm:text-3xl font-black tracking-tight mb-2" style="color: var(--ink);">Stamps collected</h2>
+      <p class="text-base leading-relaxed" style="color: var(--color-text-secondary);">Hackathons and certificates, kept for the record.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      {stamps.map((stamp, i) => (
+        <div
+          class="rounded-xl p-4 transition-transform hover:rotate-0"
+          style={`background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline); transform: rotate(${i % 2 === 0 ? '-1.2deg' : '1.2deg'});`}
+        >
+          <div class="rounded-lg p-3 h-full" style="border: 2px dashed var(--color-border-soft);">
+            <p class="text-[11px] font-black uppercase tracking-wide mb-1.5" style="color: var(--piece);">{stamp.issuer}</p>
+            <h3 class="text-sm font-extrabold leading-snug mb-1.5" style="color: var(--ink);">{stamp.name}</h3>
+            <p class="text-xs leading-relaxed" style="color: var(--color-text-secondary);">{stamp.detail}</p>
+          </div>
+        </div>
+      ))}
+    </div>
   </section>
 
   <!-- BUILDS -->
