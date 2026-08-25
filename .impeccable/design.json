@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-25T16:35:00Z",
+  "title": "Design System: Jainil Prajapati — Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "page-sky": { "role": "neutral", "displayName": "Page Sky", "canonical": "#aee1ff", "tonalRamp": ["#0b3a5c", "#14507c", "#1d6ba3", "#2f8ac7", "#5fb0dd", "#8fcbea", "#aee1ff", "#d8f1ff"] },
+      "paper": { "role": "neutral", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["#b8bcc0", "#c6cacd", "#d4d7da", "#e2e4e7", "#eff0f2", "#f7f8f9", "#ffffff", "#ffffff"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#10151b", "tonalRamp": ["#10151b", "#1d232b", "#2a323c", "#3d4753", "#5a6673", "#818b97", "#aab2bc", "#dbe0e5"] },
+      "keyline": { "role": "neutral", "displayName": "Keyline Ink", "canonical": "#111111", "tonalRamp": ["#111111", "#222222", "#3a3a3a", "#555555", "#787878", "#a3a3a3", "#cccccc", "#eeeeee"] },
+      "piece-red": { "role": "secondary", "displayName": "Piece Red", "canonical": "#e53935", "tonalRamp": ["#7f1411", "#9c1a16", "#b3211e", "#d02e29", "#e53935", "#f2685c", "#f89e93", "#fdd9d4"] },
+      "marker-yellow": { "role": "tertiary", "displayName": "Marker Yellow", "canonical": "#ffcd00", "tonalRamp": ["#6b5400", "#8a6d00", "#a88600", "#c6a000", "#e3ba00", "#ffcd00", "#ffde4d", "#fff0b3"] },
+      "action-blue": { "role": "primary", "displayName": "Action Blue", "canonical": "#147bd1", "tonalRamp": ["#083a63", "#0b4d82", "#0d5ea8", "#1170bd", "#147bd1", "#4a9ce0", "#8cc4f6", "#d3e9fc"] },
+      "plate-gray": { "role": "neutral", "displayName": "Plate Gray", "canonical": "#d9d9d9", "tonalRamp": ["#5a5a5a", "#757575", "#909090", "#aaaaaa", "#c2c2c2", "#d9d9d9", "#e8e8e8", "#f5f5f5"] },
+      "ghost-blue": { "role": "neutral", "displayName": "Ghost Blue", "canonical": "#7fa8cc", "tonalRamp": ["#2c4a66", "#3a5f82", "#4a739c", "#5f8cb3", "#7fa8cc", "#a3c2dd", "#c6dbec", "#e8f1f8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Cover name and section headings; 900 weight does the work." },
+      "body": { "displayName": "Body", "purpose": "All prose; one family, weight carries hierarchy." },
+      "label": { "displayName": "Label", "purpose": "Compartment headers and chips only; never an eyebrow above a heading." }
+    },
+    "shadows": [
+      { "name": "control-lift", "value": "0 2px 0 var(--keyline)", "purpose": "Nav tabs, chips, small toggles." },
+      { "name": "button-lift", "value": "0 3px 0 var(--keyline)", "purpose": "All buttons, TOC dock, stamps." },
+      { "name": "card-lift", "value": "0 4px 0 var(--keyline)", "purpose": "Cards, panels, sheets, inventory grid." }
+    ],
+    "motion": [
+      { "name": "piece-drop", "value": "0.55s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Diagram pieces drop into their seats on load; disabled under prefers-reduced-motion." },
+      { "name": "piece-lift", "value": "translateY(-2px), 150ms ease-out", "purpose": "Hover raises a piece off the page; its shadow stays." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Action-blue keyline button for the main action of a section.",
+      "html": "<button class=\"ds-btn-primary\">See the builds</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--action-blue, #147bd1); color: #fff; border: 2px solid var(--keyline, #111111); box-shadow: 0 3px 0 var(--keyline, #111111); border-radius: 12px; padding: 14px 24px; font: 700 16px 'Rubik Variable', system-ui, sans-serif; cursor: pointer; transition: transform 150ms ease-out; } .ds-btn-primary:hover { transform: translateY(-2px); } .ds-btn-primary:focus-visible { outline: 3px solid var(--action-blue, #147bd1); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Paper keyline button for secondary actions.",
+      "html": "<button class=\"ds-btn-secondary\">Email me</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: var(--paper, #ffffff); color: var(--ink, #10151b); border: 2px solid var(--keyline, #111111); box-shadow: 0 3px 0 var(--keyline, #111111); border-radius: 12px; padding: 14px 24px; font: 700 16px 'Rubik Variable', system-ui, sans-serif; cursor: pointer; transition: transform 150ms ease-out; } .ds-btn-secondary:hover { transform: translateY(-2px); }"
+    },
+    {
+      "name": "Email Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Piece-red button reserved for the email action.",
+      "html": "<a class=\"ds-btn-email\">jainilprajapati9@gmail.com</a>",
+      "css": ".ds-btn-email { display: inline-flex; align-items: center; gap: 8px; background: var(--piece-red, #e53935); color: #fff; border: 2px solid var(--keyline, #111111); box-shadow: 0 3px 0 var(--keyline, #111111); border-radius: 12px; padding: 14px 24px; font: 700 16px 'Rubik Variable', system-ui, sans-serif; text-decoration: none; transition: transform 150ms ease-out; } .ds-btn-email:hover { transform: translateY(-2px); }"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip-category",
+      "description": "Marker-yellow chip naming an article category.",
+      "html": "<span class=\"ds-chip-category\">Tech</span>",
+      "css": ".ds-chip-category { display: inline-block; background: var(--marker, #ffcd00); color: var(--ink, #10151b); border: 2px solid var(--keyline, #111111); border-radius: 6px; padding: 4px 10px; font: 900 11px/1.2 'Rubik Variable', system-ui, sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Piece Chip",
+      "kind": "chip",
+      "refersTo": "chip-piece",
+      "description": "Paper chip listing a piece a step added.",
+      "html": "<span class=\"ds-chip-piece\">Docker & Compose</span>",
+      "css": ".ds-chip-piece { display: inline-block; background: var(--paper, #ffffff); color: var(--ink, #10151b); border: 2px solid var(--keyline, #111111); border-radius: 8px; padding: 6px 12px; font: 600 14px 'Rubik Variable', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Paper Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The universal container: paper, keyline, hard offset.",
+      "html": "<div class=\"ds-card\"><h3>Build 01 — Writenex CMS</h3><p>Steps go here.</p></div>",
+      "css": ".ds-card { background: var(--paper, #ffffff); border: 2px solid var(--keyline, #111111); box-shadow: 0 4px 0 var(--keyline, #111111); border-radius: 16px; padding: 24px 28px; font-family: 'Rubik Variable', system-ui, sans-serif; color: var(--ink, #10151b); } .ds-card h3 { font-size: 20px; font-weight: 800; margin: 0 0 8px; } .ds-card p { font-size: 15px; line-height: 1.6; margin: 0; color: var(--text-secondary, #33404e); }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Keyline text input with leading icon.",
+      "html": "<div class=\"ds-input-wrap\"><input class=\"ds-input\" type=\"text\" placeholder=\"Search the notes...\" /></div>",
+      "css": ".ds-input-wrap { position: relative; } .ds-input { width: 100%; background: var(--paper, #ffffff); color: var(--ink, #10151b); border: 2px solid var(--keyline, #111111); box-shadow: 0 2px 0 var(--keyline, #111111); border-radius: 12px; padding: 12px 16px; font: 600 14px 'Rubik Variable', system-ui, sans-serif; outline: none; } .ds-input:focus-visible { outline: 3px solid var(--action-blue, #147bd1); outline-offset: 2px; } .ds-input::placeholder { color: var(--text-muted, #4a5b6b); }"
+    },
+    {
+      "name": "TOC Dock",
+      "kind": "custom",
+      "refersTo": "toc-dock",
+      "description": "Collapsible bottom-center contents pill for articles.",
+      "html": "<nav class=\"ds-dock\"><button class=\"ds-dock-toggle\"><span class=\"ds-dock-brick\"></span><span class=\"ds-dock-title\">Why Did India Build NavIC?</span></button></nav>",
+      "css": ".ds-dock { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--paper, #ffffff); border: 2px solid var(--keyline, #111111); box-shadow: 0 3px 0 var(--keyline, #111111); border-radius: 16px; font-family: 'Rubik Variable', system-ui, sans-serif; } .ds-dock-toggle { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: none; border: none; cursor: pointer; width: 100%; } .ds-dock-brick { width: 16px; height: 16px; background: var(--piece-red, #e53935); border: 2px solid var(--keyline, #111111); border-radius: 4px; } .ds-dock-title { font: 700 14px 'Rubik Variable', system-ui, sans-serif; color: var(--ink, #10151b); }"
+    },
+    {
+      "name": "Stamp",
+      "kind": "custom",
+      "refersTo": "stamp",
+      "description": "Slightly rotated certificate stamp with dashed inner border.",
+      "html": "<div class=\"ds-stamp\"><div class=\"ds-stamp-inner\"><p class=\"ds-stamp-issuer\">SVIT · 2024</p><h4 class=\"ds-stamp-name\">MECIA Hacks</h4><p class=\"ds-stamp-detail\">Finalist.</p></div></div>",
+      "css": ".ds-stamp { background: var(--paper, #ffffff); border: 2px solid var(--keyline, #111111); box-shadow: 0 3px 0 var(--keyline, #111111); border-radius: 12px; padding: 12px; transform: rotate(-1.2deg); transition: transform 150ms ease-out; font-family: 'Rubik Variable', system-ui, sans-serif; } .ds-stamp:hover { transform: rotate(0deg); } .ds-stamp-inner { border: 2px dashed var(--ghost-blue, #7fa8cc); border-radius: 8px; padding: 12px; } .ds-stamp-issuer { font: 900 11px/1.2 'Rubik Variable', system-ui, sans-serif; letter-spacing: 0.05em; text-transform: uppercase; color: var(--piece-red, #e53935); margin: 0 0 6px; } .ds-stamp-name { font: 800 14px/1.3 'Rubik Variable', system-ui, sans-serif; margin: 0 0 6px; color: var(--ink, #10151b); } .ds-stamp-detail { font: 400 12px/1.5 'Rubik Variable', system-ui, sans-serif; color: var(--text-secondary, #33404e); margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Instruction Booklet",
+    "overview": "The site is a brick build-instruction manual for an engineer. Every page is a printed instruction sheet: sky-blue paper, black keylines, chunky rounded numerals, and colored pieces showing what each step adds. Projects are taught, not listed. The dark theme is the same booklet under a work lamp. Depth is printed, not lit: hard black offsets, zero blur. No monospace anywhere — the terminal aesthetic of the previous design is the explicit anti-reference.",
+    "keyCharacteristics": [
+      "2px black keyline on every interactive or container element",
+      "Hard offset shadows (0 2–4px 0 keyline, zero blur); hover lifts the piece",
+      "Sky-blue page ground, white paper cards, four piece colors with fixed roles",
+      "Giant 900-weight numerals as section and step markers",
+      "Isometric brick diagrams annotated with leader lines and dashed guides",
+      "One authored motion: pieces drop into their seats on load"
+    ],
+    "rules": [
+      { "name": "The Piece Rule", "body": "Red marks the piece a step adds; yellow marks where the build stands; blue works the controls. A color never borrows another's job.", "section": "colors" },
+      { "name": "The Keyline Rule", "body": "Every interactive element and container carries a 2px keyline border and a hard offset shadow. If it has no keyline, it is not part of the kit.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Rubik carries every role from hero to chip text. Weight 400–900, nothing else.", "section": "typography" },
+      { "name": "The Full-Bleed Separator Rule", "body": "Section dividers are 2px keyline lines spanning the entire viewport width, never stopping at the container edge.", "section": "layout" }
+    ],
+    "dos": [
+      "Do keep every claim next to its artifact link — evidence is the design.",
+      "Do use dashed keylines for guides, seats, and ghost states.",
+      "Do keep dark mode as the navy work-lamp booklet with the same piece hues.",
+      "Do theme browser chrome from the palette: selection marker-yellow, focus blue, scrollbars plate-gray."
+    ],
+    "donts": [
+      "Don't reintroduce the old anti-references: pulsing status dots, // section labels, uppercase tracking-widest micro-labels, mono type, fake ID cards, STATUS: ACTIVE rows.",
+      "Don't use blur or ambient shadows; the only shadow is the hard keyline offset.",
+      "Don't add a second display face or a serif; Rubik does everything.",
+      "Don't use red or yellow as body-text colors on the sky ground — contrast fails; they mark pieces, not prose."
+    ]
+  }
+}
