@@ -1,7 +1,5 @@
 ---
-import '@fontsource-variable/inter';
-import '@fontsource-variable/space-grotesk';
-import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/rubik';
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
@@ -217,14 +215,34 @@ const articleSchema = articleData ? {
     <slot name="head" />
   </head>
   <body style="background-color: var(--color-bg); color: var(--color-text-primary);" class="font-sans transition-colors duration-200">
+    <Fragment set:html={`<!--
+      DIRECTION CONTRACT — seed 0bb616d4, world: Build Instructions (user-chosen).
+      THESIS: A portfolio built like a brick instruction book: every project taught
+      as numbered steps, each step showing only the piece it added. It refuses the
+      terminal-dashboard default this category ships.
+      OWN-WORLD: Sky-blue instruction pages, black keylines, brick red for the new
+      piece, build yellow for where the build stands, accent blue for controls.
+      Chunky rounded grotesque numerals. Isometric brick diagrams with leader-line
+      labels and 1:1 call-outs. Stud-grid plates under diagrams.
+      STORY: The visitor understands he assembles real systems, believes it because
+      every claim links to its artifact, and emails him.
+      FIRST VIEWPORT: Header tabs on top. Left: availability badge, name in 900
+      display, one-liner, two CTAs. Right: exploded isometric server stack dropping
+      together, pieces-in-this-set call-out beside it.
+      FORM: Build-instruction booklet, dealt challenger games-toys-physics-play-brick-build-instructions,
+      chosen by the user from the dealt hand.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the
+      finish review, the verdict, DESIGN.md, and every shipping raster carrying its
+      provenance.
+    -->`} />
     <div class="min-h-screen" style="background-color: var(--color-bg);">
-      <div class="max-w-7xl mx-auto min-h-screen flex flex-col border-x" style="background-color: var(--color-surface); border-color: var(--color-border);">
-        <Navbar />
-        <main class="grow">
-          <slot />
-        </main>
-        <Footer />
-      </div>
+        <div class="min-h-screen flex flex-col">
+          <Navbar />
+          <main class="grow">
+            <slot />
+          </main>
+          <Footer />
+        </div>
     </div>
     <script is:inline>
       // WebMCP API (W3C Web Machine Learning Model Context Protocol)

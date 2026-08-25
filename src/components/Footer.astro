@@ -1,134 +1,59 @@
 ---
-import Logo from './Logo.astro';
+const year = new Date().getFullYear();
 ---
 
-<footer class="bg-zinc-900 text-zinc-400 font-sans border-t" style="border-color: var(--color-border);">
-  <div class="w-full">
-    <!-- Top banner / CTA -->
-    <div class="grid grid-cols-1 md:grid-cols-2 border-b border-zinc-800">
-      <div class="py-10 md:py-14 border-b md:border-b-0 md:border-r border-zinc-800 px-6 md:px-8">
-        <p class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2">// Available for Opportunities</p>
-        <h2 class="text-2xl md:text-3xl font-display font-bold text-white mb-3 tracking-tight">
-          Let's build scalable, reliable<br/>cloud infrastructure.
-        </h2>
-        <p class="text-sm text-zinc-400 font-sans leading-relaxed">
-          Open for full-time DevOps & systems roles, homelab consulting, and open-source infrastructure projects.
-        </p>
-      </div>
-      <div class="py-10 md:py-14 px-6 md:px-8 flex flex-col justify-center gap-4">
-        <div class="flex flex-wrap gap-3">
-          <a
-            href="mailto:jainilprajapati9@gmail.com"
-            class="inline-flex items-center gap-2 bg-white text-zinc-900 px-5 py-3 font-mono text-xs uppercase tracking-widest hover:bg-zinc-200 transition-colors font-semibold"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+<footer style="background: var(--color-footer-bg); border-top: 2px solid var(--keyline);">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-8">
+      <div class="max-w-sm">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="grid place-items-center w-8 h-8 rounded-md" style="background: var(--piece); border: 2px solid var(--keyline);">
+            <svg viewBox="0 0 24 24" class="w-4 h-4" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="2" fill="#fff" opacity="0.9"/>
+              <circle cx="15.5" cy="8.5" r="2" fill="#fff" opacity="0.9"/>
+              <circle cx="8.5" cy="15.5" r="2" fill="#fff" opacity="0.9"/>
+              <circle cx="15.5" cy="15.5" r="2" fill="#fff" opacity="0.9"/>
             </svg>
-            Send Email
-          </a>
-          <a
-            href="https://www.linkedin.com/in/jaainil/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 border border-zinc-700 text-white px-5 py-3 font-mono text-xs uppercase tracking-widest hover:bg-zinc-800 transition-colors"
-          >
-            LinkedIn Profile
-          </a>
+          </span>
+          <span class="font-extrabold text-base" style="color: var(--color-footer-heading);">Jainil Prajapati</span>
         </div>
-        <p class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">
-          📍 Anand, Gujarat, India • +91 9725284302
+        <p class="text-sm leading-relaxed" style="color: var(--color-footer-text);">
+          This site is one page of Astro and Tailwind, hand-built, no template. Set and printed in Anand, Gujarat.
         </p>
       </div>
-    </div>
 
-    <!-- Middle brand strip -->
-    <div class="w-full py-8 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-6 md:px-8 flex-wrap gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 flex items-center justify-center font-mono font-bold text-xs bg-white text-zinc-950 border border-zinc-700">
-          JP
+      <nav class="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm" aria-label="Footer">
+        <div>
+          <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Pages</h2>
+          <ul class="space-y-2">
+            <li><a href="/#builds" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Builds</a></li>
+            <li><a href="/#notes" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Field notes</a></li>
+            <li><a href="/articles" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">All articles</a></li>
+            <li><a href="/about" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">About</a></li>
+          </ul>
         </div>
         <div>
-          <h3 class="text-white font-display font-bold text-base">Jainil Prajapati</h3>
-          <p class="text-[10px] font-mono uppercase tracking-widest text-zinc-400">DevOps Engineer | Cloud & Platform Infrastructure</p>
+          <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Elsewhere</h2>
+          <ul class="space-y-2">
+            <li><a href="https://github.com/jaainil" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/jaainil/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">LinkedIn</a></li>
+            <li><a href="https://www.npmjs.com/~imjp" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">npm</a></li>
+            <li><a href="https://www.reddit.com/user/enough_jainil/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Reddit</a></li>
+          </ul>
         </div>
-      </div>
-      <div class="flex items-center gap-2 text-xs font-mono text-zinc-400">
-        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-        <span class="text-white">Dokploy Contributor (10+ Merged PRs)</span>
-      </div>
+        <div>
+          <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Feeds</h2>
+          <ul class="space-y-2">
+            <li><a href="/rss.xml" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">RSS</a></li>
+            <li><a href="/llms.txt" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">llms.txt</a></li>
+          </ul>
+        </div>
+      </nav>
     </div>
 
-    <!-- Navigation columns -->
-    <div class="grid grid-cols-2 md:grid-cols-4">
-      <div class="py-8 md:py-10 px-6 md:px-8 border-b md:border-b-0 border-r border-zinc-800">
-        <h4 class="text-[11px] font-mono font-bold text-white uppercase tracking-widest mb-4">// Navigation</h4>
-        <ul class="space-y-3 text-xs font-mono uppercase tracking-wider">
-          <li><a href="/#experience" class="hover:text-white transition-colors">Experience</a></li>
-          <li><a href="/#projects" class="hover:text-white transition-colors">Projects</a></li>
-          <li><a href="/#skills" class="hover:text-white transition-colors">Skills</a></li>
-          <li><a href="/#opensource" class="hover:text-white transition-colors">Open Source</a></li>
-          <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
-        </ul>
-      </div>
-
-      <div class="py-8 md:py-10 px-6 md:px-8 border-b md:border-b-0 border-r border-zinc-800">
-        <h4 class="text-[11px] font-mono font-bold text-white uppercase tracking-widest mb-4">// Articles & Writing</h4>
-        <ul class="space-y-3 text-xs font-mono uppercase tracking-wider">
-          <li><a href="/articles" class="hover:text-white transition-colors">All Articles</a></li>
-          <li><a href="/articles?category=Linux" class="hover:text-white transition-colors">Linux & Systems</a></li>
-          <li><a href="/articles?category=AI" class="hover:text-white transition-colors">AI & ML</a></li>
-          <li><a href="/articles?category=Tech" class="hover:text-white transition-colors">Cloud & Tech</a></li>
-          <li><a href="/articles?category=Programming" class="hover:text-white transition-colors">Web & DevOps</a></li>
-        </ul>
-      </div>
-
-      <div class="py-8 md:py-10 px-6 md:px-8 border-b md:border-b-0 border-r border-zinc-800">
-        <h4 class="text-[11px] font-mono font-bold text-white uppercase tracking-widest mb-4">// Projects</h4>
-        <ul class="space-y-3 text-xs font-mono uppercase tracking-wider">
-          <li><a href="https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Dokploy Automation</a></li>
-          <li><a href="https://www.npmjs.com/package/@imjp/writenex-astro" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Writenex Astro CMS</a></li>
-          <li><a href="https://blog-maker.vercel.app/" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Blog Maker SaaS</a></li>
-          <li><a href="/articles" class="hover:text-white transition-colors">Engineering Platform & Blog</a></li>
-        </ul>
-      </div>
-
-      <div class="py-8 md:py-10 px-6 md:px-8">
-        <h4 class="text-[11px] font-mono font-bold text-white uppercase tracking-widest mb-4">// Connect</h4>
-        <ul class="space-y-3 text-xs font-mono uppercase tracking-wider">
-          <li>
-            <a href="https://github.com/jaainil" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors flex items-center gap-2">
-              GitHub (jaainil)
-            </a>
-          </li>
-          <li>
-            <a href="https://www.linkedin.com/in/jaainil/" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors flex items-center gap-2">
-              LinkedIn
-            </a>
-          </li>
-          <li>
-            <a href="https://www.npmjs.com/~imjp" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors flex items-center gap-2">
-              npm (~imjp)
-            </a>
-          </li>
-          <li>
-            <a href="https://www.reddit.com/user/enough_jainil/" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors flex items-center gap-2">
-              Reddit (u/enough_jainil)
-            </a>
-          </li>
-          <li>
-            <a href="/rss.xml" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors flex items-center gap-2">
-              RSS Feed
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Bottom copyright -->
-    <div class="py-6 px-6 md:px-8 border-t border-zinc-800 text-[11px] font-mono uppercase tracking-widest text-zinc-500 flex flex-col md:flex-row justify-between items-center gap-3">
-      <p>© 2026 JAINIL PRAJAPATI. ALL RIGHTS RESERVED.</p>
-      <p class="text-zinc-400 font-medium">FULL-STACK & DEVOPS ENGINEER • JAAINIL.COM</p>
-      <p class="text-zinc-600">ANAND, GUJARAT, INDIA</p>
+    <div class="mt-10 pt-5 flex flex-col sm:flex-row justify-between gap-2 text-xs" style="border-top: 1px solid var(--color-footer-border); color: var(--color-footer-text);">
+      <p>© {year} Jainil Prajapati</p>
+      <p>Full-stack & DevOps engineer · jaainil.com</p>
     </div>
   </div>
 </footer>

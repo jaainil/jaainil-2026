@@ -2,17 +2,24 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Rubik Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rubik Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Custom prose colors for both themes */
+/*
+  Visual world: Build Instructions (seed 0bb616d4).
+  The page is an instruction booklet for the engineer: sky-blue pages,
+  black keylines, brick red marks the piece a step adds, build yellow
+  marks where the build stands, accent blue works the controls.
+  Dark theme is the same booklet under a work lamp: deep navy pages,
+  light ink, same piece colors tuned for contrast.
+*/
+
 .prose {
   --tw-prose-body: var(--color-text-primary);
   --tw-prose-headings: var(--color-text-primary);
   --tw-prose-lead: var(--color-text-secondary);
-  --tw-prose-links: #2563eb;
+  --tw-prose-links: var(--color-link);
   --tw-prose-bold: var(--color-text-primary);
   --tw-prose-counters: var(--color-text-muted);
   --tw-prose-bullets: var(--color-text-muted);
@@ -29,75 +36,114 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Light theme tokens */
+/* Light theme: the printed instruction page */
 :root {
-  --color-bg: #fafafa;
+  --page: #aee1ff;
+  --paper: #ffffff;
+  --ink: #10151b;
+  --keyline: #111111;
+  --piece: #e53935;
+  --piece-deep: #b3211e;
+  --marker: #ffcd00;
+  --action: #147bd1;
+  --action-deep: #0d5ea8;
+  --plate: #d9d9d9;
+  --plate-shade: #b9bdc1;
+  --ghost: #7fa8cc;
+
+  --color-bg: #aee1ff;
   --color-surface: #ffffff;
-  --color-surface-elevated: #f4f4f5;
-  --color-border: #e4e4e7;
-  --color-border-strong: #d4d4d8;
-  --color-text-primary: #09090b;
-  --color-text-secondary: #52525b;
-  --color-text-muted: #71717a;
-  --color-hover: #f4f4f5;
-  --color-accent-bg: #09090b;
+  --color-surface-elevated: #f3f8fe;
+  --color-border: #111111;
+  --color-border-soft: #7fa8cc;
+  --color-text-primary: #10151b;
+  --color-text-secondary: #33404e;
+  --color-text-muted: #4a5b6b;
+  --color-hover: #e7f4ff;
+  --color-link: #0d5ea8;
+  --color-accent-bg: #147bd1;
   --color-accent-text: #ffffff;
-  --color-image-bg: #f4f4f5;
-  /* Button specific tokens */
-  --color-btn-primary-bg: #09090b;
+  --color-image-bg: #d9e9f8;
+  --color-btn-primary-bg: #147bd1;
   --color-btn-primary-text: #ffffff;
-  --color-btn-primary-hover: #27272a;
+  --color-btn-primary-hover: #0d5ea8;
   --color-btn-secondary-bg: #ffffff;
-  --color-btn-secondary-text: #09090b;
-  --color-btn-secondary-border: #e4e4e7;
-  --color-btn-secondary-hover: #f4f4f5;
-  /* Footer is always dark */
-  --color-footer-bg: #18181b;
-  --color-footer-surface: #09090b;
-  --color-footer-border: #27272a;
-  --color-footer-text: #a1a1aa;
+  --color-btn-secondary-text: #10151b;
+  --color-btn-secondary-border: #111111;
+  --color-btn-secondary-hover: #e7f4ff;
+  --color-footer-bg: #10151b;
+  --color-footer-surface: #0b0f14;
+  --color-footer-border: #2a3644;
+  --color-footer-text: #b9c6d2;
   --color-footer-heading: #ffffff;
 }
 
-/* Dark theme tokens */
+/* Dark theme: the same booklet under a work lamp */
 .dark {
-  --color-bg: #09090b;
-  --color-surface: #121215;
-  --color-surface-elevated: #1e1e24;
-  --color-border: #27272a;
-  --color-border-strong: #3f3f46;
-  --color-text-primary: #f4f4f5;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
-  --color-hover: #1e1e24;
-  --color-accent-bg: #f4f4f5;
-  --color-accent-text: #09090b;
-  --color-image-bg: #18181b;
-  /* Button specific tokens */
-  --color-btn-primary-bg: #f4f4f5;
-  --color-btn-primary-text: #09090b;
-  --color-btn-primary-hover: #e4e4e7;
-  --color-btn-secondary-bg: #1e1e24;
-  --color-btn-secondary-text: #f4f4f5;
-  --color-btn-secondary-border: #3f3f46;
-  --color-btn-secondary-hover: #27272a;
+  --page: #0f1b2d;
+  --paper: #17273e;
+  --ink: #eaf3fe;
+  --keyline: #dbe9f7;
+  --piece: #ff6b62;
+  --piece-deep: #ff8d86;
+  --marker: #ffcd00;
+  --action: #5aa9f0;
+  --action-deep: #8cc4f6;
+  --plate: #33465f;
+  --plate-shade: #223146;
+  --ghost: #4a6280;
+
+  --color-bg: #0f1b2d;
+  --color-surface: #17273e;
+  --color-surface-elevated: #1d3049;
+  --color-border: #dbe9f7;
+  --color-border-soft: #4a6280;
+  --color-text-primary: #eaf3fe;
+  --color-text-secondary: #b9c9db;
+  --color-text-muted: #8fa3b8;
+  --color-hover: #1d3049;
+  --color-link: #8cc4f6;
+  --color-accent-bg: #5aa9f0;
+  --color-accent-text: #0f1b2d;
+  --color-image-bg: #223146;
+  --color-btn-primary-bg: #5aa9f0;
+  --color-btn-primary-text: #0f1b2d;
+  --color-btn-primary-hover: #8cc4f6;
+  --color-btn-secondary-bg: #17273e;
+  --color-btn-secondary-text: #eaf3fe;
+  --color-btn-secondary-border: #dbe9f7;
+  --color-btn-secondary-hover: #1d3049;
+  --color-footer-bg: #0b0f14;
+  --color-footer-surface: #0f1b2d;
+  --color-footer-border: #2a3644;
+  --color-footer-text: #b9c6d2;
+  --color-footer-heading: #ffffff;
 }
 
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border-strong) var(--color-surface);
+  scrollbar-color: var(--plate) var(--color-surface);
 }
 
 @layer base {
   *, ::before, ::after {
     border-color: var(--color-border);
   }
+  ::selection {
+    background: var(--marker);
+    color: #10151b;
+  }
+  :focus-visible {
+    outline: 3px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
-/* Offset anchor scroll for 64px (4rem) sticky navbar + snug 12px gap */
+/* Offset anchor scroll for the sticky header */
 h1, h2, h3, h4, h5, h6, [id] {
-  scroll-margin-top: 4.75rem;
+  scroll-margin-top: 5rem;
 }
 
 @utility hide-scrollbar {
@@ -109,49 +155,63 @@ h1, h2, h3, h4, h5, h6, [id] {
   display: none;
 }
 
-/* ===== Custom Scrollbar Styles ===== */
-
-/* Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--color-surface);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
-  border-radius: 3px;
+  background: var(--plate);
+  border-radius: 5px;
+  border: 2px solid var(--color-surface);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: var(--ghost);
 }
-
 ::-webkit-scrollbar-corner {
   background: var(--color-surface);
 }
 
-/* Dark theme scrollbar */
-.dark {
-  scrollbar-color: var(--color-border-strong) var(--color-surface);
+/* Stud plate: the baseplate grid this world measures on */
+@utility stud-grid {
+  background-image: radial-gradient(
+    circle at center,
+    var(--stud-dot, rgba(16, 21, 27, 0.14)) 2.5px,
+    transparent 3px
+  );
+  background-size: 26px 26px;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: var(--color-surface);
+.dark .stud-grid,
+.stud-grid:where(.dark, .dark *) {
+  --stud-dot: rgba(234, 243, 254, 0.12);
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
+/* The one authored moment: pieces drop into their seats */
+@keyframes piece-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+.piece-drop {
+  opacity: 0;
+  animation: piece-drop 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.dark ::-webkit-scrollbar-corner {
-  background: var(--color-surface);
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .piece-drop {
+    opacity: 1;
+    animation: none;
+  }
 }
-

@@ -21,12 +21,16 @@ export default function ReadingProgressBar() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1 z-9999" style={{ pointerEvents: 'none' }}>
+    <div
+      className="fixed top-0 left-0 w-full z-9999"
+      style={{ pointerEvents: 'none', height: '6px', background: 'var(--page)', borderBottom: '2px solid var(--keyline)' }}
+      aria-hidden="true"
+    >
       <div
         className="h-full transition-all duration-150 ease-out"
         style={{
           width: `${progress}%`,
-          backgroundColor: 'var(--color-accent-bg)',
+          backgroundColor: 'var(--piece)',
         }}
       />
     </div>

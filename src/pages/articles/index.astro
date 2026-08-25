@@ -28,6 +28,9 @@ const articles: Article[] = allArticles
 // Fixed category order
 const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions', 'Programming'];
 
+const fmtDate = (iso: string) =>
+  new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
 const SITE_URL = 'https://jaainil.com';
 const pageUrl = `${SITE_URL}/articles`;
 
@@ -76,124 +79,110 @@ const itemListSchema = {
     <Schema item={webPageSchema as any} />
     <Schema item={itemListSchema as any} />
   </Fragment>
-  <div class="w-full pb-16">
 
-    <!-- Page Header -->
-    <div class="border-b px-6 md:px-8 py-10" style="border-color: var(--color-border);">
-      <div class="flex items-start md:items-end justify-between gap-4 flex-col md:flex-row">
-        <div>
-          <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// Technical Blog & Writing</p>
-          <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight mb-3" style="color: var(--color-text-primary);">
-            Articles & Engineering Notes
-          </h1>
-          <p class="text-sm font-sans max-w-2xl leading-relaxed" style="color: var(--color-text-secondary);">
-            Technical articles, Linux deep dives, DevOps pipelines, homelab guides, and software architecture analysis. Includes original publications and migrated Shravonix technical writings.
-          </p>
-        </div>
-        <p id="article-count" class="text-[11px] font-mono uppercase tracking-widest pb-1 hidden md:block shrink-0">
-          {articles.length} article{articles.length !== 1 ? 's' : ''}
-        </p>
-      </div>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-16 pb-16">
+    <div class="max-w-2xl mb-10">
+      <h1 class="text-4xl sm:text-5xl font-black tracking-tight mb-4" style="color: var(--ink);">Field notes</h1>
+      <p class="text-lg leading-relaxed" style="color: var(--color-text-secondary);">
+        Everything I've written up: Linux deep dives, DevOps pipelines, homelab guides and architecture analysis. <span id="article-count" class="font-bold" style="color: var(--ink);">{articles.length} notes</span> and counting.
+      </p>
     </div>
 
     <!-- Category Filter + Search -->
-    <div class="px-6 md:px-8 py-6 border-b" style="border-color: var(--color-border);">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="flex items-center gap-0 overflow-x-auto w-full md:w-auto hide-scrollbar border" style="border-color: var(--color-border);">
-          {CATEGORIES.map((category: string, index: number) => (
-            <button
-              data-category={category}
-              class={`category-btn px-6 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors${index !== 0 ? " border-l" : ""}`}
-              style={`background-color: ${index === 0 ? "var(--color-accent-bg)" : "var(--color-surface)"}; color: ${index === 0 ? "var(--color-accent-text)" : "var(--color-text-secondary)"}; border-color: var(--color-border);`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+      <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by category">
+        {CATEGORIES.map((category: string, index: number) => (
+          <button
+            data-category={category}
+            class={`category-btn px-4 py-2.5 rounded-lg text-sm font-bold whitespace-nowrap transition-transform ${index === 0 ? 'hover:-translate-y-0.5' : 'hover:-translate-y-0.5'}`}
+            style={`border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline); background-color: ${index === 0 ? 'var(--action)' : 'var(--paper)'}; color: ${index === 0 ? '#ffffff' : 'var(--ink)'};`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
 
-        <div class="relative w-full md:w-64 border" style="border-color: var(--color-border);">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            id="search-input"
-            type="text"
-            placeholder="SEARCH ARTICLES..."
-            class="w-full pl-10 pr-4 py-3 rounded-none border-none focus:ring-0 text-xs font-mono uppercase tracking-widest outline-none"
-            style="background-color: var(--color-surface); color: var(--color-text-primary);"
-          />
-        </div>
+      <div class="relative w-full md:w-72">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <label class="sr-only" for="search-input">Search articles</label>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search the notes..."
+          class="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-semibold outline-none"
+          style="background-color: var(--paper); color: var(--color-text-primary); border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline);"
+        />
       </div>
     </div>
 
     <!-- Articles Grid -->
-    <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-b" style="border-color: var(--color-border);">
-      {articles.map((article: Article, index: number) => (
+    <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {articles.map((article: Article) => (
         <a
           href={`/articles/${article.id}`}
           data-category={article.category}
           data-title={article.title.toLowerCase()}
           data-description={(article.description ?? '').toLowerCase()}
-          class={`article-card group flex flex-col h-full border-b transition-colors ${index % 2 === 0 ? "md:border-r" : "md:border-r-0"} ${(index + 1) % 3 !== 0 ? "lg:border-r" : "lg:border-r-0"}`}
-          style="border-color: var(--color-border);"
-          onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-          onmouseleave="this.style.backgroundColor=''"
+          class="article-card group flex flex-col h-full rounded-2xl overflow-hidden transition-transform hover:-translate-y-1"
+          style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);"
         >
-          <div class="p-6 md:p-8 grow">
-            {article.imageUrl && (
-              <div class="aspect-video rounded-none overflow-hidden mb-6 border" style="background-color: var(--color-image-bg); border-color: var(--color-border);">
-                 <Image
-                   src={article.imageUrl}
-                   alt={article.title}
-                   class="w-full h-full object-cover"
-                   width={600}
-                   height={338}
-                   format="webp"
-                   quality={80}
-                   loading="lazy"
-                 />
-              </div>
-            )}
-            <div class="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest mb-3">
-              <span style="color: var(--color-text-muted);">// {article.category}</span>
+          {article.imageUrl && (
+            <div class="aspect-video overflow-hidden" style="border-bottom: 2px solid var(--keyline); background-color: var(--color-image-bg);">
+              <Image
+                src={article.imageUrl}
+                alt={article.title}
+                class="w-full h-full object-cover"
+                width={600}
+                height={338}
+                format="webp"
+                quality={80}
+                loading="lazy"
+              />
             </div>
-            <h3 class="text-xl font-display font-bold tracking-tight mb-4" style="color: var(--color-text-primary);">
+          )}
+          <div class="p-6 grow flex flex-col">
+            <span class="self-start px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wide mb-3" style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;">
+              {article.category}
+            </span>
+            <h2 class="text-lg font-extrabold tracking-tight leading-snug mb-2 group-hover:underline underline-offset-4 decoration-2" style="color: var(--ink);">
               {article.title}
-            </h3>
+            </h2>
             {article.description && (
-              <p class="text-sm font-sans leading-relaxed line-clamp-2" style="color: var(--color-text-secondary);">
+              <p class="text-sm leading-relaxed line-clamp-2" style="color: var(--color-text-secondary);">
                 {article.description}
               </p>
             )}
           </div>
-          <div class="border-t p-4 px-6 md:px-8 flex items-center justify-between mt-auto" style="border-color: var(--color-border);">
+          <div class="border-t-2 px-6 py-3.5 flex items-center justify-between mt-auto" style="border-color: var(--keyline);">
             <div class="flex -space-x-2">
               {article.authors.map((author: { name: string; avatarUrl: string }) => (
-              <img
-                src={author.avatarUrl}
-                alt={author.name}
-                class="w-6 h-6 rounded-none border"
-                style="border-color: var(--color-border);"
-                loading="lazy"
-                decoding="async"
-                width="24"
-                height="24"
-              />
+                <img
+                  src={author.avatarUrl}
+                  alt={author.name}
+                  class="w-6 h-6 rounded-md object-cover"
+                  style="border: 2px solid var(--keyline);"
+                  loading="lazy"
+                  decoding="async"
+                  width="24"
+                  height="24"
+                />
               ))}
             </div>
-            <div class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">
-              {article.publishedAt}
-            </div>
+            <span class="text-xs font-bold" style="color: var(--color-text-muted);">
+              {fmtDate(article.publishedAt)}
+            </span>
           </div>
         </a>
       ))}
     </div>
 
     <!-- Empty state -->
-    <div id="empty-state" class="hidden px-6 md:px-8 py-24 text-center border-b" style="border-color: var(--color-border);">
-      <p class="text-[11px] font-mono uppercase tracking-widest" style="color: var(--color-text-muted);">No articles found.</p>
+    <div id="empty-state" class="hidden py-20 text-center rounded-2xl" style="border: 2px dashed var(--keyline); background: var(--paper);">
+      <p class="text-lg font-bold" style="color: var(--ink);">No notes match that.</p>
+      <p class="text-sm mt-2" style="color: var(--color-text-muted);">Try another word or clear the category filter.</p>
     </div>
-
   </div>
 </BaseLayout>
 
@@ -226,7 +215,7 @@ const itemListSchema = {
       }
     });
 
-    countEl.textContent = `${visible} article${visible !== 1 ? 's' : ''}`;
+    countEl.textContent = `${visible} note${visible !== 1 ? 's' : ''}`;
 
     if (visible === 0) {
       grid.classList.add('hidden');
@@ -240,8 +229,8 @@ const itemListSchema = {
   function setActiveButton(category: string) {
     buttons.forEach((btn) => {
       const isActive = btn.dataset.category === category;
-      btn.style.backgroundColor = isActive ? 'var(--color-accent-bg)' : 'var(--color-surface)';
-      btn.style.color = isActive ? 'var(--color-accent-text)' : 'var(--color-text-secondary)';
+      btn.style.backgroundColor = isActive ? 'var(--action)' : 'var(--paper)';
+      btn.style.color = isActive ? '#ffffff' : 'var(--ink)';
     });
   }
 
@@ -249,6 +238,11 @@ const itemListSchema = {
   const initialCategory = params.get('category') ?? 'All';
   activeCategory = initialCategory;
   setActiveButton(activeCategory);
+  const initialQuery = (params.get('q') ?? '').toLowerCase().trim();
+  if (initialQuery) {
+    searchQuery = initialQuery;
+    searchInput.value = initialQuery;
+  }
   applyFilters();
 
   buttons.forEach((btn) => {

@@ -26,6 +26,34 @@ const webPageSchema = {
   about: { '@id': `${SITE_URL}/#person` },
   mainEntity: { '@id': `${SITE_URL}/#person` },
 };
+
+const competencies = [
+  {
+    n: '1',
+    title: 'Full-stack web development',
+    body: 'Web applications with Next.js, React, Astro, Node.js and Express, backed by Prisma ORM on PostgreSQL or MongoDB.',
+  },
+  {
+    n: '2',
+    title: 'DevOps and CI/CD pipelines',
+    body: 'GitHub Actions workflows for automated tests, Docker image builds, container deployments and environment configuration.',
+  },
+  {
+    n: '3',
+    title: 'Linux server administration and networking',
+    body: 'Debian and Ubuntu production nodes, Nginx reverse proxies, DNS records, UFW firewall rules and Bash automation.',
+  },
+  {
+    n: '4',
+    title: 'Virtualization and self-hosting',
+    body: 'Proxmox VE hypervisor administration, VLAN bridges, ZFS storage and self-hosted application stacks on my own hardware.',
+  },
+  {
+    n: '5',
+    title: 'Community and open source',
+    body: 'Maintaining an npm package, contributing to Dokploy, and growing the r/AI_India community from 1,000 to 21,000 members.',
+  },
+];
 ---
 
 <BaseLayout
@@ -36,201 +64,103 @@ const webPageSchema = {
     <Schema item={breadcrumbSchema as any} />
     <Schema item={webPageSchema as any} />
   </Fragment>
-  <div class="w-full pb-16">
-    
-    <!-- Page heading -->
-    <div class="border-b px-6 md:px-8 py-10" style="border-color: var(--color-border);">
-      <p class="text-[11px] font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-muted);">// About Me</p>
-      <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight mb-2" style="color: var(--color-text-primary);">
-        Jainil Prajapati
-      </h1>
-      <p class="text-sm font-mono uppercase tracking-wider" style="color: var(--color-text-secondary);">
-        Full-Stack Developer & DevOps Engineer • AI Enthusiast • Anand, Gujarat, India
-      </p>
+
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-16 pb-16">
+    <div class="grid lg:grid-cols-12 gap-10 items-start mb-14">
+      <div class="lg:col-span-8">
+        <h1 class="text-4xl sm:text-5xl font-black tracking-tight mb-5" style="color: var(--ink);">About the builder</h1>
+        <p class="text-lg leading-relaxed mb-5 font-medium" style="color: var(--color-text-secondary);">
+          I'm Jainil, a full-stack developer and DevOps engineer based in Anand, Gujarat. I build web applications with Next.js and Node.js, containerize them with Docker, and run the Linux servers they live on.
+        </p>
+        <p class="leading-relaxed mb-5" style="color: var(--color-text-secondary);">
+          Right now I work at <a href="https://aexaware.com" target="_blank" rel="noopener noreferrer" class="font-bold underline underline-offset-4" style="color: var(--color-link);">Aexaware Infotech</a> in Vadodara, building client applications and the CI/CD workflows that ship them. A normal day covers frontend layouts, API routes, database migrations, and Nginx reverse proxies with SSL on Debian servers.
+        </p>
+        <p class="leading-relaxed mb-5" style="color: var(--color-text-secondary);">
+          In open source, I've merged <a href="https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil" target="_blank" rel="noopener noreferrer" class="font-bold underline underline-offset-4" style="color: var(--color-link);">more than ten pull requests into Dokploy's templates</a> and I maintain <a href="https://www.npmjs.com/package/@imjp/writenex-astro" target="_blank" rel="noopener noreferrer" class="font-bold underline underline-offset-4" style="color: var(--color-link);">Writenex CMS on npm</a>, a visual editor for Astro content collections.
+        </p>
+        <p class="leading-relaxed" style="color: var(--color-text-secondary);">
+          Before that I founded <strong style="color: var(--ink);">Shravonix</strong>, an independent tech publication that reached 5,000 monthly readers. The archive lives on in the <a href="/articles" class="font-bold underline underline-offset-4" style="color: var(--color-link);">field notes section</a>.
+        </p>
+      </div>
+
+      <div class="lg:col-span-4">
+        <div class="rounded-2xl p-4" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+          <div class="stud-grid rounded-xl overflow-hidden mb-3" style="border: 2px dashed var(--color-border-soft);">
+            <img
+              src="/profile.png"
+              alt="Jainil Prajapati"
+              class="w-full aspect-square object-cover"
+              width="400"
+              height="400"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <p class="text-sm font-bold text-center" style="color: var(--ink);">Jainil Prajapati</p>
+          <p class="text-xs font-semibold text-center" style="color: var(--color-text-muted);">Anand, Gujarat, India</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Bio & Summary Section -->
-    <section class="border-b px-6 md:px-8 py-16" style="border-color: var(--color-border);">
-      <div class="max-w-3xl">
-        <h2 class="text-sm font-mono font-bold uppercase tracking-widest mb-6" style="color: var(--color-text-primary);">
-          // Background & Engineering Focus
-        </h2>
-        <p class="text-lg font-sans leading-relaxed mb-6" style="color: var(--color-text-secondary);">
-          I am a full-stack developer and DevOps engineer based in Anand, Gujarat. I build web applications with Next.js and Node.js, containerize services using Docker, and manage production Linux servers.
-        </p>
-        <p class="text-base font-sans leading-relaxed mb-6" style="color: var(--color-text-secondary);">
-          Currently working at <a href="https://aexaware.com" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-text-primary);">Aexawareinfotech Pvt. Ltd.</a> in Vadodara, I build client applications and maintain automated CI/CD workflows using GitHub Actions. My day-to-day work spans frontend layouts, backend API routes, database migrations, and server configuration with Nginx reverse proxies and SSL certificates.
-        </p>
-        <p class="text-base font-sans leading-relaxed mb-6" style="color: var(--color-text-secondary);">
-          In the open-source community, I contribute to <a href="https://github.com/Dokploy/templates" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-text-primary);">Dokploy</a>, with 10+ merged pull requests across application blueprints, CLI validation tooling, and container networking. I also created <a href="https://www.npmjs.com/package/@imjp/writenex-astro" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-text-primary);">Writenex CMS</a>, an open-source headless CMS integration on npm with 79+ commits.
-        </p>
-        <p class="text-base font-sans leading-relaxed" style="color: var(--color-text-secondary);">
-          Previously, I founded and ran <strong>Shravonix</strong>, an independent technical media site reaching 5K+ monthly readers with deep dives on Linux, AI models, and web architecture. I continue to publish in-depth technical writing, with all historical and new posts available in the <a href="/articles" class="underline font-bold" style="color: var(--color-text-primary);">Articles section</a> on this website.
-        </p>
+    <section class="mb-14">
+      <h2 class="text-2xl sm:text-3xl font-black tracking-tight mb-3" style="color: var(--ink);">Parts inventory</h2>
+      <p class="text-lg mb-8 max-w-2xl" style="color: var(--color-text-secondary);">What's in the kit, and what each part is for.</p>
+
+      <div class="rounded-2xl overflow-hidden" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+        {competencies.map((c, i) => (
+          <div class={`flex items-start gap-5 px-6 py-5 ${i > 0 ? 'border-t-2' : ''}`} style="border-color: var(--keyline);">
+            <span class="grid place-items-center w-9 h-9 shrink-0 rounded-lg text-base font-black" style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;">{c.n}</span>
+            <div>
+              <h3 class="text-lg font-extrabold tracking-tight mb-1" style="color: var(--ink);">{c.title}</h3>
+              <p class="text-sm leading-relaxed" style="color: var(--color-text-secondary);">{c.body}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
 
-    <!-- Core Engineering Focus -->
-    <section class="border-b px-6 md:px-8 py-16" style="border-color: var(--color-border);">
-      <div class="max-w-3xl">
-        <h2 class="text-sm font-mono font-bold uppercase tracking-widest mb-6" style="color: var(--color-text-primary);">
-          // Core Competencies
-        </h2>
-        <div class="space-y-6">
-          <div class="flex items-start gap-4">
-            <span class="text-xs font-mono uppercase tracking-widest mt-1" style="color: var(--color-text-muted);">01</span>
-            <div>
-              <h3 class="text-base font-display font-bold mb-1" style="color: var(--color-text-primary);">Full-Stack Web Development</h3>
-              <p class="text-sm font-sans" style="color: var(--color-text-secondary);">Building web applications using Next.js, React, Astro, Node.js, Express, and Prisma ORM with PostgreSQL and MongoDB.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-4">
-            <span class="text-xs font-mono uppercase tracking-widest mt-1" style="color: var(--color-text-muted);">02</span>
-            <div>
-              <h3 class="text-base font-display font-bold mb-1" style="color: var(--color-text-primary);">DevOps & CI/CD Pipelines</h3>
-              <p class="text-sm font-sans" style="color: var(--color-text-secondary);">Writing GitHub Actions workflows for automated tests, Docker image builds, container deployments, and environment configurations.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-4">
-            <span class="text-xs font-mono uppercase tracking-widest mt-1" style="color: var(--color-text-muted);">03</span>
-            <div>
-              <h3 class="text-base font-display font-bold mb-1" style="color: var(--color-text-primary);">Linux Server Administration & Networking</h3>
-              <p class="text-sm font-sans" style="color: var(--color-text-secondary);">Managing Debian and Ubuntu production nodes, Nginx reverse proxy configuration, DNS records, firewall rules with UFW, and Bash automation.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-4">
-            <span class="text-xs font-mono uppercase tracking-widest mt-1" style="color: var(--color-text-muted);">04</span>
-            <div>
-              <h3 class="text-base font-display font-bold mb-1" style="color: var(--color-text-primary);">Virtualization & Self-Hosting</h3>
-              <p class="text-sm font-sans" style="color: var(--color-text-secondary);">Proxmox VE hypervisor administration, VLAN network bridges, ZFS storage setups, and self-hosted application stacks.</p>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-4">
-            <span class="text-xs font-mono uppercase tracking-widest mt-1" style="color: var(--color-text-muted);">05</span>
-            <div>
-              <h3 class="text-base font-display font-bold mb-1" style="color: var(--color-text-primary);">Community & Open Source</h3>
-              <p class="text-sm font-sans" style="color: var(--color-text-secondary);">Maintaining open-source npm packages, contributing to Dokploy PaaS, and previously growing the r/AI_India Reddit community from 1K to 21K members.</p>
-            </div>
-          </div>
-        </div>
+    <section class="rounded-2xl p-7 sm:p-10" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+      <h2 class="text-2xl sm:text-3xl font-black tracking-tight mb-4" style="color: var(--ink);">Say hello</h2>
+      <p class="leading-relaxed mb-7 max-w-xl" style="color: var(--color-text-secondary);">
+        Up for discussing infrastructure, homelab architecture or open source. Email works fastest.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a
+          href="mailto:jainilprajapati9@gmail.com"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
+          style="background: var(--piece); color: #fff; border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          Email me
+        </a>
+        <a
+          href="https://github.com/jaainil"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
+          style="background: var(--paper); color: var(--ink); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://www.linkedin.com/in/jaainil/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
+          style="background: var(--paper); color: var(--ink); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://www.npmjs.com/~imjp"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
+          style="background: var(--paper); color: var(--ink); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+        >
+          npm
+        </a>
       </div>
     </section>
-
-    <!-- Quick Navigation CTAs -->
-    <section class="border-b px-6 md:px-8 py-16" style="border-color: var(--color-border);">
-      <div class="max-w-3xl">
-        <h2 class="text-sm font-mono font-bold uppercase tracking-widest mb-6" style="color: var(--color-text-primary);">
-          // Explore Further
-        </h2>
-        <div class="flex flex-wrap gap-4">
-          <a
-            href="/#projects"
-            class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors font-bold"
-            style="border-color: var(--color-text-primary); background-color: var(--color-text-primary); color: var(--color-surface);"
-          >
-            Featured Projects
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </a>
-          <a
-            href="/#experience"
-            class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-            style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-surface);"
-            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-            onmouseleave="this.style.backgroundColor='var(--color-surface)'"
-          >
-            Work Experience
-          </a>
-          <a
-            href="/articles"
-            class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-            style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-surface);"
-            onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-            onmouseleave="this.style.backgroundColor='var(--color-surface)'"
-          >
-            Technical Articles
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="border-b px-6 md:px-8 py-16" style="border-color: var(--color-border);">
-      <div class="max-w-3xl">
-        <h2 class="text-sm font-mono font-bold uppercase tracking-widest mb-6" style="color: var(--color-text-primary);">
-          // Get in Touch
-        </h2>
-        <div class="space-y-6">
-          <p class="text-base font-sans leading-relaxed" style="color: var(--color-text-secondary);">
-            Interested in discussing DevOps infrastructure, homelab architecture, or open-source collaboration? Let's connect.
-          </p>
-          <div class="flex flex-wrap gap-4">
-            <a
-              href="mailto:jainilprajapati9@gmail.com"
-              class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-              style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-surface);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor='var(--color-surface)'"
-            >
-              Email (jainilprajapati9@gmail.com)
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/jaainil/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-              style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-surface);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor='var(--color-surface)'"
-            >
-              LinkedIn
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-            <a
-              href="https://github.com/jaainil"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-              style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-surface);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor='var(--color-surface)'"
-            >
-              GitHub
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-            <a
-              href="https://www.npmjs.com/~imjp"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-6 py-3 border text-xs font-mono uppercase tracking-widest transition-colors"
-              style="border-color: var(--color-border); color: var(--color-text-primary); background-color: var(--color-surface);"
-              onmouseenter="this.style.backgroundColor='var(--color-hover)'"
-              onmouseleave="this.style.backgroundColor='var(--color-surface)'"
-            >
-              npm
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </div>
 </BaseLayout>

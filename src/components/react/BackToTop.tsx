@@ -25,32 +25,18 @@ export default function BackToTop() {
   return (
     <button
       onClick={scrollToTop}
-      className="fixed right-6 bottom-6 z-9999 w-12 h-12 flex items-center justify-center transition-all duration-200 hover:scale-110"
+      className="fixed right-4 bottom-24 md:right-6 md:bottom-6 z-40 w-12 h-12 flex items-center justify-center transition-transform hover:-translate-y-1 cursor-pointer"
       style={{
-        backgroundColor: 'var(--color-accent-bg)',
-        border: '1px solid var(--color-border)',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-hover)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-accent-bg)';
+        backgroundColor: 'var(--marker)',
+        color: '#10151b',
+        border: '2px solid var(--keyline)',
+        boxShadow: '0 3px 0 var(--keyline)',
+        borderRadius: '12px',
       }}
       aria-label="Back to top"
     >
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        style={{ color: 'var(--color-accent-text)' }}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M5 10l7-7m0 0l7 7m-7-7v18"
-        />
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.6" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
       </svg>
     </button>
   );
