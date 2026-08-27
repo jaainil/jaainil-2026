@@ -1,10 +1,8 @@
-import { openrouter, googleGenAI } from './clients.js';
 import { rerankerCircuit } from './circuit.js';
 import type { SearchResult } from './types.js';
 
-const PRIMARY_RERANK_MODEL = process.env.RERANK_MODEL || 'voyageai/rerank-2.5-lite';
-const FALLBACK_RERANK_MODEL = process.env.RERANK_FALLBACK_MODEL || 'cohere/rerank-4-fast';
-const LLM_JUDGE_MODEL = process.env.RERANK_LLM_MODEL || 'nvidia/nemotron-3-super-120b-a12b:free';
+const RERANK_MODEL = process.env.RERANK_MODEL || 'voyageai/rerank-2.5-lite';
+const RERANK_TIMEOUT_MS = 4500;
 
 export interface RerankerStats {
   attempts: number;
@@ -47,7 +45,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
 
 /**
  * Applies a ranked index list onto the candidate pool, preserving any
- * candidates the reranker dropped (appended in original order).
+ * candidates the reranker dropped (appended in original RRF order).
  */
 function applyRanking(
   candidatePool: SearchResult[],
@@ -63,6 +61,7 @@ function applyRanking(
       });
     }
   }
+  // Append any candidates the reranker dropped, preserving original order
   for (const candidate of candidatePool) {
     if (!reranked.some((r) => r.id === candidate.id)) {
       reranked.push(candidate);
@@ -72,76 +71,8 @@ function applyRanking(
 }
 
 /**
- * Dedicated rerank models (voyage/cohere) via the OpenRouter rerank endpoint.
- */
-async function rerankEndpoint(
-  model: string,
-  query: string,
-  docs: string[],
-  timeoutMs: number
-): Promise<Array<{ index: number; score: number }> | null> {
-  const apiKey = process.env.OPENROUTER_API_KEY || '';
-  if (!apiKey) return null;
-
-  const res = await withTimeout(
-    fetch('https://openrouter.ai/api/v1/rerank', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ model, query, documents: docs }),
-    }),
-    timeoutMs,
-    model
-  );
-
-  if (!res.ok) return null;
-  const data: any = await res.json();
-  const results = data?.results;
-  if (!Array.isArray(results) || results.length === 0) return null;
-  return results.map((r: any) => ({ index: r.index, score: r.relevance_score }));
-}
-
-/**
- * LLM-judge reranker via OpenRouter chat (free Nvidia), last code fallback.
- */
-async function rerankLlmJudge(
-  query: string,
-  candidatePool: SearchResult[]
-): Promise<Array<{ index: number; score: number }> | null> {
-  const prompt = `Evaluate passage relevance for query: "${query}"
-
-Passages:
-${candidatePool.map((c, i) => `[ID: ${i}] ${c.title} > ${c.heading || 'Main'}\n${c.content.slice(0, 280)}`).join('\n\n---\n\n')}
-
-Output a JSON array of objects with id and score (0.0 to 1.0) ordered by relevance. Example: [{"id":0,"score":0.95}]. JSON ONLY:`;
-
-  const chat: any = await withTimeout(
-    openrouter.chat.send({
-      chatRequest: {
-        model: LLM_JUDGE_MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.0,
-      },
-    }),
-    4500,
-    LLM_JUDGE_MODEL
-  );
-
-  const content = chat.choices?.[0]?.message?.content || '';
-  const jsonMatch = content.match(/\[[\s\S]*?\]/);
-  if (!jsonMatch) return null;
-  const ranked = JSON.parse(jsonMatch[0]);
-  if (!Array.isArray(ranked) || ranked.length === 0) return null;
-  return ranked;
-}
-
-/**
- * Three-stage reranker with circuit breaker protection and graceful degradation to RRF:
- * 1. voyageai/rerank-2.5-lite (dedicated rerank endpoint)
- * 2. cohere/rerank-4-fast (dedicated rerank endpoint)
- * 3. nvidia LLM-judge via chat completions
+ * Single-stage reranker: voyageai/rerank-2.5-lite via the OpenRouter rerank endpoint.
+ * Degrades gracefully to original RRF order on failure or circuit-open.
  */
 export async function rerankResults(
   query: string,
@@ -152,9 +83,9 @@ export async function rerankResults(
     return candidates;
   }
 
-  // 1. Circuit Breaker Check
+  // Circuit Breaker: skip if open, return RRF order immediately
   if (rerankerCircuit.isOpen()) {
-    return candidates.slice(0, topK); // Degrade to original RRF order immediately
+    return candidates.slice(0, topK);
   }
 
   totalAttempts++;
@@ -165,29 +96,35 @@ export async function rerankResults(
   );
 
   try {
-    // 2. Primary: voyageai rerank-2.5-lite
-    let ranked = await rerankEndpoint(PRIMARY_RERANK_MODEL, query, docs, 4000).catch(() => null);
+    const apiKey = process.env.OPENROUTER_API_KEY || '';
+    if (!apiKey) throw new Error('OPENROUTER_API_KEY not set');
 
-    // 3. Fallback: cohere rerank-4-fast
-    if (!ranked) {
-      ranked = await rerankEndpoint(FALLBACK_RERANK_MODEL, query, docs, 4000).catch(() => null);
-    }
+    const res = await withTimeout(
+      fetch('https://openrouter.ai/api/v1/rerank', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ model: RERANK_MODEL, query, documents: docs }),
+      }),
+      RERANK_TIMEOUT_MS,
+      RERANK_MODEL
+    );
 
-    // 4. Last code fallback: free Nvidia LLM-judge via chat
-    if (!ranked) {
-      ranked = await rerankLlmJudge(query, candidatePool).catch(() => null);
-    }
+    if (!res.ok) throw new Error(`Rerank API ${res.status}`);
+    const data: any = await res.json();
+    const results = data?.results;
+    if (!Array.isArray(results) || results.length === 0) throw new Error('Empty rerank response');
 
-    if (ranked) {
-      totalSuccesses++;
-      rerankerCircuit.recordSuccess();
-      rerankerLatencies.push(Date.now() - t0);
-      return applyRanking(candidatePool, ranked, topK);
-    }
+    const ranked = results.map((r: any) => ({ index: r.index, score: r.relevance_score }));
 
-    // All three stages returned unusable shapes — treat as error, degrade
-    totalErrors++;
-    rerankerCircuit.recordFailure();
+    totalSuccesses++;
+    rerankerCircuit.recordSuccess();
+    rerankerLatencies.push(Date.now() - t0);
+    if (rerankerLatencies.length > 500) rerankerLatencies.splice(0, rerankerLatencies.length - 500);
+    return applyRanking(candidatePool, ranked, topK);
+
   } catch (err: any) {
     if (err?.message?.includes('timeout')) {
       totalTimeouts++;
@@ -197,7 +134,8 @@ export async function rerankResults(
     rerankerCircuit.recordFailure();
   }
 
-  // 5. Graceful Degradation: Return original RRF rank order
+  // Graceful Degradation: return original RRF rank order
   rerankerLatencies.push(Date.now() - t0);
+  if (rerankerLatencies.length > 500) rerankerLatencies.splice(0, rerankerLatencies.length - 500);
   return candidates.slice(0, topK);
 }

@@ -13,24 +13,23 @@ import {
 import { classifyQueryIntent } from './intent.js';
 import { estimateRetrievalConfidence } from './confidence.js';
 import { primaryLlmCircuit } from './circuit.js';
-import { googleGenAI, openrouter } from './clients.js';
+import { googleGenAI } from './clients.js';
 import type { RAGResponse, RAGSource, SearchOptions, RAGTrace } from './types.js';
 
-const PRIMARY_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-flash-latest';
-const GEMINI_FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || 'gemini-flash-latest';
-const OPENROUTER_FALLBACK_MODEL = process.env.OPENROUTER_FALLBACK_MODEL || 'nvidia/nemotron-3-super-120b-a12b:free';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 
 /**
  * Citation Integrity & Response Quality Gate.
+ * Converts [SOURCE: N] tags into verified markdown links and validates output quality.
+ * Phantom citations are stripped from the formatted output; they do not block caching.
  */
 function validateCitationIntegrityAndQuality(
   text: string,
   sources: RAGSource[]
 ): { formatted: string; isValid: boolean; citationCount: number } {
-  let hasInvalid = false;
   let citationCount = 0;
 
-  const formatted = text.replace(/\[SOURCE:([^\]]*)\]/gi, (match, inner: string) => {
+  const formatted = text.replace(/\[SOURCE:([^\]]*)\]/gi, (_, inner: string) => {
     // Tolerates every LLM spelling: [SOURCE: 1], [SOURCE: 1, 2], [SOURCE: 1, SOURCE: 4]
     const ids = (inner.match(/\d+/g) || []).map(Number);
     const seen = new Set<number>();
@@ -42,23 +41,27 @@ function validateCitationIntegrityAndQuality(
         seen.add(id);
         return `[[${id}]](${source.url})`;
       }
-      hasInvalid = true;
-      return '';
+      return ''; // Phantom citation — strip silently
     }).filter(Boolean);
     return links.length ? ` ${links.join(' ')}` : '';
   });
 
-  const passesQuality = !hasInvalid && formatted.trim().length > 20 && !formatted.includes('fallback-error');
+  // Cache the response if the formatted output is non-trivial and contains no error sentinel.
+  // Phantom citations are already stripped above — they don't disqualify the response.
+  const isValid = formatted.trim().length > 20 && !formatted.includes('fallback-error');
 
   return {
     formatted: formatted.trim(),
-    isValid: passesQuality,
+    isValid,
     citationCount,
   };
 }
 
 /**
- * Production RAG pipeline with Singleflight request coalescing, circuit breakers, and Citation Integrity gating.
+ * Production RAG pipeline.
+ * Stages: Query normalization → Tier 1 cache → Singleflight coalescing →
+ *         Hybrid search → Confidence gate → Fast/Deep path → Gemini generation →
+ *         Citation integrity gate → Tier 1 cache write.
  */
 export async function askRag(
   question: string,
@@ -70,10 +73,6 @@ export async function askRag(
 ): Promise<RAGResponse> {
   const startTime = Date.now();
   const cleanQuestion = question.trim();
-  const intent = options.intent || classifyQueryIntent(cleanQuestion);
-  const kbVersion = getKbVersion();
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-  const queryHash = hashString(cleanQuestion);
 
   if (!cleanQuestion) {
     return {
@@ -82,11 +81,16 @@ export async function askRag(
       confidence: 0,
       sources: [],
       cached: false,
-      model: PRIMARY_GEMINI_MODEL,
+      model: GEMINI_MODEL,
       intent: 'general',
       executionTimeMs: 0,
     };
   }
+
+  const intent = options.intent || classifyQueryIntent(cleanQuestion);
+  const kbVersion = getKbVersion();
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const queryHash = hashString(cleanQuestion);
 
   // 1. Tier 1: Versioned Dragonfly Answer Cache
   const answerCacheKey = options.useCache !== false ? getAnswerCacheKey(cleanQuestion, kbVersion) : null;
@@ -94,11 +98,7 @@ export async function askRag(
     const cached = await getCached<RAGResponse>(answerCacheKey);
     if (cached) {
       if (options.onToken) options.onToken(cached.answer);
-      return {
-        ...cached,
-        cached: true,
-        executionTimeMs: Date.now() - startTime,
-      };
+      return { ...cached, cached: true, executionTimeMs: Date.now() - startTime };
     }
   }
 
@@ -110,13 +110,9 @@ export async function askRag(
       const coalescedAnswer = await waitForCachedAnswer<RAGResponse>(answerCacheKey, 3000, 150);
       if (coalescedAnswer) {
         if (options.onToken) options.onToken(coalescedAnswer.answer);
-        return {
-          ...coalescedAnswer,
-          cached: true,
-          executionTimeMs: Date.now() - startTime,
-        };
+        return { ...coalescedAnswer, cached: true, executionTimeMs: Date.now() - startTime };
       }
-      // Re-try acquiring lock after wait before running pipeline
+      // Re-try acquiring lock after wait
       isLockHolder = await acquireStampedeLock(queryHash, requestId, 15);
     }
   }
@@ -133,7 +129,7 @@ export async function askRag(
     });
     const searchMs = Date.now() - searchStart;
 
-    // 4. Multi-Feature Confidence Assessment & Conservative Early Refusal Gate
+    // 4. Multi-Feature Confidence Assessment & Early Refusal Gate
     const confidence = estimateRetrievalConfidence(matches, intent);
 
     if (!confidence.isConfident) {
@@ -147,10 +143,7 @@ export async function askRag(
         cacheHit: false,
         path: 'EARLY_REFUSAL',
         confidence,
-        latencies: {
-          searchMs,
-          totalMs: Date.now() - startTime,
-        },
+        latencies: { searchMs, totalMs: Date.now() - startTime },
         model: 'early-refusal-gate',
         kbVersion,
       };
@@ -175,7 +168,9 @@ export async function askRag(
     let rerankMs = 0;
     let selectedPath: 'FAST_PATH' | 'DEEP_PATH' = 'FAST_PATH';
 
-    const shouldRerank = options.enableRerank === true || (!confidence.isDecisive && options.enableRerank !== false && matches.length > candidateLimit);
+    const shouldRerank =
+      options.enableRerank === true ||
+      (!confidence.isDecisive && options.enableRerank !== false && matches.length > candidateLimit);
 
     if (shouldRerank) {
       selectedPath = 'DEEP_PATH';
@@ -215,72 +210,44 @@ Citation & Grounding Rules:
 
     const inputPrompt = `${systemInstruction}\n\nContext Passages:\n${contextBlocks}\n\nUser Question: ${cleanQuestion}\n\nAnswer:`;
 
+    // 7. Answer Generation — single Gemini model with circuit breaker
     let rawAnswer = '';
-    let usedModel = `google/${PRIMARY_GEMINI_MODEL}`;
     const genStart = Date.now();
+    const tryGenerate = !primaryLlmCircuit.isOpen();
 
-    // 7. Answer Generation with Half-Open Circuit Breakers & Fallback LLM
-    const tryPrimary = !primaryLlmCircuit.isOpen();
-
-    if (tryPrimary) {
+    if (tryGenerate) {
       try {
         const res = await googleGenAI.models.generateContent({
-          model: PRIMARY_GEMINI_MODEL,
+          model: GEMINI_MODEL,
           contents: inputPrompt,
           config: { temperature: 0.1 },
         });
-
         if (res.text) {
           rawAnswer = res.text.trim();
           primaryLlmCircuit.recordSuccess();
+        } else {
+          primaryLlmCircuit.recordFailure();
         }
       } catch {
         primaryLlmCircuit.recordFailure();
       }
     }
 
-    // Fallback LLM when primary is failed or circuit is open
-    if (!rawAnswer) {
-      try {
-        const fallbackRes = await googleGenAI.models.generateContent({
-          model: GEMINI_FALLBACK_MODEL,
-          contents: inputPrompt,
-          config: { temperature: 0.1 },
-        });
-        if (fallbackRes.text) {
-          rawAnswer = fallbackRes.text.trim();
-          usedModel = `google/${GEMINI_FALLBACK_MODEL}`;
-        }
-      } catch {
-        try {
-          const chat: any = await openrouter.chat.send({
-            chatRequest: {
-              model: OPENROUTER_FALLBACK_MODEL,
-              messages: [{ role: 'user', content: inputPrompt }],
-              temperature: 0.1,
-            },
-          });
-          if (chat.choices?.[0]?.message?.content) {
-            rawAnswer = chat.choices[0].message.content.trim();
-            usedModel = OPENROUTER_FALLBACK_MODEL;
-          }
-        } catch {}
-      }
-    }
-
     const generationMs = Date.now() - genStart;
 
+    // Static fallback: surface raw chunks with inline source links if Gemini is unavailable
     if (!rawAnswer) {
-      rawAnswer = `Based on Jainil's RAG knowledge base:\n\n` +
-        matches.map((m, i) => `- **[${m.title}](${m.url})** (${m.heading || 'Overview'}) [SOURCE: ${i + 1}]:\n  ${m.content.slice(0, 250)}...`).join('\n\n');
+      rawAnswer =
+        `Based on Jainil's RAG knowledge base:\n\n` +
+        matches
+          .map((m, i) => `- **${m.title}** (${m.heading || 'Overview'}) [SOURCE: ${i + 1}]:\n  ${m.content.slice(0, 250)}...`)
+          .join('\n\n');
     }
 
     // 8. Citation Integrity & Response Quality Gate
     const qualityGate = validateCitationIntegrityAndQuality(rawAnswer, sources);
 
-    if (options.onToken) {
-      options.onToken(qualityGate.formatted);
-    }
+    if (options.onToken) options.onToken(qualityGate.formatted);
 
     const totalMs = Date.now() - startTime;
 
@@ -297,7 +264,7 @@ Citation & Grounding Rules:
         generationMs,
         totalMs,
       },
-      model: usedModel,
+      model: GEMINI_MODEL,
       kbVersion,
     };
 
@@ -307,13 +274,13 @@ Citation & Grounding Rules:
       confidence: Number(confidence.score.toFixed(3)),
       sources,
       cached: false,
-      model: usedModel,
+      model: GEMINI_MODEL,
       intent,
       executionTimeMs: totalMs,
       trace,
     };
 
-    // 9. Cache Write (Only cache when passing Citation Integrity & Quality)
+    // 9. Cache Write — only on valid, non-trivial answers
     if (answerCacheKey && qualityGate.isValid) {
       await setCached(answerCacheKey, response, 7200);
     }
