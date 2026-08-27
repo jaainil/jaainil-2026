@@ -35,6 +35,7 @@ At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-A
 * **Grounded AI Assistant (Jainil's RAG):** Interactive modal (`⌘K` / `Ctrl+K`) that answers questions exclusively from Jainil's verified resume, profile, and 25+ articles with 100% citation accuracy and zero hallucinations.
 * **Writenex CMS Integration:** Integrated with `@imjp/writenex-astro` (v1.9.1) — Jainil's open-source Astro CMS integration for MDX content management with colocated images and autosave.
 * **25+ Technical Deep Dives:** Long-form engineering articles covering AI infrastructure, Linux kernel internals, telecommunications architecture (JioHotstar feature flagging), GPS systems (NavIC), geopolitics of compute, and web performance.
+* **Interactive Margin Notes (Giscus):** GitHub Discussions-backed commenting engine on every technical article with bespoke Primer themes (`public/giscus/theme-*.css`) matching the Lego/Blueprint design tokens, featuring real-time light/dark theme synchronization via `MutationObserver`.
 * **AI Engine Optimization (AEO) & WebMCP:** Built-in `llms.txt` generation via `astro-aeo`, structured JSON-LD schemas (`Person`, `BlogPosting`), and browser-native W3C Web Machine Learning Model Context Protocol (WebMCP) tool integration.
 * **Privacy & Cookie Governance:** Built-in privacy management and consent banner powered by `@openpolicy/sdk`.
 * **Zero-Tracker Analytics:** Self-hosted privacy-focused analytics using Umami (`@yeskunall/astro-umami`).
@@ -192,6 +193,7 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 * **Typography:** Variable fonts via Fontsource (`@fontsource-variable/rubik`, `@fontsource-variable/jetbrains-mono`, `@fontsource-variable/inter`, `@fontsource-variable/space-grotesk`).
 * **Micro-interactions:** Hard shadows (`0 3px 0 var(--keyline)`), tactile button presses (`hover:-translate-y-1`, `active:translate-y-0`), stud-grid backgrounds, and pill badge indicators.
 * **Accessibility:** WCAG AA compliant contrast ratios across both light and dark themes, keyboard navigable, screen reader friendly.
+* **Themed Discussions (Giscus):** Custom Primer stylesheets (`public/giscus/theme-light.css` & `public/giscus/theme-dark.css`) style embedded GitHub Discussions margin notes with Rubik typography, `#111111` keyline geometry, action blue buttons, and real-time light/dark theme switching.
 
 ---
 
@@ -202,6 +204,7 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 | **Framework & SSG** | [Astro 7](https://astro.build), [React 19](https://react.dev), [Vite](https://vitejs.dev), [@astrojs/vercel](https://www.npmjs.com/package/@astrojs/vercel) |
 | **Styling & Design** | [Tailwind CSS 4](https://tailwindcss.com), [@tailwindcss/vite](https://www.npmjs.com/package/@tailwindcss/vite), Lucide Icons |
 | **CMS Engine** | [@imjp/writenex-astro](https://www.npmjs.com/package/@imjp/writenex-astro) (v1.9.1) |
+| **Comments & Community** | [Giscus](https://giscus.app) (GitHub Discussions comments with custom Primer CSS themes) |
 | **Vector Database** | [PostgreSQL 16](https://www.postgresql.org) + [pgvector](https://github.com/pgvector/pgvector) (1536-dim HNSW Cosine Index) |
 | **In-Memory Cache & Mutex**| [Dragonfly](https://www.dragonflydb.io) (Multi-threaded Redis-compatible engine on VPS) |
 | **Dense Embeddings** | OpenAI `text-embedding-3-small` (1536 dimensions via [OpenRouter SDK](https://openrouter.ai)) |
@@ -217,18 +220,14 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 
 ```text
 ├── public/                     # Static assets, favicon, resume PDF & MD
-├── scripts/
-│   └── rag/                    # Operational & diagnostic CLI scripts
-│       ├── chat-cli.ts         # Interactive terminal REPL & single Q&A CLI
-│       ├── eval.ts             # Automated evaluation benchmark test runner
-│       ├── index-content.ts    # Incremental knowledge base ETL indexer
-│       ├── init-db.ts          # PostgreSQL schema & pgvector index initialiser
-│       ├── search-cli.ts       # Raw hybrid search scoring diagnostic
-│       └── stats.ts            # VPS database & Dragonfly health check
+│   └── giscus/                 # Custom Primer stylesheets for Giscus comments
+│       ├── theme-dark.css      # Dark mode booklet theme
+│       └── theme-light.css     # Light mode booklet theme
 ├── src/
 │   ├── components/             # Reusable Astro & React components
 │   │   ├── AnimatedToc.astro   # Dynamic TOC for technical articles
 │   │   ├── Footer.astro        # Site footer with status & links
+│   │   ├── GiscusComments.astro# GitHub Discussions margin notes component
 │   │   ├── Navbar.astro        # Navigation header with dark mode toggle
 │   │   ├── rag/
 │   │   │   └── JainilsRAGChat.tsx # Lego-themed AI chat modal (⌘K)
