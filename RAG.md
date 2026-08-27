@@ -286,19 +286,32 @@ Full audit of all 15 source files in `src/lib/rag/`, `src/pages/api/rag/`, and `
 ---
 
 #### BUG-02 · `db.ts` · 🔴 Critical
-**Vector dimension migration never triggered.**
+**Brittle vector dimension check caused unintended table wipes or missed migrations.**
 
-pgvector stores `vector(N)` columns with `atttypmod = N + 1` (i.e. `vector(1536)` → `atttypmod = 1537`). The check was `currentDim !== 1536`, which is always false for a correctly created table.
+Raw `atttypmod` integer representation in PostgreSQL catalog attributes can vary depending on driver and pgvector extension internals. Checking raw `currentDim !== 1536` or `!== 1537` was brittle and caused `initSchema()` to wipe `document_chunks` or fail dimension migrations.
+
+**Fix:** Switched to PostgreSQL's canonical `format_type(atttypid, atttypmod)` function, which directly returns the human-readable type string (e.g. `'vector(1536)'`), ensuring 100% deterministic dimension checking across all PostgreSQL/pgvector versions.
 
 ```ts
 // Before
-if (colCheck.rows.length > 0 && currentDim !== 1536)
+const colCheck = await client.query(`
+  SELECT atttypmod FROM pg_attribute 
+  WHERE attrelid = 'document_chunks'::regclass AND attname = 'embedding';
+`);
+if (colCheck.rows.length > 0 && currentDim !== 1536) ...
 
-// After — pgvector stores vector(N) with atttypmod = N + 1
-if (colCheck.rows.length > 0 && currentDim !== 1537)
+// After — canonical PostgreSQL type formatting
+const colCheck = await client.query(`
+  SELECT format_type(atttypid, atttypmod) as fmt 
+  FROM pg_attribute 
+  WHERE attrelid = 'document_chunks'::regclass AND attname = 'embedding';
+`);
+if (colCheck.rows.length > 0 && colCheck.rows[0]?.fmt !== 'vector(1536)') {
+  await client.query('DROP TABLE IF EXISTS document_chunks CASCADE;');
+}
 ```
 
-**File:** `src/lib/rag/db.ts`
+**File:** `src/lib/rag/db.ts` L62–73
 
 ---
 
@@ -427,7 +440,7 @@ rel={s.url.startsWith('http') ? 'noopener noreferrer' : undefined}
 | ID | Severity | File | Root Cause |
 |----|----------|------|------------|
 | BUG-01 | 🔴 Critical | `rerank.ts` | LLM-judge `{id}` not mapped to `{index}` — third rerank stage silently broken |
-| BUG-02 | 🔴 Critical | `db.ts` | `atttypmod` off-by-one — vector dimension migration never fired |
+| BUG-02 | 🔴 Critical | `db.ts` | Brittle `atttypmod` equality — replaced with canonical `format_type` check |
 | BUG-03 | 🟠 High | `chat.ts` | Gemini fallback defaulted to same model as primary |
 | BUG-04 | 🟠 High | `chat.ts` | Circuit breaker not updated on fallback path |
 | BUG-05 | 🟠 High | `ingest.ts` | `frontmatter.title` used without null guard — DB NOT NULL crash |

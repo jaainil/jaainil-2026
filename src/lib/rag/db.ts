@@ -59,15 +59,15 @@ export async function initSchema(): Promise<void> {
       ALTER TABLE documents ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT now();
     `);
 
-    // Check if document_chunks exists and its vector dimension
+    // Check if document_chunks exists and its vector dimension using canonical format_type
     const colCheck = await client.query(`
-      SELECT atttypmod FROM pg_attribute 
+      SELECT format_type(atttypid, atttypmod) as fmt 
+      FROM pg_attribute 
       WHERE attrelid = 'document_chunks'::regclass AND attname = 'embedding';
     `).catch(() => ({ rows: [] }));
 
-    const currentDim = colCheck.rows[0]?.atttypmod;
-    // pgvector stores vector(N) with atttypmod = N + 1 (e.g. vector(1536) → atttypmod = 1537)
-    if (colCheck.rows.length > 0 && currentDim !== 1537) {
+    const fmt = colCheck.rows[0]?.fmt;
+    if (colCheck.rows.length > 0 && fmt !== 'vector(1536)') {
       console.log(`🔄 Updating table with vector(1536) for OpenRouter Embeddings + HNSW index...`);
       await client.query('DROP TABLE IF EXISTS document_chunks CASCADE;');
     }
