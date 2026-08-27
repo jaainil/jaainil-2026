@@ -152,7 +152,28 @@ export const JainilsRAGChat: React.FC = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // ponytail: localStorage flag instead of "seen N times" logic — fine for a hint
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        if (localStorage.getItem('ragchat-hint') !== '1') setShowHint(true);
+      } catch {
+        /* private mode */
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  const rememberHint = () => {
+    try {
+      localStorage.setItem('ragchat-hint', '1');
+    } catch {
+      /* ignore */
+    }
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -230,7 +251,10 @@ export const JainilsRAGChat: React.FC = () => {
     <>
       {/* Floating Trigger */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          rememberHint();
+          setIsOpen(true);
+        }}
         className="fixed bottom-36 left-4 md:bottom-6 md:left-6 md:right-auto z-30 flex items-center justify-center gap-2.5 w-12 h-12 md:w-auto md:h-auto md:px-4 md:py-3 rounded-xl transition-transform hover:-translate-y-1 font-bold text-sm cursor-pointer"
         style={{
           backgroundColor: 'var(--marker)',
@@ -249,6 +273,49 @@ export const JainilsRAGChat: React.FC = () => {
           ⌘K
         </kbd>
       </button>
+
+      {/* Mobile hint bubble — names the unlabeled icon */}
+      <div
+        className={`md:hidden fixed bottom-[9.25rem] left-[4.25rem] z-30 transition-all duration-300 ease-out ${
+          showHint && !isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1.5 opacity-0'
+        }`}
+        aria-hidden={!showHint || isOpen}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 -left-[7px] -mt-[7px] w-3.5 h-3.5 rotate-45"
+          style={{ background: 'var(--paper)', borderLeft: '2px solid var(--keyline)', borderBottom: '2px solid var(--keyline)' }}
+        />
+        <button
+          onClick={() => {
+            rememberHint();
+            setIsOpen(true);
+          }}
+          className="flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap cursor-pointer active:scale-[0.98] transition-transform"
+          style={{
+            background: 'var(--paper)',
+            color: 'var(--ink)',
+            border: '2px solid var(--keyline)',
+            boxShadow: '0 3px 0 var(--keyline)',
+          }}
+        >
+          <BrickGlyph />
+          Ask me anything about Jainil
+        </button>
+        <button
+          onClick={() => {
+            rememberHint();
+            setShowHint(false);
+          }}
+          aria-label="Dismiss hint"
+          className="absolute -top-2 -right-2 grid place-items-center w-5 h-5 rounded-md cursor-pointer"
+          style={{ background: 'var(--paper)', color: 'var(--ink)', border: '2px solid var(--keyline)', boxShadow: '0 2px 0 var(--keyline)' }}
+        >
+          <svg className="w-2 h-2" fill="none" stroke="currentColor" strokeWidth="3.4" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
       {/* Modal Backdrop */}
       {isOpen && (
