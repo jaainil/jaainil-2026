@@ -645,6 +645,8 @@ export function getRerankerTelemetry(): RerankerStats {
   6. Be concise, direct, and technically accurate.
   ```
 
+* **Personal-Life Persona (`chat.ts`):** Questions matching a hardcoded personal-life keyword list (girlfriend, gf, Hetal, love story, …) that also retrieve `is_private` background context are answered in a warm, playful tone with emojis — grounded strictly in the `[BACKGROUND]` excerpts as always. A fixed sign-off is appended **in code** (`PERSONAL_CLOSER`), so it can never be skipped, doubled, or vary off-brand; all other questions keep the strict professional persona. Keywords live directly in source, not env config.
+
 ### 9.2 Pre-Retrieval & Pre-LLM Guardrails (`guardrails.ts`)
 
 Before any embedding API calls, vector search queries, or LLM generations occur, the input query passes through **Stage 0 deterministic guardrails** executing in `<5ms` and consuming **0 LLM tokens**:

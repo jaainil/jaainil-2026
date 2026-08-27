@@ -181,6 +181,7 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
 7. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
 8. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
 9. **Automated Quality Gates:** `rag:eval` runs 24 ground-truth queries against regression thresholds (Recall@3, citation validity, refusal accuracy); `rag:privacy` audits private-document isolation end-to-end.
+10. **Personal-Life Persona:** Questions about Jainil's relationship (keyword-gated against private context) get a warm, emoji-flavored answer grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work; all other queries keep the strict professional tone.
 
 ---
 
