@@ -216,8 +216,17 @@ export async function askRag(
       matches = matches.slice(0, candidateLimit);
     }
 
+    // Private (pvt) docs are grounded-in, never cited: kept out of the numbered
+    // source list; their content ships as unnumbered BACKGROUND context so the
+    // model has no [SOURCE: N] id to reference them with.
+    // ponytail: path-prefix check only covers default /knowledge/pvt/... urls — a
+    // frontmatter url override would bypass it; switch to a document flag if that matters.
+    const isPrivateUrl = (u: string) => u.startsWith('/knowledge/pvt/');
+    const citableMatches = matches.filter((m) => !isPrivateUrl(m.url));
+    const privateMatches = matches.filter((m) => isPrivateUrl(m.url));
+
     // 6. Structured Context Builder with Explicit Source IDs
-    const sources: RAGSource[] = matches.map((m) => ({
+    const sources: RAGSource[] = citableMatches.map((m) => ({
       title: m.title,
       url: m.url,
       heading: m.heading,
@@ -225,10 +234,15 @@ export async function askRag(
       score: Number(m.rrfScore.toFixed(4)),
     }));
 
-    const contextBlocks = matches.map((m, idx) => {
-      const sourceId = idx + 1;
-      return `[SOURCE: ${sourceId}]\nURL: ${m.url}\nTITLE: ${m.title}\nSECTION: ${m.heading || 'Overview'}\nCONTENT:\n${m.content}`;
-    }).join('\n\n---\n\n');
+    const contextBlocks = [
+      ...citableMatches.map((m, idx) => {
+        const sourceId = idx + 1;
+        return `[SOURCE: ${sourceId}]\nURL: ${m.url}\nTITLE: ${m.title}\nSECTION: ${m.heading || 'Overview'}\nCONTENT:\n${m.content}`;
+      }),
+      ...privateMatches.map((m) =>
+        `[BACKGROUND]\nTITLE: ${m.title}\nSECTION: ${m.heading || 'Overview'}\nCONTENT:\n${m.content}`
+      ),
+    ].join('\n\n---\n\n');
 
     const systemInstruction = `You are Jainil's RAG AI Assistant, representing Jainil Prajapati's portfolio, resume, and technical publications (jaainil.com / Shravonix).
 
@@ -275,9 +289,10 @@ Citation & Grounding Rules:
     // or the output guardrails reject the answer as degenerate.
     const staticFallbackAnswer =
       `Based on Jainil's RAG knowledge base:\n\n` +
-      matches
-        .map((m, i) => `- **${m.title}** (${m.heading || 'Overview'}) [SOURCE: ${i + 1}]:\n  ${m.content.slice(0, 250)}...`)
-        .join('\n\n');
+      [
+        ...citableMatches.map((m, i) => `- **${m.title}** (${m.heading || 'Overview'}) [SOURCE: ${i + 1}]:\n  ${m.content.slice(0, 250)}...`),
+        ...privateMatches.map((m) => `- **${m.title}** (${m.heading || 'Overview'}):\n  ${m.content.slice(0, 250)}...`),
+      ].join('\n\n');
 
     if (!rawAnswer) {
       rawAnswer = staticFallbackAnswer;

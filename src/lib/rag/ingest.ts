@@ -3,7 +3,7 @@ import path from 'node:path';
 import { extractFrontmatterAndClean, htmlToText } from './cleaner.js';
 import { chunkDocument } from './chunk.js';
 import { embedBatch, EMBEDDING_MODEL, EMBEDDING_DIMENSION } from './embeddings.js';
-import { initSchema, upsertDocument, replaceDocumentChunks, getDocumentByUrl, getDatabaseStats } from './db.js';
+import { initSchema, upsertDocument, replaceDocumentChunks, getDocumentByUrl, getDatabaseStats, getDbNow, touchDocumentSeen, pruneStaleDocuments } from './db.js';
 import { setKbVersion, hashString } from './cache.js';
 import type { ChunkRecord } from './types.js';
 
@@ -47,6 +47,7 @@ export async function ingestProfilePages(): Promise<number> {
 
     if (existing && existing.sourceHash === sourceHash) {
       console.log('⚡ [Resume] Unchanged (matching source hash) — skipping re-embed.');
+      await touchDocumentSeen('/resume/Jainil.pdf');
     } else {
       const docId = await upsertDocument({
         url: '/resume/Jainil.pdf',
@@ -111,6 +112,7 @@ export async function ingestProfilePages(): Promise<number> {
 
     if (existing && existing.sourceHash === sourceHash) {
       console.log('⚡ [About Page] Unchanged (matching source hash) — skipping re-embed.');
+      await touchDocumentSeen('/about');
     } else {
       const docId = await upsertDocument({
         url: '/about',
@@ -181,6 +183,7 @@ export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; t
 
       if (existingDoc && existingDoc.sourceHash === sourceHash) {
         skippedDocuments++;
+        await touchDocumentSeen(url);
         continue;
       }
 
@@ -232,6 +235,9 @@ export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; t
 export async function ingestAllArticles(): Promise<{ totalDocuments: number; totalChunks: number; skippedDocuments: number }> {
   console.log('🚀 Starting Incremental RAG Knowledge Base Ingestion...');
   await initSchema();
+  // Cutoff for stale-document pruning: everything seen on disk this run gets last_seen_at >= now,
+  // anything older than this is a deleted/removed source and gets pruned at the end.
+  const runStart = await getDbNow();
 
   let totalDocuments = 0;
   let totalChunks = 0;
@@ -250,9 +256,8 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
   // Scan directory for technical articles
   if (!fs.existsSync(CONTENT_DIR)) {
     console.warn(`⚠️ Articles directory not found: ${CONTENT_DIR} — skipping article ingestion.`);
-    return { totalDocuments, totalChunks, skippedDocuments };
   }
-  const entries = fs.readdirSync(CONTENT_DIR, { withFileTypes: true });
+  const entries = fs.existsSync(CONTENT_DIR) ? fs.readdirSync(CONTENT_DIR, { withFileTypes: true }) : [];
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
@@ -276,6 +281,7 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
 
     if (existingDoc && existingDoc.sourceHash === sourceHash) {
       skippedDocuments++;
+      await touchDocumentSeen(url);
       continue;
     }
 
@@ -315,6 +321,12 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
     await replaceDocumentChunks(docId, chunkRecords);
     totalChunks += chunkRecords.length;
     console.log(`✅ [Article] Indexed "${articleTitle.slice(0, 38)}" (${chunkRecords.length} chunks)`);
+  }
+
+  // Prune documents whose source no longer exists on disk (deleted files, drafts, etc.)
+  const prunedUrls = await pruneStaleDocuments(runStart);
+  if (prunedUrls.length > 0) {
+    console.log(`🧹 Pruned ${prunedUrls.length} stale document(s) (source deleted or draft): ${prunedUrls.join(', ')}`);
   }
 
   // Roll KB Version in Cache

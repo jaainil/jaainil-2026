@@ -234,6 +234,32 @@ export async function getDatabaseStats(): Promise<DatabaseStats> {
   });
 }
 
+/** DB-server clock (avoids host-vs-VPS skew when pruning). */
+export async function getDbNow(): Promise<Date> {
+  return withDb(async (client) => {
+    const res = await client.query('SELECT now() AS ts');
+    return res.rows[0].ts as Date;
+  });
+}
+
+/** Marks a scanned-but-unchanged document as still present on disk. */
+export async function touchDocumentSeen(url: string): Promise<void> {
+  await withDb(async (client) => {
+    await client.query('UPDATE documents SET last_seen_at = now() WHERE url = $1', [url]);
+  });
+}
+
+/** Deletes documents not seen during this ingestion run; chunks go via ON DELETE CASCADE. */
+export async function pruneStaleDocuments(cutoff: Date): Promise<string[]> {
+  return withDb(async (client) => {
+    const res = await client.query(
+      'DELETE FROM documents WHERE last_seen_at < $1 RETURNING url',
+      [cutoff]
+    );
+    return res.rows.map((r: { url: string }) => r.url);
+  });
+}
+
 export async function closeDb(): Promise<void> {
   if (pool) {
     await pool.end();
