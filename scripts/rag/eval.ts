@@ -121,8 +121,8 @@ async function runEval() {
         });
       }
 
-      // Check citations
-      const citationMatches = res.answer.match(/\[[^\]]+\]\(([^)]+)\)/g) || [];
+      // Check citations (supports [[1]](url) and [1](url))
+      const citationMatches = res.answer.match(/\[+[\d\s,]+\]+\(([^)]+)\)/g) || [];
       totalCitations += citationMatches.length;
       citationMatches.forEach((c) => {
         const urlMatch = c.match(/\(([^)]+)\)/);

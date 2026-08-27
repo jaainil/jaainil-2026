@@ -332,8 +332,8 @@ export const JainilsRAGChat: React.FC = () => {
                             <a
                               key={idx}
                               href={s.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              target={s.url.startsWith('http') ? '_blank' : undefined}
+                              rel={s.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                               className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg font-bold transition-transform hover:-translate-y-0.5"
                               style={{
                                 border: '2px solid var(--keyline)',

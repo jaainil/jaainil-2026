@@ -248,6 +248,10 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
   skippedDocuments += knowledgeRes.skippedDocuments;
 
   // Scan directory for technical articles
+  if (!fs.existsSync(CONTENT_DIR)) {
+    console.warn(`⚠️ Articles directory not found: ${CONTENT_DIR} — skipping article ingestion.`);
+    return { totalDocuments, totalChunks, skippedDocuments };
+  }
   const entries = fs.readdirSync(CONTENT_DIR, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -276,9 +280,10 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
     }
 
     totalDocuments++;
+    const articleTitle = frontmatter.title || path.basename(slug).replace(/[-_]/g, ' ');
     const docId = await upsertDocument({
       url,
-      title: frontmatter.title,
+      title: articleTitle,
       type: 'article',
       category: frontmatter.category,
       description: frontmatter.description,
@@ -287,7 +292,7 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
       publishedAt: frontmatter.publishedAt ? new Date(frontmatter.publishedAt) : null,
     });
 
-    const rawChunks = chunkDocument(cleanContent, frontmatter.title);
+    const rawChunks = chunkDocument(cleanContent, articleTitle);
     if (rawChunks.length === 0) continue;
 
     const textsToEmbed = rawChunks.map((c) => c.content);
@@ -309,7 +314,7 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
 
     await replaceDocumentChunks(docId, chunkRecords);
     totalChunks += chunkRecords.length;
-    console.log(`✅ [Article] Indexed "${frontmatter.title.slice(0, 38)}" (${chunkRecords.length} chunks)`);
+    console.log(`✅ [Article] Indexed "${articleTitle.slice(0, 38)}" (${chunkRecords.length} chunks)`);
   }
 
   // Roll KB Version in Cache

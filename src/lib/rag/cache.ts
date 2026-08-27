@@ -30,6 +30,12 @@ export function getRedisClient(): Redis | null {
       }
     });
 
+    // Clear the singleton when the connection is permanently closed so the
+    // next call to getRedisClient() can attempt a fresh connection.
+    redisClient.on('end', () => {
+      redisClient = null;
+    });
+
     return redisClient;
   } catch (err) {
     console.warn('Failed to initialize Dragonfly client:', err);

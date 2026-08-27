@@ -86,10 +86,10 @@ Technical documentation for **Jainil's RAG**, a multi-tiered Retrieval-Augmented
                                                  └───────────┬───────────┘
                                                              │
                                                              ▼
-                                                 ┌───────────────────────┐
-                                                 │   gemini-2.0-flash    │ (Google GenAI SDK)
-                                                 │   Circuit Breaker     │ (3 failures → OPEN 30s)
-                                                 └───────────┬───────────┘
+                                                 ┌───────────────────────────┐
+                                                 │   gemini-3.5-flash-lite   │ (Google GenAI SDK)
+                                                 │   Circuit Breaker         │ (3 failures → OPEN 30s)
+                                                 └───────────┬───────────────┘
                                                              │
                                                  ┌───────────┴───────────┐
                                                  │                       │
@@ -183,37 +183,37 @@ Total Test Questions:   24
 
 🔍 RETRIEVAL
 Recall@1:               94.7% (18/19)
-Recall@3:               94.7% (18/19)
+Recall@3:               100% (19/19)
 
 🧠 CITATIONS & RESPONSE QUALITY
-Citation Validity:            100.0%
-Citation-Backed Answer Rate:   94.7% (18/19)
-Invalid Cached Responses:         0
+Citation Validity:            100% (128/128 valid links)
+Citation-Backed Answer Rate:  100% (19/19)
+Invalid Cached Responses:     0
 
 🛡️ REFUSAL
-Refusal Accuracy:       100.0% (5/5) [Zero hallucinations, rejected in < 80ms]
+Refusal Accuracy:       100% (5/5) [Zero hallucinations, rejected in < 85ms]
 
 ⚡ ROUTING BREAKDOWN
-⚡ Fast-Path:            13
-🧠 Deep-Path:            6
+⚡ Fast-Path:            16
+🧠 Deep-Path:            3
 🛡️ Early Refusals:       5
 ────────────────────────────────────
 Total Handled:          24/24
 
 ⏱️ PERFORMANCE
 Answer Cache Hit:       ~10–80ms
-Fast-Path P50:          289ms
-Deep-Path P50:          2954ms
-Overall P50:            290ms
-Overall Average:        772ms
-Overall P95:            3092ms
+Fast-Path P50:          1388ms
+Deep-Path P50:          2382ms
+Overall P50:            1271ms
+Overall Average:        1153ms
+Overall P95:            2382ms
 
 📂 CATEGORY PERFORMANCE
 - profile     : 100% (3/3)
 - projects    : 100% (3/3)
 - experience  : 100% (1/1)
 - skills      : 100% (2/2)
-- article     : 90% (9/10)
+- article     : 100% (10/10)
 - negative    : 100% (5/5)
 ──────────────────────────────────────────────────────
 🎉 EVALUATION PASSED: All regression quality gates met!
@@ -231,7 +231,7 @@ The previous architecture had three LLM layers for generation and three for rera
 
 | Stage | Before | After |
 |-------|--------|-------|
-| LLM generation | `gemini-2.0-flash` → `gemini-2.0-flash-lite` → OpenRouter Nvidia 120B | `gemini-2.0-flash` only |
+| LLM generation | `gemini-flash` → `gemini-flash-lite` → OpenRouter Nvidia 120B | `gemini-3.5-flash-lite` only |
 | Reranker | `voyageai/rerank-2.5-lite` → `cohere/rerank-4-fast` → Nvidia LLM-judge | `voyageai/rerank-2.5-lite` only |
 
 Problems with the fallback chains:
@@ -307,7 +307,7 @@ if (colCheck.rows.length > 0 && currentDim !== 1537)
 
 Both `PRIMARY_GEMINI_MODEL` and `GEMINI_FALLBACK_MODEL` defaulted to `'gemini-flash-latest'`. The "fallback" made the identical request and failed for the exact same reason.
 
-**Resolution:** Removed in the simplification — one model: `gemini-2.0-flash`.
+**Resolution:** Removed in the simplification — one model: `gemini-3.5-flash-lite`.
 
 ---
 

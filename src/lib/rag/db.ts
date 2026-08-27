@@ -66,7 +66,8 @@ export async function initSchema(): Promise<void> {
     `).catch(() => ({ rows: [] }));
 
     const currentDim = colCheck.rows[0]?.atttypmod;
-    if (colCheck.rows.length > 0 && currentDim !== 1536) {
+    // pgvector stores vector(N) with atttypmod = N + 1 (e.g. vector(1536) → atttypmod = 1537)
+    if (colCheck.rows.length > 0 && currentDim !== 1537) {
       console.log(`🔄 Updating table with vector(1536) for OpenRouter Embeddings + HNSW index...`);
       await client.query('DROP TABLE IF EXISTS document_chunks CASCADE;');
     }
