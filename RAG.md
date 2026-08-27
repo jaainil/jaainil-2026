@@ -723,13 +723,34 @@ npm run rag:stats
 npm run rag:eval
 ```
 
-### Script Details:
+### 11.1 Script Details:
 * **`scripts/rag/init-db.ts`**: Connects to PostgreSQL, executes `initSchema()`, creates tables, verifies vector dimensions, creates HNSW and GIN indexes, prints database size and document counts.
 * **`scripts/rag/index-content.ts`**: Runs `ingestAllArticles()`, hashes files, embeds new/modified documents, rolls `KB_VERSION`, prints summary statistics.
 * **`scripts/rag/search-cli.ts`**: CLI search utility displaying vector similarity, FTS rank, RRF score, URL, heading, and text excerpts.
 * **`scripts/rag/chat-cli.ts`**: Terminal chat interface featuring a continuous REPL, typewriter token streaming (`streamWords()`), citation listings, and latency breakdowns.
 * **`scripts/rag/stats.ts`**: Connectivity and health diagnostic for PostgreSQL, pgvector version, table size, document counts by category, and Dragonfly server version.
 * **`scripts/rag/eval.ts`**: Automated benchmark runner that evaluates 24 ground-truth queries against regression quality gates.
+
+### 11.2 Environment Variables & Configuration (`.env.example`)
+
+The RAG pipeline requires credentials for PostgreSQL, Dragonfly, Google Gemini, and OpenRouter. Copy the provided `.env.example` template:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Description | Default / Example |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | Google Gemini API Key for primary generation | `your_gemini_api_key` |
+| `GEMINI_MODEL` | Primary LLM model identifier | `gemini-3.5-flash-lite` |
+| `OPENROUTER_API_KEY` | OpenRouter API Key for embeddings and reranker | `your_openrouter_api_key` |
+| `EMBEDDING_MODEL` | Dense vector embedding model name (1536-dim) | `text-embedding-3-small` |
+| `RERANK_MODEL` | Neural reranker model identifier via OpenRouter | `voyageai/rerank-2.5-lite` |
+| `DATABASE_URL` / `POSTGRES_URL` | PostgreSQL connection string with pgvector extension | `postgres://user:pass@host:4321/postgres` |
+| `DRAGONFLY_URL` / `REDIS_URL` | Dragonfly / Redis in-memory cache connection string | `redis://:pass@host:4322/0` |
+| `KB_VERSION` | Knowledge base cache partition and invalidation key | `20260825_1` |
+| `RAG_MIN_RECALL_AT_3` | Minimum Recall@3 threshold percentage for `rag:eval` | `85` |
+| `RAG_MIN_REFUSAL_ACCURACY`| Minimum Refusal accuracy threshold percentage for `rag:eval` | `95` |
 
 ---
 
@@ -837,6 +858,7 @@ Previously, the pipeline maintained redundant 3-tier fallback chains for generat
 ## 14. File Tree & Component Reference
 
 ```text
+.env.example                           # Configuration environment template
 src/
 ├── components/
 │   └── rag/

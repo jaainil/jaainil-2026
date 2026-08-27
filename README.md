@@ -259,6 +259,7 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 ├── DESIGN.md                   # Visual design tokens & interface philosophy
 ├── PRODUCT.md                  # Product vision, audience & evidence summary
 ├── RAG.md                      # Comprehensive RAG Architecture & System Manual
+├── .env.example                # Environment variables template
 ├── writenex.config.ts          # Writenex CMS collection configuration
 └── openpolicy.ts               # OpenPolicy privacy governance configuration
 ```
@@ -289,7 +290,11 @@ npm run rag:stats         # Check live PostgreSQL & Dragonfly VPS infrastructure
 
 ## ⚙️ Environment Configuration
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root by copying the provided template:
+
+```bash
+cp .env.example .env
+```
 
 ```env
 # ── LLM & AI Providers ───────────────────────────────────────────────────────
@@ -310,6 +315,10 @@ REDIS_URL=redis://:password@your-vps-ip:4322/0
 
 # ── Knowledge Base Versioning ────────────────────────────────────────────────
 KB_VERSION=20260825_1
+
+# ── RAG Evaluation Thresholds (Optional) ────────────────────────────────────
+RAG_MIN_RECALL_AT_3=85
+RAG_MIN_REFUSAL_ACCURACY=95
 
 # ── Analytics ────────────────────────────────────────────────────────────────
 UMAMI_WEBSITE_ID=8169229f-6d5b-4ffc-ac38-9036661b5d94
