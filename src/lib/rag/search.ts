@@ -9,6 +9,7 @@ interface RawDbRow {
   document_id: number;
   url: string;
   title: string;
+  is_private: boolean;
   heading: string | null;
   category: string | null;
   published_at: string | null;
@@ -78,6 +79,7 @@ export async function hybridSearch(
         c.document_id,
         d.url,
         d.title,
+        d.is_private,
         c.heading,
         d.category,
         d.published_at,
@@ -101,6 +103,7 @@ export async function hybridSearch(
         c.document_id,
         d.url,
         d.title,
+        d.is_private,
         c.heading,
         d.category,
         d.published_at,
@@ -173,6 +176,7 @@ export async function hybridSearch(
       category: row.category,
       publishedAt: row.published_at ? new Date(row.published_at).toISOString() : null,
       content: row.content,
+      isPrivate: row.is_private ?? false,
       vectorScore,
       textScore,
       rrfScore,

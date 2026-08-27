@@ -9,6 +9,7 @@ export interface DocumentRecord {
   description?: string;
   tags?: string[];
   sourceHash?: string;
+  isPrivate?: boolean;
   publishedAt?: Date | string | null;
   indexedAt?: Date | string;
   lastSeenAt?: Date | string;
@@ -36,6 +37,7 @@ export interface SearchResult {
   category: string | null;
   publishedAt: string | null;
   content: string;
+  isPrivate: boolean;
   vectorScore: number;
   textScore: number;
   rrfScore: number;

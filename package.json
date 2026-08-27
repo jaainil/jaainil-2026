@@ -15,7 +15,8 @@
     "rag:search": "tsx --env-file=.env scripts/rag/search-cli.ts",
     "rag:chat": "tsx --env-file=.env scripts/rag/chat-cli.ts",
     "rag:stats": "tsx --env-file=.env scripts/rag/stats.ts",
-    "rag:eval": "tsx --env-file=.env scripts/rag/eval.ts"
+    "rag:eval": "tsx --env-file=.env scripts/rag/eval.ts",
+    "rag:privacy": "tsx --env-file=.env scripts/rag/privacy-check.ts"
   },
   "dependencies": {
     "@astrojs/markdoc": "^2.0.8",

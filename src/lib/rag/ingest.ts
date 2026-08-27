@@ -169,6 +169,8 @@ export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; t
 
       const relPath = path.relative(knowledgeDir, filePath).replace(/\\/g, '/').replace(/\.(md|mdx)$/, '');
       const url = frontmatter.url || `/knowledge/${relPath}`;
+      // Private if it lives in a pvt/ folder at any depth, or opts in via frontmatter.
+      const isPrivate = relPath.split('/').includes('pvt') || frontmatter.private === true;
 
       const title = frontmatter.title || 
         cleanContent.match(/^#\s+(.+)$/m)?.[1] || 
@@ -196,6 +198,7 @@ export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; t
         description: frontmatter.description || title,
         tags: fmTags,
         sourceHash,
+        isPrivate,
         publishedAt: frontmatter.publishedAt ? new Date(frontmatter.publishedAt) : new Date(),
       });
 
@@ -295,6 +298,7 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
       description: frontmatter.description,
       tags: frontmatter.tags || [],
       sourceHash,
+      isPrivate: frontmatter.private === true,
       publishedAt: frontmatter.publishedAt ? new Date(frontmatter.publishedAt) : null,
     });
 

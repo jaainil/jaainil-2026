@@ -49,7 +49,8 @@ export async function initSchema(): Promise<void> {
         source_hash TEXT,
         published_at TIMESTAMPTZ,
         indexed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-        last_seen_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        last_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        is_private BOOLEAN NOT NULL DEFAULT false
       );
     `);
 
@@ -57,6 +58,13 @@ export async function initSchema(): Promise<void> {
     await client.query(`
       ALTER TABLE documents ADD COLUMN IF NOT EXISTS source_hash TEXT;
       ALTER TABLE documents ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT now();
+      ALTER TABLE documents ADD COLUMN IF NOT EXISTS is_private BOOLEAN NOT NULL DEFAULT false;
+    `);
+
+    // Self-healing backfill: anything under the pvt/ knowledge path is private,
+    // even if an older ingest marked it public (e.g. frontmatter url overrides).
+    await client.query(`
+      UPDATE documents SET is_private = true WHERE url LIKE '/knowledge/pvt/%' AND is_private = false;
     `);
 
     // Check if document_chunks exists and its vector dimension using canonical format_type
@@ -145,8 +153,8 @@ export async function upsertDocument(doc: DocumentRecord): Promise<number> {
   return withDb(async (client) => {
     const res = await client.query(
       `
-      INSERT INTO documents (url, title, type, category, description, tags, source_hash, published_at, indexed_at, last_seen_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), now())
+      INSERT INTO documents (url, title, type, category, description, tags, source_hash, published_at, indexed_at, last_seen_at, is_private)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), now(), $9)
       ON CONFLICT (url) DO UPDATE SET
         title = EXCLUDED.title,
         type = EXCLUDED.type,
@@ -156,7 +164,8 @@ export async function upsertDocument(doc: DocumentRecord): Promise<number> {
         source_hash = EXCLUDED.source_hash,
         published_at = EXCLUDED.published_at,
         indexed_at = now(),
-        last_seen_at = now()
+        last_seen_at = now(),
+        is_private = EXCLUDED.is_private
       RETURNING id;
       `,
       [
@@ -168,6 +177,7 @@ export async function upsertDocument(doc: DocumentRecord): Promise<number> {
         doc.tags || [],
         doc.sourceHash || null,
         doc.publishedAt || null,
+        doc.isPrivate || false,
       ]
     );
     return res.rows[0].id;

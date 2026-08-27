@@ -179,6 +179,8 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
 5. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
 6. **Adaptive Fast/Deep Path:** High-confidence decisive matches skip the reranker (Fast-Path, ~1.3s), while ambiguous queries route through `voyageai/rerank-2.5-lite` (Deep-Path, ~2.3s).
 7. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
+8. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
+9. **Automated Quality Gates:** `rag:eval` runs 24 ground-truth queries against regression thresholds (Recall@3, citation validity, refusal accuracy); `rag:privacy` audits private-document isolation end-to-end.
 
 ---
 
@@ -307,7 +309,8 @@ npm run start             # Serve production build on port 3000
 
 # ── Jainil's RAG Operational Suite ──────────────────────────────────────────
 npm run rag:init          # Initialize PostgreSQL schema, pgvector & HNSW/GIN indexes
-npm run rag:index         # Run incremental content ingestion & roll KB version
+npm run rag:index         # Run incremental ingestion, prune deleted docs & roll KB version
+npm run rag:privacy       # Audit private-document isolation (SQL flags + live citation probes)
 npm run rag:eval          # Run automated 24-case evaluation benchmark
 npm run rag:chat          # Launch interactive terminal AI Chat REPL
 npm run rag:search "query"# Inspect raw vector similarity, FTS rank & RRF scores
