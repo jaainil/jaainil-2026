@@ -10,3 +10,5 @@ coverage/
 # Astro
 .astro/
 .vercel/
+
+/src/content/knowledge/pvt/*
