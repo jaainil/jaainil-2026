@@ -184,6 +184,35 @@ export async function checkRateLimit(
   }
 }
 
+/**
+ * Physically removes ALL cached answers & search results (every KB version).
+ * Called at the end of each ingestion run so deleted/changed content never
+ * leaves stale residue in memory. Intentionally preserves:
+ *   - rag:emb:*        (query-embedding cache — pure function of text+model, still valid)
+ *   - rag:lock:*       (singleflight mutexes, self-expiring)
+ *   - rag:ratelimit:*  (live abuse-quota buckets must not reset mid-window)
+ */
+export async function purgeRagAnswerAndSearchCaches(): Promise<number> {
+  const client = getRedisClient();
+  if (!client) return 0;
+  let deleted = 0;
+  for (const pattern of ['rag:answer:v2:*', 'rag:search:v2:*']) {
+    try {
+      // SCAN (non-blocking) — never KEYS, which stalls the Dragonfly event loop
+      const stream = client.scanStream({ match: pattern, count: 500 });
+      for await (const keys of stream) {
+        if (keys.length > 0) {
+          await client.del(...keys);
+          deleted += keys.length;
+        }
+      }
+    } catch {
+      // Cache purge is best-effort — versioned keys keep serving safe anyway
+    }
+  }
+  return deleted;
+}
+
 export async function closeCache(): Promise<void> {
   if (redisClient) {
     try {

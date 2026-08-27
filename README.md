@@ -179,7 +179,7 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
 5. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
 6. **Adaptive Fast/Deep Path:** High-confidence decisive matches skip the reranker (Fast-Path, ~1.3s), while ambiguous queries route through `voyageai/rerank-2.5-lite` (Deep-Path, ~2.3s).
 7. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
-8. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
+8. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
 9. **Automated Quality Gates:** `rag:eval` runs 24 ground-truth queries against regression thresholds (Recall@3, citation validity, refusal accuracy); `rag:privacy` audits private-document isolation end-to-end.
 
 ---

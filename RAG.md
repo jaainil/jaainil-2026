@@ -323,6 +323,7 @@ Deleted sources used to stay embedded forever. Every full ingestion run now enfo
 * **Safe failure mode:** the prune executes only at the very end of a *complete* run — an embedding outage mid-run leaves the database untouched rather than mass-deleting fresh data.
 * **Deleting an article** = delete the folder (or mark it `draft: true`), re-run `npm run rag:index`; it disappears from the vector store on the next pass. The articles-directory-missing guard logs a warning instead of early-returning so pruning still runs.
 * **Privacy self-healing backfill** (`initSchema()`): any row under `/knowledge/pvt/%` is force-flagged `is_private = true`, covering legacy rows regardless of how they were inserted.
+* **Cache purge on ingest:** after rolling `KB_VERSION`, all cached answers & search results from every previous version are *physically deleted* (`purgeRagAnswerAndSearchCaches()` via non-blocking SCAN), not just orphaned until TTL expiry. The query-embedding tier (`rag:emb:*`) is preserved — it is a pure function of question text + model and remains valid across ingests, avoiding redundant embedding API spend. Locks (`rag:lock:*`) and live rate-limit buckets (`rag:ratelimit:*`) are never touched.
 
 ---
 

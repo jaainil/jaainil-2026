@@ -4,7 +4,7 @@ import { extractFrontmatterAndClean, htmlToText } from './cleaner.js';
 import { chunkDocument } from './chunk.js';
 import { embedBatch, EMBEDDING_MODEL, EMBEDDING_DIMENSION } from './embeddings.js';
 import { initSchema, upsertDocument, replaceDocumentChunks, getDocumentByUrl, getDatabaseStats, getDbNow, touchDocumentSeen, pruneStaleDocuments } from './db.js';
-import { setKbVersion, hashString } from './cache.js';
+import { setKbVersion, hashString, purgeRagAnswerAndSearchCaches } from './cache.js';
 import type { ChunkRecord } from './types.js';
 
 const CONTENT_DIR = path.resolve(process.cwd(), 'src/content/articles');
@@ -337,10 +337,14 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
   const newVersion = `v_${Date.now()}`;
   setKbVersion(newVersion);
 
+  // Physically purge stale answer/search caches from every previous KB version
+  const purgedCacheKeys = await purgeRagAnswerAndSearchCaches();
+
   console.log(`\n🎉 Ingestion Complete!`);
   console.log(`- Total Processed Documents: ${totalDocuments}`);
   console.log(`- Unchanged (Skipped):        ${skippedDocuments}`);
   console.log(`- New/Updated Chunks:        ${totalChunks}`);
+  console.log(`- Stale Cache Keys Purged:   ${purgedCacheKeys}`);
   console.log(`- Rolled Knowledge Version:  ${newVersion}\n`);
 
   const stats = await getDatabaseStats();
