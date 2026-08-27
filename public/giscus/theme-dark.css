@@ -1,0 +1,150 @@
+/*! giscus theme — "Instruction Booklet" dark (jaainil.com)
+ * The same booklet under a work lamp: navy paper, light ink, lit-blue actions.
+ * Built on GitHub Primer variables (MIT, github.com/primer/primitives). */
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400..900;1,400..900&display=swap');
+
+main {
+  --color-prettylights-syntax-comment: #8fa3b8;
+  --color-prettylights-syntax-constant: #5aa9f0;
+  --color-prettylights-syntax-entity: #d2a8ff;
+  --color-prettylights-syntax-storage-modifier-import: #eaf3fe;
+  --color-prettylights-syntax-entity-tag: #7ee787;
+  --color-prettylights-syntax-keyword: #ff6b62;
+  --color-prettylights-syntax-string: #a5d6ff;
+  --color-prettylights-syntax-variable: #ffa657;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #ff6b62;
+  --color-prettylights-syntax-invalid-illegal-text: #eaf3fe;
+  --color-prettylights-syntax-invalid-illegal-bg: #8e1519;
+  --color-prettylights-syntax-carriage-return-text: #eaf3fe;
+  --color-prettylights-syntax-carriage-return-bg: #b62324;
+  --color-prettylights-syntax-string-regexp: #7ee787;
+  --color-prettylights-syntax-markup-list: #ffcd00;
+  --color-prettylights-syntax-markup-heading: #5aa9f0;
+  --color-prettylights-syntax-markup-italic: #eaf3fe;
+  --color-prettylights-syntax-markup-bold: #eaf3fe;
+  --color-prettylights-syntax-markup-deleted-text: #ffdcd7;
+  --color-prettylights-syntax-markup-deleted-bg: #67060c;
+  --color-prettylights-syntax-markup-inserted-text: #aff5b4;
+  --color-prettylights-syntax-markup-inserted-bg: #033a16;
+  --color-prettylights-syntax-markup-changed-text: #ffdfb6;
+  --color-prettylights-syntax-markup-changed-bg: #5a1e02;
+  --color-prettylights-syntax-markup-ignored-text: #eaf3fe;
+  --color-prettylights-syntax-markup-ignored-bg: #1158c7;
+  --color-prettylights-syntax-meta-diff-range: #d2a8ff;
+  --color-prettylights-syntax-brackethighlighter-angle: #8fa3b8;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #4a5b6b;
+  --color-prettylights-syntax-constant-other-reference-link: #a5d6ff;
+  --color-btn-text: #eaf3fe;
+  --color-btn-bg: #1d3049;
+  --color-btn-border: #dbe9f7;
+  --color-btn-shadow: 0 2px 0 #dbe9f7;
+  --color-btn-inset-shadow: 0 0 transparent;
+  --color-btn-hover-bg: #24395a;
+  --color-btn-hover-border: #dbe9f7;
+  --color-btn-active-bg: #0f1b2d;
+  --color-btn-active-border: #dbe9f7;
+  --color-btn-selected-bg: #24395a;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-bg: #147bd1;
+  --color-btn-primary-border: #dbe9f7;
+  --color-btn-primary-shadow: 0 2px 0 #dbe9f7;
+  --color-btn-primary-inset-shadow: 0 0 transparent;
+  --color-btn-primary-hover-bg: #0d5ea8;
+  --color-btn-primary-hover-border: #dbe9f7;
+  --color-btn-primary-selected-bg: #0d5ea8;
+  --color-btn-primary-selected-shadow: 0 0 transparent;
+  --color-btn-primary-disabled-text: rgb(255 255 255 / 50%);
+  --color-btn-primary-disabled-bg: rgb(20 123 209 / 55%);
+  --color-btn-primary-disabled-border: #dbe9f7;
+  --color-action-list-item-default-hover-bg: rgb(90 169 240 / 12%);
+  --color-segmented-control-bg: rgb(90 169 240 / 14%);
+  --color-segmented-control-button-bg: #17273e;
+  --color-segmented-control-button-selected-border: #8fa3b8;
+  --color-fg-default: #eaf3fe;
+  --color-fg-muted: #b9c6d2;
+  --color-fg-subtle: #8fa3b8;
+  --color-canvas-default: #17273e;
+  --color-canvas-overlay: #1d3049;
+  --color-canvas-inset: #0f1b2d;
+  --color-canvas-subtle: #1d3049;
+  --color-border-default: #33455e;
+  --color-border-muted: #2a3644;
+  --color-neutral-muted: rgb(90 169 240 / 16%);
+  --color-accent-fg: #5aa9f0;
+  --color-accent-emphasis: #147bd1;
+  --color-accent-muted: rgb(90 169 240 / 40%);
+  --color-accent-subtle: rgb(90 169 240 / 12%);
+  --color-success-fg: #3fb950;
+  --color-attention-fg: #d29922;
+  --color-attention-muted: rgb(187 128 9 / 40%);
+  --color-attention-subtle: rgb(187 128 9 / 15%);
+  --color-danger-fg: #ff6b62;
+  --color-danger-muted: rgb(255 107 98 / 40%);
+  --color-danger-subtle: rgb(255 107 98 / 10%);
+  --color-primer-shadow-inset: 0 0 transparent;
+  --color-scale-gray-7: #1d3049;
+  --color-scale-blue-8: #0d3a66;
+
+  --color-social-reaction-bg-hover: var(--color-scale-gray-7);
+  --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-8);
+}
+
+/* Booklet lettering and geometry inside the iframe */
+main body,
+main button,
+main input,
+main textarea,
+main select {
+  font-family: 'Rubik', ui-sans-serif, system-ui, sans-serif;
+}
+
+main .btn,
+main textarea,
+main input[type='text'],
+main .form-control {
+  border-radius: 10px;
+}
+
+main .pagination-loader-container {
+  background-image: url("https://github.com/images/modules/pulls/progressive-disclosure-line-dark.svg");
+}
+
+main .gsc-loading-image {
+  background-image: url("https://github.githubassets.com/images/mona-loading-dark.gif");
+}
+
+
+/* --- Force booklet geometry over giscus's own stylesheet (loads after themes) --- */
+main .btn {
+  border: 2px solid #dbe9f7 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 0 #dbe9f7 !important;
+  font-weight: 700 !important;
+}
+main .btn:hover {
+  background: #24395a !important;
+  transform: translateY(-1px);
+}
+main .btn-primary,
+main .btn.btn-primary {
+  background: #147bd1 !important;
+  color: #ffffff !important;
+}
+main .btn-primary:hover {
+  background: #0d5ea8 !important;
+}
+main textarea,
+main .form-control {
+  border: 2px solid #dbe9f7 !important;
+  border-radius: 10px !important;
+}
+main textarea:focus,
+main .form-control:focus {
+  outline: 3px solid #147bd1 !important;
+  outline-offset: 2px;
+}
+main [class*='BorderGrid'],
+main [class*='Box'] {
+  border-color: #dbe9f7;
+}

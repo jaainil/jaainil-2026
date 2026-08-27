@@ -4,6 +4,7 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import ArticleInteractive from '../../components/react/ArticleInteractive';
 import AnimatedToc from '../../components/AnimatedToc.astro';
+import GiscusComments from '../../components/GiscusComments.astro';
 import ReadingProgressBar from '../../components/react/ReadingProgressBar';
 import BackToTop from '../../components/react/BackToTop';
 import { Schema } from 'astro-seo-schema';
@@ -193,6 +194,8 @@ const breadcrumbSchema = {
 
       <AnimatedToc items={TOC_ITEMS} />
     </div>
+
+    <GiscusComments />
 
     <!-- Related notes -->
     <div class="mt-12">
