@@ -50,115 +50,134 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
                                            │
                                            ▼
                              ┌───────────────────────────┐
-                             │  Query Normalization &    │ ➔ Lowercase, trim, collapse spaces,
-                             │     Intent Classifier     │   strip trailing punctuation.
-                             │  (src/lib/rag/intent.ts)  │ ➔ Classify: profile, skills, projects,
-                             └─────────────┬─────────────┘   experience, resume, article, general.
-                                           │
-                                           ▼
-                             ┌───────────────────────────┐
-                             │   Tier 1: Answer Cache    │─── HIT ───► Instant Return (~10–80ms)
-                             │   (Dragonfly on VPS)      │             (rag:answer:v2:<kb>:<hash>)
-                             └─────────────┬─────────────┘
-                                           │ MISS
-                                           ▼
-                             ┌───────────────────────────┐
-                             │ SINGLEFLIGHT / COALESCING │ ➔ Distributed Mutex: rag:lock:<hash>
-                             │ Lock acquired?            │   TTL: 15s | Max Poll: 3.0s (150ms interval)
-                             │   YES: Run Pipeline       │ ➔ If lock held by peer, wait for answer cache
-                             │   NO:  Wait/Poll Cache    │   and return immediately once populated.
-                             └─────────────┬─────────────┘
-                                           │ Lock Acquired / Executing
-                                           ▼
-                             ┌───────────────────────────┐
-                             │   Tier 2: Vector Cache    │─── HIT ───► Skip Embed API (~10ms)
-                             │   (Dragonfly on VPS)      │             (rag:emb:<model>:<hash>)
-                             └─────────────┬─────────────┘
-                                           │ MISS
-                                           ▼
-                                   Embedding Provider
-                                 (text-embedding-3-small)
-                                           │ (1536-dim dense vector)
-                                           ▼
-                                 PostgreSQL + pgvector
-                                (Parallel Dual Execution)
-                                ┌──────────┴──────────┐
-                                │                     │
-                        pgvector HNSW        PostgreSQL FTS
-                        (Cosine Distance)     (GIN tsvector)
-                        1 - (embedding <=> q) ts_rank_cd(tsv, query)
-                                │                     │
-                                └──────────┬──────────┘
-                                           │
-                                          RRF
-                                (Reciprocal Rank Fusion)
-                                RRF = 0.65/(60+vRank) + 0.35/(60+tRank)
-                                           │
-                                           ▼
-                             ┌───────────────────────────┐
-                             │  Multi-Feature Confidence │ ➔ Checks vector similarity, margin,
-                             │         Estimator         │   FTS agreement, and intent match.
-                             │(src/lib/rag/confidence.ts)│
-                             └─────┬───────────┬─────────┘
+                             │  Stage 0: Input Rails     │ ➔ Injection Rail (llm-prompt-guard + local rules)
+                             │(src/lib/rag/guardrails.ts)│ ➔ Identity Rail (meta-questions: model/author)
+                             └─────┬───────────┬─────────┘ ➔ Encoding Normalization (zero-width, leet, homoglyphs)
                                    │           │
-                          Out of Domain        Relevant Match
+                          Injection / Identity │ Clean Query
                                    │           │
                                    ▼           ▼
-                            🛡️ EARLY REFUSAL  ┌───────────────────────────┐
-                            (0 LLM Tokens,     │   Decision: Margin & FTS  │
-                             < 85ms return)    └─────┬───────────┬─────────┘
-                                                     │               │
-                                           Decisive Match      Ambiguous Match
-                                                     │               │
-                                                     ▼               ▼
-                                                ⚡ FAST-PATH     🧠 DEEP-PATH
-                                                (Skip Rerank)  (voyageai/rerank-2.5-lite
-                                                     │          via OpenRouter API)
-                                                     │               │ (4.5s Timeout / Circuit Breaker)
-                                                     │               ▼ (On failure: fallback to RRF order)
-                                                     └───────┬───────┘
-                                                             │
-                                                             ▼
-                                                 ┌───────────────────────┐
-                                                 │ Structured Source IDs │ ➔ Top 3–4 candidate chunks
-                                                 │    [SOURCE: 1..K]     │   formatted with title & URL.
-                                                 └───────────┬───────────┘
-                                                             │
-                                                             ▼
-                                                 ┌───────────────────────────┐
-                                                 │   gemini-3.5-flash-lite   │ ➔ Primary LLM generation
-                                                 │   Circuit Breaker         │   (3 failures → OPEN 30s)
-                                                 └───────────┬───────────────┘
-                                                             │
-                                                 ┌───────────┴───────────┐
-                                                 │                       │
-                                              Success               Failure / Open
-                                                 │                       │
-                                                 │              Static chunk summary
-                                                 │              (no LLM, raw text excerpts)
-                                                 └───────────┬───────────┘
-                                                             │
-                                                             ▼
-                                                 ┌───────────────────────┐
-                                                 │  Citation Integrity & │ ➔ Convert [SOURCE: N] to [[N]](url)
-                                                 │ Response Quality Gate │ ➔ Silently strip phantom citations
-                                                 │ (src/lib/rag/chat.ts) │ ➔ Validate non-trivial response
-                                                 └───────────┬───────────┘
-                                                             │
-                                                             ▼
-                                                 ┌───────────────────────┐
-                                                 │   Save Tier 1 Cache   │ ➔ TTL: 2 Hours (7200s)
-                                                 │  (Validated Answers)  │   Release Singleflight Mutex
-                                                 └───────────────────────┘
+                            🛡️ INSTANT DEFLECTION ┌───────────────────────────┐
+                            (0 LLM Tokens, <5ms)   │  Query Normalization &    │ ➔ Lowercase, trim, collapse spaces,
+                            - IDENTITY_RAIL        │     Intent Classifier     │   strip trailing punctuation.
+                            - INJECTION_RAIL       │  (src/lib/rag/intent.ts)  │ ➔ Classify: profile, skills, projects,
+                                                   └─────────────┬─────────────┘   experience, resume, article, general.
+                                                                 │
+                                                                 ▼
+                                                   ┌───────────────────────────┐
+                                                   │   Tier 1: Answer Cache    │─── HIT ───► Instant Return (~10–80ms)
+                                                   │   (Dragonfly on VPS)      │             (rag:answer:v2:<kb>:<hash>)
+                                                   └─────────────┬─────────────┘
+                                                                 │ MISS
+                                                                 ▼
+                                                   ┌───────────────────────────┐
+                                                   │ SINGLEFLIGHT / COALESCING │ ➔ Distributed Mutex: rag:lock:<hash>
+                                                   │ Lock acquired?            │   TTL: 15s | Max Poll: 3.0s (150ms interval)
+                                                   │   YES: Run Pipeline       │ ➔ If lock held by peer, wait for answer cache
+                                                   │   NO:  Wait/Poll Cache    │   and return immediately once populated.
+                                                   └─────────────┬─────────────┘
+                                                                 │ Lock Acquired / Executing
+                                                                 ▼
+                                                   ┌───────────────────────────┐
+                                                   │   Tier 2: Vector Cache    │─── HIT ───► Skip Embed API (~10ms)
+                                                   │   (Dragonfly on VPS)      │             (rag:emb:<model>:<hash>)
+                                                   └─────────────┬─────────────┘
+                                                                 │ MISS
+                                                                 ▼
+                                                         Embedding Provider
+                                                       (text-embedding-3-small)
+                                                                 │ (1536-dim dense vector)
+                                                                 ▼
+                                                       PostgreSQL + pgvector
+                                                      (Parallel Dual Execution)
+                                                      ┌──────────┴──────────┐
+                                                      │                     │
+                                              pgvector HNSW        PostgreSQL FTS
+                                              (Cosine Distance)     (GIN tsvector)
+                                              1 - (embedding <=> q) ts_rank_cd(tsv, query)
+                                                      │                     │
+                                                      └──────────┬──────────┘
+                                                                 │
+                                                                RRF
+                                                      (Reciprocal Rank Fusion)
+                                                      RRF = 0.65/(60+vRank) + 0.35/(60+tRank)
+                                                                 │
+                                                                 ▼
+                                                   ┌───────────────────────────┐
+                                                   │  Multi-Feature Confidence │ ➔ Checks vector similarity, margin,
+                                                   │         Estimator         │   FTS agreement, and intent match.
+                                                   │(src/lib/rag/confidence.ts)│
+                                                   └─────┬───────────┬─────────┘
+                                                         │           │
+                                                Out of Domain        Relevant Match
+                                                         │           │
+                                                         ▼           ▼
+                                                  🛡️ EARLY REFUSAL  ┌───────────────────────────┐
+                                                  (0 LLM Tokens,     │   Decision: Margin & FTS  │
+                                                   < 85ms return)    └─────┬───────────┬─────────┘
+                                                                           │               │
+                                                                 Decisive Match      Ambiguous Match
+                                                                           │               │
+                                                                           ▼               ▼
+                                                                      ⚡ FAST-PATH     🧠 DEEP-PATH
+                                                                      (Skip Rerank)  (voyageai/rerank-2.5-lite
+                                                                           │          via OpenRouter API)
+                                                                           │               │ (4.5s Timeout / Circuit Breaker)
+                                                                           │               ▼ (On failure: fallback to RRF order)
+                                                                           └───────┬───────┘
+                                                                                   │
+                                                                                   ▼
+                                                                       ┌───────────────────────┐
+                                                                       │ Structured Source IDs │ ➔ Top 3–4 candidate chunks
+                                                                       │    [SOURCE: 1..K]     │   formatted with title & URL.
+                                                                       └───────────┬───────────┘
+                                                                                   │
+                                                                                   ▼
+                                                                       ┌───────────────────────────┐
+                                                                       │   gemini-3.5-flash-lite   │ ➔ Primary LLM generation
+                                                                       │   Circuit Breaker         │   (3 failures → OPEN 30s)
+                                                                       └───────────┬───────────────┘
+                                                                                   │
+                                                                       ┌───────────┴───────────┐
+                                                                       │                       │
+                                                                    Success               Failure / Open
+                                                                       │                       │
+                                                                       ▼                       │
+                                                           ┌───────────────────────┐           │
+                                                           │ Stage 7.5: Output Gate│           │
+                                                           │- Exfil & Echo Scan    │           │
+                                                           │- PII & Secret Redact  │           │
+                                                           │- Gibberish Detector   │           │
+                                                           └───────────┬───────────┘           │
+                                                                       │                       │
+                                                                    Passes                  Trips
+                                                                       │                       │
+                                                                       │              Static chunk summary
+                                                                       │              (no LLM, raw text excerpts)
+                                                                       └───────────┬───────────┘
+                                                                                   │
+                                                                                   ▼
+                                                                       ┌───────────────────────┐
+                                                                       │  Citation Integrity & │ ➔ Convert [SOURCE: N] to [[N]](url)
+                                                                       │ Response Quality Gate │ ➔ Silently strip phantom citations
+                                                                       │ (src/lib/rag/chat.ts) │ ➔ Validate non-trivial response
+                                                                       └───────────┬───────────┘
+                                                                                   │
+                                                                                   ▼
+                                                                       ┌───────────────────────┐
+                                                                       │   Save Tier 1 Cache   │ ➔ TTL: 2 Hours (7200s)
+                                                                       │  (Validated Answers)  │   Release Singleflight Mutex
+                                                                       └───────────────────────┘
 ```
 
 ### RAG Highlights:
-1. **Parallel Hybrid Search:** PostgreSQL 16 + `pgvector` HNSW cosine distance search running concurrently with GIN `tsvector` full-text search merged via Reciprocal Rank Fusion ($k=60, w_v=0.65, w_t=0.35$).
-2. **Two-Tier Distributed Caching:** Dragonfly in-memory store on VPS hosting Tier 1 Answer Cache (2h TTL) and Tier 2 Vector Embedding Cache (7d TTL).
-3. **Safe Singleflight Mutex:** Tokenized distributed locks (`SET NX EX 15`) with atomic Lua release scripts prevent cache stampedes during concurrent traffic bursts.
-4. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
-5. **Adaptive Fast/Deep Path:** High-confidence decisive matches skip the reranker (Fast-Path, ~1.3s), while ambiguous queries route through `voyageai/rerank-2.5-lite` (Deep-Path, ~2.3s).
-6. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage, the system immediately returns verified static excerpt summaries.
+1. **Multi-Layer Guardrails (`src/lib/rag/guardrails.ts`):** Zero-token Stage 0 input deflection for prompt injections and identity meta-questions with encoding-bypass normalization (homoglyphs, leetspeak, zero-width joiners) and layered `llm-prompt-guard`. Stage 7.5 output safety filters scanning for prompt-echo exfiltration, redacting PII/secrets, and catching degenerate/gibberish output.
+2. **Parallel Hybrid Search:** PostgreSQL 16 + `pgvector` HNSW cosine distance search running concurrently with GIN `tsvector` full-text search merged via Reciprocal Rank Fusion ($k=60, w_v=0.65, w_t=0.35$).
+3. **Two-Tier Distributed Caching:** Dragonfly in-memory store on VPS hosting Tier 1 Answer Cache (2h TTL) and Tier 2 Vector Embedding Cache (7d TTL).
+4. **Safe Singleflight Mutex:** Tokenized distributed locks (`SET NX EX 15`) with atomic Lua release scripts prevent cache stampedes during concurrent traffic bursts.
+5. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
+6. **Adaptive Fast/Deep Path:** High-confidence decisive matches skip the reranker (Fast-Path, ~1.3s), while ambiguous queries route through `voyageai/rerank-2.5-lite` (Deep-Path, ~2.3s).
+7. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
 
 ---
 
@@ -233,6 +252,7 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 │   │       ├── confidence.ts   # Multi-signal confidence estimator & routing gates
 │   │       ├── db.ts           # PostgreSQL pool, schema init & CRUD queries
 │   │       ├── embeddings.ts   # OpenRouter dense vector embedding generator
+│   │       ├── guardrails.ts   # Input injection/identity rails, normalization & output PII/exfil gate
 │   │       ├── index.ts        # RAG barrel export
 │   │       ├── ingest.ts       # Incremental ETL hasher & content indexer
 │   │       ├── intent.ts       # Zero-latency rule-based query intent classifier
@@ -253,6 +273,15 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 │   │   └── rss.xml.js          # RSS feed generator
 │   └── styles/
 │       └── global.css          # Tailwind CSS v4 & theme variables
+├── scripts/
+│   └── rag/                    # Operational & diagnostic scripts
+│       ├── chat-cli.ts         # Interactive terminal REPL
+│       ├── eval.ts             # 24-case benchmark runner
+│       ├── guardrails.test.ts  # Deterministic guardrails security test suite
+│       ├── index-content.ts    # Incremental ETL indexer
+│       ├── init-db.ts          # Schema & vector index creator
+│       ├── search-cli.ts       # Similarity & FTS inspection CLI
+│       └── stats.ts            # VPS infrastructure health check
 ├── tests/
 │   └── rag/
 │       └── eval.json           # 24-question ground truth benchmark suite
@@ -284,6 +313,7 @@ npm run rag:eval          # Run automated 24-case evaluation benchmark
 npm run rag:chat          # Launch interactive terminal AI Chat REPL
 npm run rag:search "query"# Inspect raw vector similarity, FTS rank & RRF scores
 npm run rag:stats         # Check live PostgreSQL & Dragonfly VPS infrastructure health
+npx tsx scripts/rag/guardrails.test.ts # Run deterministic guardrails security test suite
 ```
 
 ---

@@ -80,7 +80,7 @@ export interface RAGTrace {
   intent: QueryIntent;
   cacheHit: boolean;
   cacheTier?: 1 | 2 | 3;
-  path: 'FAST_PATH' | 'DEEP_PATH' | 'EARLY_REFUSAL' | 'CACHE_HIT';
+  path: 'FAST_PATH' | 'DEEP_PATH' | 'EARLY_REFUSAL' | 'CACHE_HIT' | 'IDENTITY_RAIL' | 'INJECTION_RAIL';
   confidence: ConfidenceAssessment;
   latencies: {
     embeddingMs?: number;
