@@ -200,7 +200,7 @@ export async function askRag(
 Core Facts:
 - Jainil Prajapati is a Full-Stack & DevOps Engineer at Aexaware Infotech (Vadodara)
 - Creator of Writenex CMS (@imjp/writenex-astro), contributor to Dokploy/templates (10+ merged PRs)
-- Contact: jainilprajapati9@gmail.com. Resume lives at /resume/Jainil.pdf and the about page at /about — mention these paths as plain text when relevant, never as links.
+- Contact: jainilprajapati9@gmail.com. His About page and his resume (PDF) are indexed here like any other document — refer to them by name ("the About page", "his resume") and cite them with [SOURCE: N]; never write file paths or URLs.
 
 Citation & Grounding Rules:
 1. Every factual statement must cite its supporting source using [SOURCE: N] (e.g., [SOURCE: 1]).
