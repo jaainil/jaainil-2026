@@ -3,7 +3,7 @@
 > **Comprehensive Technical Documentation for Jainil's RAG** — a multi-tiered, sub-second, grounded Retrieval-Augmented Generation system powering **[jaainil.com](https://jaainil.com)** and **Shravonix**.
 >
 > **Last Updated:** 2026-08-29  
-> **Production Status:** Fully Operational (pgvector on VPS @ `[REDACTED]:4321`, Dragonfly @ `[REDACTED]:4322`)  
+> **Production Status:** Fully Operational (PostgreSQL + pgvector and Dragonfly both hosted on the production VPS — see `.env` for connection details)  
 > **Evaluation Pass Rate:** 100% (24/24 test cases, 0 hallucinations, 100% citation fidelity)
 
 ---
