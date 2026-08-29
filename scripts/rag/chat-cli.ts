@@ -14,10 +14,10 @@ async function streamWords(text: string, delayMs = 12): Promise<void> {
   console.log();
 }
 
-async function handleQuestion(query: string) {
+async function handleQuestion(query: string, history: { role: 'user' | 'assistant'; content: string }[] = []) {
   process.stdout.write(`\n🔍 Searching Jainil's RAG knowledge base... `);
   const start = Date.now();
-  const response = await askRag(query);
+  const response = await askRag(query, { history });
   const elapsed = Date.now() - start;
 
   process.stdout.write(`⚡ Done (${elapsed}ms${response.cached ? ' [Cached]' : ''})\n\n`);
@@ -44,6 +44,7 @@ async function handleQuestion(query: string) {
   }
   console.log('------------------------------------------------------------');
   console.log(`⏱️ Latency: ${response.executionTimeMs}ms | Cached: ${response.cached} | Model: ${response.model} | Confidence: ${response.confidence}\n`);
+  return response;
 }
 
 async function startInteractive() {
@@ -58,6 +59,8 @@ async function startInteractive() {
     output: process.stdout,
   });
 
+  const history: { role: 'user' | 'assistant'; content: string }[] = [];
+
   const promptUser = () => {
     rl.question('Ask Jainil\'s RAG > ', async (input) => {
       const q = input.trim();
@@ -70,7 +73,9 @@ async function startInteractive() {
         return;
       }
       try {
-        await handleQuestion(q);
+        const response = await handleQuestion(q, history);
+        history.push({ role: 'user', content: q });
+        history.push({ role: 'assistant', content: response.answer });
       } catch (err: any) {
         console.error('\n❌ Error generating answer:', err.message);
       }

@@ -215,10 +215,15 @@ export const JainilsRAGChat: React.FC = () => {
 
     try {
       const startTime = Date.now();
+      // Send recent turns so follow-up questions keep their context server-side.
+      const history = messages
+        .filter((m) => m.id !== 'welcome')
+        .slice(-10)
+        .map((m) => ({ role: m.role, content: m.content }));
       const res = await fetch('/api/rag/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: query }),
+        body: JSON.stringify({ question: query, history }),
       });
 
       if (!res.ok) {

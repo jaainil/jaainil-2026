@@ -37,7 +37,15 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const result = await askRag(question, { useCache: true });
+    // Client-supplied conversation history: last 10 turns, capped per turn.
+    // Untrusted like the question itself — the system prompt handles injection.
+    const history = (Array.isArray(body?.history) ? body.history : [])
+      .filter((t: any) => t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string')
+      .slice(-10)
+      .map((t: any) => ({ role: t.role as 'user' | 'assistant', content: t.content.trim().slice(0, 1000) }))
+      .filter((t: { content: string }) => t.content);
+
+    const result = await askRag(question, { useCache: true, history });
 
     return new Response(
       JSON.stringify({
