@@ -24,14 +24,19 @@ async function main() {
 
   // 1. Rest-state audit: private docs must be flagged in SQL.
   const pool = new pg.Pool({ connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL });
-  const flagged = await pool.query(
-    'SELECT url FROM documents WHERE is_private = true ORDER BY url'
-  );
-  const pvtByPath = await pool.query(
-    'SELECT count(*)::int AS c FROM documents WHERE url LIKE $1 AND is_private = false',
-    [`${PRIVATE_URL_PREFIX}%`]
-  );
-  await pool.end();
+  let flagged: pg.QueryResult;
+  let pvtByPath: pg.QueryResult;
+  try {
+    flagged = await pool.query(
+      'SELECT url FROM documents WHERE is_private = true ORDER BY url'
+    );
+    pvtByPath = await pool.query(
+      'SELECT count(*)::int AS c FROM documents WHERE url LIKE $1 AND is_private = false',
+      [`${PRIVATE_URL_PREFIX}%`]
+    );
+  } finally {
+    await pool.end();
+  }
 
   if (flagged.rows.length === 0) {
     console.log('⚠️ No private documents indexed — rest-state and grounding checks are vacuous.');
@@ -73,5 +78,7 @@ main()
   })
   .catch(async (err) => {
     console.error('\n❌ Privacy audit error:', err);
+    await closeDb();
+    await closeCache();
     process.exit(1);
   });

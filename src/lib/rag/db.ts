@@ -142,6 +142,7 @@ export async function getDocumentByUrl(url: string): Promise<DocumentRecord | nu
       description: r.description,
       tags: r.tags,
       sourceHash: r.source_hash,
+      isPrivate: r.is_private,
       publishedAt: r.published_at,
       indexedAt: r.indexed_at,
       lastSeenAt: r.last_seen_at,

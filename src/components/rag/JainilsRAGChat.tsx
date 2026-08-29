@@ -134,7 +134,8 @@ function RagMarkdown({ text }: { text: string }) {
     }
     flushBullets();
     if (line === '') continue;
-    out.push(<p key={`p-${key++}`} className="my-1.5">{renderInline(line, `p-${key}`)}</p>);
+    const pKey = key++;
+    out.push(<p key={`p-${pKey}`} className="my-1.5">{renderInline(line, `p-${pKey}`)}</p>);
   }
   flushBullets();
 
@@ -202,11 +203,13 @@ export const JainilsRAGChat: React.FC = () => {
     if (!query || isLoading) return;
 
     setInput('');
-    const assistantMsgId = 'a-' + Date.now();
+    const ts = Date.now();
+    const rnd = () => Math.random().toString(36).slice(2, 7);
+    const assistantMsgId = `a-${ts}-${rnd()}`;
 
     setMessages((prev) => [
       ...prev,
-      { id: 'u-' + Date.now(), role: 'user', content: query },
+      { id: `u-${ts}-${rnd()}`, role: 'user', content: query },
     ]);
     setIsLoading(true);
 

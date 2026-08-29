@@ -22,8 +22,8 @@ let totalErrors = 0;
 
 export function getRerankerTelemetry(): RerankerStats {
   const sorted = [...rerankerLatencies].sort((a, b) => a - b);
-  const p50Idx = Math.floor(sorted.length * 0.50);
-  const p95Idx = Math.floor(sorted.length * 0.95);
+  const p50Idx = Math.min(Math.floor(sorted.length * 0.50), sorted.length - 1);
+  const p95Idx = Math.min(Math.ceil(sorted.length * 0.95) - 1, sorted.length - 1);
 
   return {
     attempts: totalAttempts,

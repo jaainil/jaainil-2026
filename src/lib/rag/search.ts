@@ -73,6 +73,8 @@ export async function hybridSearch(
 
     // A. Vector Cosine Search (pgvector HNSW)
     const vectorParamIndex = queryParams.length + 1;
+    const thresholdParamIndex = queryParams.length + 2;
+    const vectorLimitParamIndex = queryParams.length + 3;
     const vectorSql = `
       SELECT 
         c.id,
@@ -89,14 +91,15 @@ export async function hybridSearch(
         1 - (c.embedding <=> $${vectorParamIndex}::vector) AS similarity
       FROM document_chunks c
       JOIN documents d ON c.document_id = d.id
-      WHERE (1 - (c.embedding <=> $${vectorParamIndex}::vector)) >= ${threshold}
+      WHERE (1 - (c.embedding <=> $${vectorParamIndex}::vector)) >= $${thresholdParamIndex}
       ${filterClause}
       ORDER BY c.embedding <=> $${vectorParamIndex}::vector ASC
-      LIMIT ${limit * 3};
+      LIMIT $${vectorLimitParamIndex};
     `;
 
     // B. Full-Text Search (GIN tsvector with websearch_to_tsquery)
     const textParamIndex = queryParams.length + 1;
+    const textLimitParamIndex = queryParams.length + 2;
     const textSql = `
       SELECT 
         c.id,
@@ -116,12 +119,13 @@ export async function hybridSearch(
       WHERE c.tsv @@ websearch_to_tsquery('english', $${textParamIndex})
       ${filterClause}
       ORDER BY fts_rank DESC
-      LIMIT ${limit * 3};
+      LIMIT $${textLimitParamIndex};
     `;
 
+    const fetchLimit = limit * 3;
     const [vRes, tRes] = await Promise.all([
-      client.query<RawDbRow>(vectorSql, [...queryParams, vectorStr]),
-      client.query<RawDbRow>(textSql, [...queryParams, query]).catch(() => ({ rows: [] as RawDbRow[] })),
+      client.query<RawDbRow>(vectorSql, [...queryParams, vectorStr, threshold, fetchLimit]),
+      client.query<RawDbRow>(textSql, [...queryParams, query, fetchLimit]).catch(() => ({ rows: [] as RawDbRow[] })),
     ]);
 
     return [vRes.rows, tRes.rows];

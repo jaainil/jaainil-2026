@@ -89,7 +89,9 @@ export async function embedBatch(
         });
 
         if (res.data && res.data.length === slice.length) {
-          batchValues = res.data.map((d: any) => d.embedding);
+          batchValues = res.data
+            .sort((a: any, b: any) => a.index - b.index)
+            .map((d: any) => d.embedding);
           batchSucceeded = true;
         }
       } catch {

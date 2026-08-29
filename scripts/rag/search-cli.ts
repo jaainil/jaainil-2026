@@ -39,8 +39,8 @@ async function main() {
       console.log(`    📝 Excerpt:`);
       const excerpt = r.content
         .split('\n')
-        .map((l) => '       ' + l)
         .slice(0, 5)
+        .map((l) => '       ' + l)
         .join('\n');
       console.log(excerpt);
       console.log('');

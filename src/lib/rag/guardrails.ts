@@ -66,7 +66,7 @@ const upstreamGuard = createGuard();
 export function normalizeInput(question: string): string {
   let s = question.normalize('NFKC').replace(/\u200B/g, ' ').replace(ZERO_WIDTH_RE, '');
   s = s.replace(/./gu, (ch) => HOMOGLYPHS[ch] ?? ch);
-  s = s.replace(/[013457@$]/g, (ch) => LEET_MAP[ch] ?? ch);
+  s = s.replace(/[013457@$!]/g, (ch) => LEET_MAP[ch] ?? ch);
   return s.replace(/\s+/g, ' ');
 }
 
@@ -100,8 +100,8 @@ const PROMPT_ECHO_RE =
 export function isExfil(answer: string, sourceUrls: string[]): boolean {
   if (PROMPT_ECHO_RE.test(answer)) return true;
   const allowed = new Set(sourceUrls.map((u) => u.replace(/\/$/, '')));
-  for (const url of answer.match(/https?:\/\/[^\s)>]+/g) ?? []) {
-    if (!allowed.has(url.replace(/[).,]+$/, '').replace(/\/$/, ''))) return true;
+  for (const url of answer.match(/https?:\/\/[^\s)>\]]+/g) ?? []) {
+    if (!allowed.has(url.replace(/[).,\]]+$/, '').replace(/\/$/, ''))) return true;
   }
   return false;
 }

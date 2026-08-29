@@ -48,9 +48,9 @@ function validateCitationIntegrityAndQuality(
     const links = ids.map((id) => {
       const source = sources[id - 1];
       if (source) {
-        citationCount++;
         if (seen.has(id)) return '';
         seen.add(id);
+        citationCount++;
         return `[[${id}]](${source.url})`;
       }
       return ''; // Phantom citation — strip silently

@@ -36,6 +36,8 @@ async function runEval() {
   console.log(`\n🧪 Running Jainil's RAG Evaluation Suite (${dataset.length} test cases)...`);
   console.log(`🎯 Targets: Recall@3 >= ${MIN_RECALL_AT_3}%, Refusal Accuracy >= ${MIN_REFUSAL_ACCURACY}%\n`);
 
+  try {
+
   let recallAt1 = 0;
   let recallAt3 = 0;
   let refusalCorrect = 0;
@@ -152,7 +154,9 @@ async function runEval() {
   const citationValPct = totalCitations > 0 ? Number(((validCitations / totalCitations) * 100).toFixed(1)) : 100;
   const citationBackedPct = positiveTotal > 0 ? Number(((citationBackedAnswers / positiveTotal) * 100).toFixed(1)) : 100;
 
-  const avgLatency = (allLatencies.reduce((a, b) => a + b, 0) / allLatencies.length).toFixed(0);
+  const avgLatency = allLatencies.length > 0
+    ? (allLatencies.reduce((a, b) => a + b, 0) / allLatencies.length).toFixed(0)
+    : '0';
   const fastP50 = calculatePercentile(fastPathLatencies, 50);
   const deepP50 = calculatePercentile(deepPathLatencies, 50);
   const overallP50 = calculatePercentile(allLatencies, 50);
@@ -222,8 +226,10 @@ async function runEval() {
     process.exitCode = 1;
   }
 
-  await closeDb();
-  await closeCache();
+  } finally {
+    await closeDb();
+    await closeCache();
+  }
 }
 
 runEval().catch(console.error);

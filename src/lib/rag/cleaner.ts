@@ -89,7 +89,11 @@ export function cleanMarkdownContent(rawBody: string): string {
   text = text.replace(/<[A-Z][A-Za-z0-9_]*\b[^>]*\/>/g, '');
 
   // 4. Remove paired JSX components but preserve their inner text: <Alert>inner text</Alert> -> inner text
-  text = text.replace(/<[A-Z][A-Za-z0-9_]*\b[^>]*>([\s\S]*?)<\/[A-Z][A-Za-z0-9_]*>/g, '$1');
+  let prevText = '';
+  while (prevText !== text) {
+    prevText = text;
+    text = text.replace(/<([A-Z][A-Za-z0-9_]*)\b[^>]*>([\s\S]*?)<\/\1>/g, '$2');
+  }
 
   // 5. Remove HTML tags like <div>, <span>, <br />, etc.
   text = text.replace(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi, '');
