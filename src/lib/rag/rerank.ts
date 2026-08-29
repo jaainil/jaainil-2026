@@ -90,9 +90,9 @@ export async function rerankResults(
 
   totalAttempts++;
   const t0 = Date.now();
-  const candidatePool = candidates.slice(0, 8);
+  const candidatePool = candidates.slice(0, 12);
   const docs = candidatePool.map(
-    (c) => `${c.title} > ${c.heading || 'Main'}\n${c.content.slice(0, 500)}`
+    (c) => `${c.title} > ${c.heading || 'Main'}\n${c.content.slice(0, 800)}`
   );
 
   try {

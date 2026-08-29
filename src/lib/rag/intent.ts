@@ -21,28 +21,28 @@ export function classifyQueryIntent(query: string): QueryIntent {
 
   // 2. Open Source & Projects Intent
   if (
-    hasKeyword(q, ['project', 'writenex', 'dokploy', 'blog maker', 'memoryview', 'built', 'made', 'github', 'npm', 'open source'])
+    hasKeyword(q, ['project', 'writenex', 'dokploy', 'blog maker', 'memoryview', 'github', 'npm', 'open source'])
   ) {
     return 'projects';
   }
 
   // 3. Work Experience / Job Intent
   if (
-    hasKeyword(q, ['experience', 'work', 'job', 'aexaware', 'role', 'company', 'career'])
+    hasKeyword(q, ['experience', 'work experience', 'work history', 'job', 'aexaware', 'role', 'company', 'career'])
   ) {
     return 'experience';
   }
 
   // 4. Skills & Tech Stack Intent
   if (
-    hasKeyword(q, ['skill', 'tech stack', 'stack', 'technolog', 'languages', 'tools', 'docker', 'linux', 'devops', 'proxmox', 'homelab', 'networking'])
+    hasKeyword(q, ['skill', 'tech stack', 'technology', 'technologies', 'languages', 'tools', 'docker', 'linux', 'devops', 'proxmox', 'homelab', 'networking'])
   ) {
     return 'skills';
   }
 
   // 5. Personal Identity & Bio Intent
   if (
-    hasKeyword(q, ['who is', 'about jainil', 'tell me about', 'background', 'education', 'college', 'svit', 'gujarat', 'anand'])
+    hasKeyword(q, ['who is', 'about jainil', 'education', 'college', 'svit', 'gujarat', 'anand'])
   ) {
     return 'profile';
   }

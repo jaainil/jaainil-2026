@@ -29,7 +29,7 @@ export async function hybridSearch(
 ): Promise<SearchResult[]> {
   const {
     limit = 6,
-    threshold = 0.20,
+    threshold = 0.25,
     category,
     type,
     rrfK = 60,
