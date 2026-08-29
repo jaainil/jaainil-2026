@@ -27,7 +27,8 @@ const PERSONAL_LIFE_RE =
 
 // Guaranteed sign-off for personal-life answers (appended in code, not generated,
 // so it can never be skipped, doubled, or vary off-brand).
-const PERSONAL_CLOSER =
+// Exported so the API route can strip it from history turns (noise downstream).
+export const PERSONAL_CLOSER =
   `\n\nOkay okay, enough about her now 😅 — trust me, I can yapp about her non-stop 💗 but this is my site, sooo… ask me about ME and my profession instead 🧑‍💻✨`;
 
 export interface ChatHistoryTurn {
@@ -50,7 +51,7 @@ async function expandQueries(question: string, history: ChatHistoryTurn[] = []):
     const res = await Promise.race([
       googleGenAI.models.generateContent({
         model: GEMINI_MODEL,
-        contents: `${historyBlock}Rewrite this search query in 2 different ways to help find relevant documents. The query may be a conversational follow-up — resolve pronouns like "it", "that", "he" against the conversation so the rewrites are self-contained. Keep them concise and preserve the original meaning. Return ONLY the 2 rewrites, one per line, no numbering or bullets.\n\nQuery: ${question}`,
+        contents: `${historyBlock}Rewrite this search query in 2 different ways to help find relevant documents. The query may be a conversational follow-up — resolve pronouns like "it", "that", "he" against the conversation so the rewrites are self-contained. The rewrite must be LOSSLESS: resolve references only, never introduce entities, technologies, names, or assumptions that are absent from the question and the conversation. Keep them concise and preserve the original meaning. Return ONLY the 2 rewrites, one per line, no numbering or bullets.\n\nQuery: ${question}`,
         config: { temperature: 0.4, maxOutputTokens: 120 },
       }),
       new Promise<never>((_, reject) =>
@@ -319,6 +320,14 @@ export async function askRag(
       rerankMs = Date.now() - rerankStart;
     } else {
       matches = matches.slice(0, candidateLimit);
+    }
+
+    // Adaptive context pruning: chunks scoring far below the leader are noise,
+    // not evidence — smaller context, tighter grounding. Relative cutoff works
+    // on both rerank (0–1) and RRF (~0–0.1) score scales. Top 2 always kept.
+    const topScore = matches[0]?.rrfScore ?? 0;
+    if (topScore > 0) {
+      matches = matches.filter((m, i) => i < 2 || m.rrfScore >= topScore * 0.45);
     }
 
     // Private docs are grounded-in but never cited: they stay out of the numbered

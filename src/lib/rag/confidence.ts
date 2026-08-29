@@ -74,12 +74,15 @@ export function estimateRetrievalConfidence(
 
   const features = extractConfidenceFeatures(matches, queryIntent);
 
-  // 1. Out-of-Domain Refusal Gate
-  // Only refuse if vector similarity is low (< 0.40), FTS found no keyword match, AND intent is not an explicit match
+  // 1. Obvious-Negative Refusal Gate
+  // Refuses only extreme out-of-domain queries: near-zero vector similarity AND
+  // no FTS match. Ambiguous cases (0.25–0.33) flow through to the reranker and
+  // grounded generation — the system's best relevance signals get a say before
+  // anything is rejected, and the grounding protocol handles "no direct answer"
+  // honestly. ponytail: thresholds are engineering defaults until eval
+  // calibration (500+ scored queries) justifies tuned boundaries.
   const isOutOfDomain =
-    !features.intentMatch &&
-    ((features.topVectorScore < 0.40 && features.topFtsRank === null) ||
-     (features.topVectorScore < 0.33 && (matches[0]?.textScore || 0) < 0.01));
+    !features.intentMatch && features.topVectorScore < 0.33 && features.topFtsRank === null;
 
   if (isOutOfDomain) {
     return {

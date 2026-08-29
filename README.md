@@ -47,8 +47,10 @@ At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-A
 Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine designed for strict factual accuracy. For full architectural details, schemas, and operational runbooks, see **[RAG.md](file:///home/jainil/Downloads/code/jaainil-2026/RAG.md)**.
 
 ```text
-                                       USER QUERY
-                                           │
+                                        USER QUERY
+                                            ➔ shipped with the last 10 conversation
+                                              turns (client-held chat history)
+                                            │
                                            ▼
                              ┌───────────────────────────┐
                              │  Stage 0: Input Rails     │ ➔ Injection Rail (llm-prompt-guard + local rules)
@@ -80,8 +82,11 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
                                                                  │ Lock Acquired / Executing
                                                                  ▼
                                                    ┌───────────────────────────┐
-                                                   │  Multi-Query Expansion    │ ➔ Gemini generates 2 alternative query
-                                                   │     (expandQueries)       │   phrasings (2s cap) for high recall
+                                                    │  Multi-Query Expansion    │ ➔ Gemini generates 2 alternative query
+                                                    │     (expandQueries)       │   phrasings (3.5s cap) for high recall;
+                                                    │                           │   history-aware rewrite resolves
+                                                    │                           │   follow-up pronouns ("it", "that");
+                                                    │                           │   on failure re-searches last user turn
                                                    └─────────────┬─────────────┘
                                                                  │ 3 Query Variants
                                                                  ▼
@@ -153,17 +158,19 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
 
 ### RAG Highlights:
 1. **Multi-Layer Guardrails (`src/lib/rag/guardrails.ts`):** Zero-token Stage 0 input deflection for prompt injections and identity meta-questions with encoding-bypass normalization (homoglyphs, leetspeak, zero-width joiners) and layered `llm-prompt-guard`. Stage 7.5 output safety filters scanning for prompt-echo exfiltration, redacting PII/secrets, and catching degenerate/gibberish output.
-2. **Multi-Query Parallel Hybrid Search:** Query expansion generates 2 alternative phrasings via Gemini, executing 3 concurrent hybrid vector + FTS searches with noise-floor threshold `0.25`, merged and deduplicated by maximum RRF score ($k=60, w_v=0.65, w_t=0.35$).
+2. **Multi-Query Parallel Hybrid Search:** Query expansion generates 2 alternative phrasings via Gemini (lossless, history-aware — resolves follow-up pronouns without inventing entities), executing 3 concurrent hybrid vector + FTS searches with noise-floor threshold `0.25`, merged and deduplicated by maximum RRF score ($k=60, w_v=0.65, w_t=0.35$).
 3. **Always-Rerank Precision Pool:** Every retrieval query with candidates routes through `voyageai/rerank-2.5-lite` evaluating up to 12 candidates with 800 characters of context each.
 4. **Lost-in-the-Middle Mitigation:** Context candidates are reordered `[1, 3, 5, 6, 4, 2]` so top-scoring chunks reside at the beginning and end where LLM attention is strongest.
 5. **5-Step Grounding Protocol:** Enforced in system instructions with a chain-of-thought verification procedure ensuring every claim traces to an explicit source excerpt.
 6. **Two-Tier Distributed Caching:** Dragonfly in-memory store on VPS hosting Tier 1 Answer Cache (2h TTL) and Tier 2 Vector Embedding Cache (7d TTL).
 7. **Safe Singleflight Mutex:** Tokenized distributed locks (`SET NX EX 15`) with atomic Lua release scripts prevent cache stampedes during concurrent traffic bursts.
-8. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
-9. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
-10. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
-11. **Automated Quality Gates:** `rag:eval` runs 24 ground-truth queries against regression thresholds (Recall@3, citation validity, refusal accuracy); `rag:privacy` audits private-document isolation end-to-end.
-12. **Persona Tuning (Default + Personal-Life):** Default answers use a casual, conversational "Jainil thinking out loud" voice — lowercase-leaning, tradeoff-aware, emoji-sparingly, with zero corporate AI filler — while still citing every fact. Questions about Jainil's relationship (keyword-gated against private context) additionally shift into a warm, emotionally expressive persona grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work.
+8. **Early Refusal Gate (Obvious Negatives Only):** Rejects only extreme out-of-domain queries (vector < 0.33 AND no FTS match) in <85ms without consuming any LLM tokens; ambiguous candidates flow through to the reranker and grounded generation instead of being rejected by weaker pre-rerank signals.
+9. **Adaptive Context Pruning:** After reranking, chunks scoring below 45% of the leader are dropped (top 2 always kept) — context stays as small as possible while large enough to answer, so tail noise never dilutes grounding.
+10. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
+11. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
+12. **Automated Quality Gates:** `rag:eval` runs the ground-truth suite (`tests/rag/eval.json`) against regression thresholds (Recall@3, citation validity, refusal accuracy), plus an adversarial suite (`tests/rag/eval-adversarial.json`: out-of-domain, near-domain, and history-anchored follow-up/noise-injection cases). Follow-up cases carry `history`, exercising the conversation-aware pipeline end-to-end. `rag:privacy` audits private-document isolation end-to-end.
+13. **Persona Tuning (Default + Personal-Life):** Default answers use a casual, conversational "Jainil thinking out loud" voice — lowercase-leaning, tradeoff-aware, emoji-sparingly, with zero corporate AI filler — while still citing every fact. Questions about Jainil's relationship (keyword-gated against private context) additionally shift into a warm, emotionally expressive persona grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work. Detection matches the current question or recent conversation history, so indirect follow-ups stay in persona.
+14. **Conversational Follow-up Memory:** The client sends the last 10 messages with every request; the API sanitizes them (per-turn cap, role validation, citation links `[[N]](url)` collapsed to `[N]`, personal-life closer stripped), query rewriting resolves pronouns against them, and they are injected into the generation prompt. The answer cache key and singleflight lock hash include the history, so follow-ups never collide with first-ask cached answers. No server-side conversation storage — the chat stays stateless and anonymous.
 
 ---
 
@@ -343,7 +350,7 @@ UMAMI_WEBSITE_ID=8169229f-6d5b-4ffc-ac38-9036661b5d94
 
 ## 📊 Automated Evaluation & Benchmarks
 
-Jainil's RAG includes a continuous regression evaluation suite (`scripts/rag/eval.ts`) testing 24 ground-truth queries across 6 categories:
+Jainil's RAG includes a continuous regression evaluation suite (`scripts/rag/eval.ts`) testing 24 ground-truth queries across 6 categories, plus an adversarial suite (`tests/rag/eval-adversarial.json`) covering out-of-domain, near-domain, and conversation-follow-up cases (with injected-noise history). Run it via `npm run rag:eval -- tests/rag/eval-adversarial.json`. The harness passes each case's optional `history` through to the pipeline, so follow-up resolution is tested end-to-end:
 
 ```text
 ──────────────────────────────────────────────────────

@@ -13,6 +13,8 @@ interface EvalItem {
   expected_sources: string[];
   expected_keywords: string[];
   should_refuse: boolean;
+  // Optional prior conversation for follow-up cases; passed through to askRag
+  history?: { role: 'user' | 'assistant'; content: string }[];
 }
 
 const MIN_RECALL_AT_3 = Number(process.env.RAG_MIN_RECALL_AT_3 || 85);
@@ -26,7 +28,8 @@ function calculatePercentile(arr: number[], p: number): number {
 }
 
 async function runEval() {
-  const evalPath = path.resolve(process.cwd(), 'tests/rag/eval.json');
+  // Default dataset or a path override: npm run rag:eval -- tests/rag/eval-adversarial.json
+  const evalPath = path.resolve(process.cwd(), process.argv[2] || 'tests/rag/eval.json');
   if (!fs.existsSync(evalPath)) {
     console.error('❌ Eval dataset not found at:', evalPath);
     process.exit(1);
@@ -73,7 +76,7 @@ async function runEval() {
 
     process.stdout.write(`[${(i + 1).toString().padStart(2, '0')}/${dataset.length}] [${test.category.padEnd(10)}] "${test.question.slice(0, 42).padEnd(42)}" ... `);
 
-    const res = await askRag(test.question, { useCache: false });
+    const res = await askRag(test.question, { useCache: false, history: test.history });
     allLatencies.push(res.executionTimeMs);
 
     if (res.trace?.path === 'FAST_PATH') {

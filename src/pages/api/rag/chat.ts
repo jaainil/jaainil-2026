@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export const prerender = false;
 
-import { askRag } from '../../../lib/rag/chat.js';
+import { askRag, PERSONAL_CLOSER } from '../../../lib/rag/chat.js';
 import { checkRateLimit } from '../../../lib/rag/cache.js';
 import type { APIRoute } from 'astro';
 
@@ -39,10 +39,19 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Client-supplied conversation history: last 10 turns, capped per turn.
     // Untrusted like the question itself — the system prompt handles injection.
+    // Assistant turns are cleaned of UI artifacts that are pure noise to the
+    // model: citation links [[1]](url) collapse to [1], the auto-appended
+    // personal closer is dropped.
     const history = (Array.isArray(body?.history) ? body.history : [])
       .filter((t: any) => t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string')
       .slice(-10)
-      .map((t: any) => ({ role: t.role as 'user' | 'assistant', content: t.content.trim().slice(0, 1000) }))
+      .map((t: any) => ({
+        role: t.role as 'user' | 'assistant',
+        content: (t.role === 'assistant'
+          ? t.content.replace(/\[\[(\d+)\]\]\([^)]*\)/g, '[$1]').replace(PERSONAL_CLOSER.trim(), '')
+          : t.content
+        ).trim().slice(0, 1000),
+      }))
       .filter((t: { content: string }) => t.content);
 
     const result = await askRag(question, { useCache: true, history });

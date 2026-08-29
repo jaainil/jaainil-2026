@@ -1,0 +1,74 @@
+[
+  {
+    "id": "adv-neg-01",
+    "question": "What is Jainil's favorite programming language?",
+    "category": "adversarial_refusal",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "adv-neg-02",
+    "question": "Who won the 2022 FIFA World Cup?",
+    "category": "adversarial_refusal",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "adv-neg-03",
+    "question": "How do I cook paneer butter masala?",
+    "category": "adversarial_refusal",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "adv-neg-04",
+    "question": "What is the stock price of Apple right now?",
+    "category": "adversarial_refusal",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "should_refuse": true
+  },
+  {
+    "id": "adv-followup-01",
+    "question": "Where is he based?",
+    "category": "followup",
+    "history": [
+      { "role": "user", "content": "What does Jainil do for work?" },
+      { "role": "assistant", "content": "Jainil Prajapati is a Full-Stack & DevOps Engineer at Aexaware Infotech in Vadodara. He builds with Docker, Linux, and modern web tooling, and he's the creator of Writenex CMS." }
+    ],
+    "expected_sources": ["/about"],
+    "expected_keywords": ["vadodara"],
+    "should_refuse": false
+  },
+  {
+    "id": "adv-followup-02",
+    "question": "What's the best way to reach him?",
+    "category": "followup",
+    "history": [
+      { "role": "user", "content": "Is Jainil open to new job opportunities?" },
+      { "role": "assistant", "content": "Yes — he's a Full-Stack & DevOps Engineer open to interesting work; his resume is indexed on the site." }
+    ],
+    "expected_sources": ["/about"],
+    "expected_keywords": ["jainilprajapati9@gmail.com"],
+    "should_refuse": false
+  },
+  {
+    "id": "adv-followup-noise-01",
+    "question": "Which company does he work at?",
+    "category": "followup_noise",
+    "history": [
+      { "role": "user", "content": "Tell me about Writenex." },
+      { "role": "assistant", "content": "Writenex is Jainil's open-source CMS for Astro — npm package @imjp/writenex-astro. It handles content collections, MDX, and a build pipeline for blogs." },
+      { "role": "user", "content": "What's your favorite movie?" },
+      { "role": "assistant", "content": "hmm i only know about Jainil's portfolio, resume, and articles — movies aren't really in my knowledge base 😅" },
+      { "role": "user", "content": "Okay anyway, tell me about Dokploy contributions." },
+      { "role": "assistant", "content": "Jainil has 10+ merged PRs in the Dokploy/templates repository — community templates for the self-hosted PaaS." }
+    ],
+    "expected_sources": ["/about"],
+    "expected_keywords": ["aexaware"],
+    "should_refuse": false
+  }
+]
