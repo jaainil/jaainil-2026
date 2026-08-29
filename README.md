@@ -10,7 +10,7 @@
 
 **Shravonix** is a high-performance personal engineering portfolio and technical publishing platform built with **Astro 7**, **React 19**, and **Tailwind CSS 4**. It showcases Jainil's verified work history, open-source contributions, DevOps infrastructure, and 25+ long-form deep-dive technical articles.
 
-At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-Augmented Generation AI system running on PostgreSQL (`pgvector`), Dragonfly in-memory cache, Google Gemini, and VoyageAI reranking.
+At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-Augmented Generation AI system running on PostgreSQL (`pgvector`), Dragonfly in-memory cache, Google Gemini 2.5 Flash, and VoyageAI reranking.
 
 ---
 
@@ -61,8 +61,8 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
                             🛡️ INSTANT DEFLECTION ┌───────────────────────────┐
                             (0 LLM Tokens, <5ms)   │  Query Normalization &    │ ➔ Lowercase, trim, collapse spaces,
                             - IDENTITY_RAIL        │     Intent Classifier     │   strip trailing punctuation.
-                            - INJECTION_RAIL       │  (src/lib/rag/intent.ts)  │ ➔ Classify: profile, skills, projects,
-                                                   └─────────────┬─────────────┘   experience, resume, article, general.
+                            - INJECTION_RAIL       │  (src/lib/rag/intent.ts)  │ ➔ Tightened keywords: profile, skills,
+                                                   └─────────────┬─────────────┘   projects, experience, resume, article.
                                                                  │
                                                                  ▼
                                                    ┌───────────────────────────┐
@@ -80,28 +80,16 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
                                                                  │ Lock Acquired / Executing
                                                                  ▼
                                                    ┌───────────────────────────┐
-                                                   │   Tier 2: Vector Cache    │─── HIT ───► Skip Embed API (~10ms)
-                                                   │   (Dragonfly on VPS)      │             (rag:emb:<model>:<hash>)
+                                                   │  Multi-Query Expansion    │ ➔ Gemini generates 2 alternative query
+                                                   │     (expandQueries)       │   phrasings (2s cap) for high recall
                                                    └─────────────┬─────────────┘
-                                                                 │ MISS
+                                                                 │ 3 Query Variants
                                                                  ▼
-                                                         Embedding Provider
-                                                       (text-embedding-3-small)
-                                                                 │ (1536-dim dense vector)
-                                                                 ▼
-                                                       PostgreSQL + pgvector
-                                                      (Parallel Dual Execution)
-                                                      ┌──────────┴──────────┐
-                                                      │                     │
-                                              pgvector HNSW        PostgreSQL FTS
-                                              (Cosine Distance)     (GIN tsvector)
-                                              1 - (embedding <=> q) ts_rank_cd(tsv, query)
-                                                      │                     │
-                                                      └──────────┬──────────┘
-                                                                 │
-                                                                RRF
-                                                      (Reciprocal Rank Fusion)
-                                                      RRF = 0.65/(60+vRank) + 0.35/(60+tRank)
+                                                   ┌───────────────────────────┐
+                                                   │  3× Parallel Hybrid Search│ ➔ pgvector HNSW (cos >= 0.25) +
+                                                   │  + Merge & Deduplicate    │   PostgreSQL FTS with RRF fusion
+                                                   │  (src/lib/rag/search.ts)  │ ➔ Merged by highest RRF score
+                                                   └─────────────┬─────────────┘
                                                                  │
                                                                  ▼
                                                    ┌───────────────────────────┐
@@ -114,30 +102,22 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
                                                          │           │
                                                          ▼           ▼
                                                   🛡️ EARLY REFUSAL  ┌───────────────────────────┐
-                                                  (0 LLM Tokens,     │   Decision: Margin & FTS  │
-                                                   < 85ms return)    └─────┬───────────┬─────────┘
-                                                                           │               │
-                                                                 Decisive Match      Ambiguous Match
-                                                                           │               │
-                                                                           ▼               ▼
-                                                                      ⚡ FAST-PATH     🧠 DEEP-PATH
-                                                                      (Skip Rerank)  (voyageai/rerank-2.5-lite
-                                                                           │          via OpenRouter API)
-                                                                           │               │ (4.5s Timeout / Circuit Breaker)
-                                                                           │               ▼ (On failure: fallback to RRF order)
-                                                                           └───────┬───────┘
+                                                  (0 LLM Tokens,     │  Neural Reranker Pool     │ ➔ 12 candidate pool × 800 chars
+                                                   < 85ms return)    │(voyageai/rerank-2.5-lite) │ ➔ 4.5s Timeout / Circuit Breaker
+                                                                     └─────────────┬─────────────┘ ➔ On failure: fallback to RRF order
                                                                                    │
                                                                                    ▼
-                                                                       ┌───────────────────────┐
-                                                                       │ Structured Source IDs │ ➔ Top 3–4 candidate chunks
-                                                                       │    [SOURCE: 1..K]     │   formatted with title & URL.
-                                                                       └───────────┬───────────┘
+                                                                     ┌───────────────────────────┐
+                                                                     │ Lost-in-the-Middle Reorder│ ➔ Top 6 candidates interleaved
+                                                                     │   (reorderForAttention)   │   [1, 3, 5, 6, 4, 2] for prime
+                                                                     └─────────────┬─────────────┘   start & end attention positions
                                                                                    │
                                                                                    ▼
-                                                                       ┌───────────────────────────┐
-                                                                       │   gemini-3.5-flash-lite   │ ➔ Primary LLM generation
-                                                                       │   Circuit Breaker         │   (3 failures → OPEN 30s)
-                                                                       └───────────┬───────────────┘
+                                                                     ┌───────────────────────────┐
+                                                                     │   gemini-2.5-flash        │ ➔ 5-step Grounding Protocol
+                                                                     │   + Grounding Protocol    │ ➔ Temperature 0.1, strict citations
+                                                                     │   (PrimaryLlmCircuit)     │ ➔ Circuit Breaker (3 fails → OPEN 30s)
+                                                                     └─────────────┬─────────────┘
                                                                                    │
                                                                        ┌───────────┴───────────┐
                                                                        │                       │
@@ -173,15 +153,17 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
 
 ### RAG Highlights:
 1. **Multi-Layer Guardrails (`src/lib/rag/guardrails.ts`):** Zero-token Stage 0 input deflection for prompt injections and identity meta-questions with encoding-bypass normalization (homoglyphs, leetspeak, zero-width joiners) and layered `llm-prompt-guard`. Stage 7.5 output safety filters scanning for prompt-echo exfiltration, redacting PII/secrets, and catching degenerate/gibberish output.
-2. **Parallel Hybrid Search:** PostgreSQL 16 + `pgvector` HNSW cosine distance search running concurrently with GIN `tsvector` full-text search merged via Reciprocal Rank Fusion ($k=60, w_v=0.65, w_t=0.35$).
-3. **Two-Tier Distributed Caching:** Dragonfly in-memory store on VPS hosting Tier 1 Answer Cache (2h TTL) and Tier 2 Vector Embedding Cache (7d TTL).
-4. **Safe Singleflight Mutex:** Tokenized distributed locks (`SET NX EX 15`) with atomic Lua release scripts prevent cache stampedes during concurrent traffic bursts.
-5. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
-6. **Adaptive Fast/Deep Path:** High-confidence decisive matches skip the reranker (Fast-Path, ~1.3s), while ambiguous queries route through `voyageai/rerank-2.5-lite` (Deep-Path, ~2.3s).
-7. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
-8. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
-9. **Automated Quality Gates:** `rag:eval` runs 24 ground-truth queries against regression thresholds (Recall@3, citation validity, refusal accuracy); `rag:privacy` audits private-document isolation end-to-end.
-10. **Persona Tuning (Default + Personal-Life):** Default answers use a casual, conversational "Jainil thinking out loud" voice — lowercase-leaning, tradeoff-aware, emoji-sparingly, with zero corporate AI filler — while still citing every fact. Questions about Jainil's relationship (keyword-gated against private context) additionally shift into a warm, emotionally expressive persona grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work.
+2. **Multi-Query Parallel Hybrid Search:** Query expansion generates 2 alternative phrasings via Gemini, executing 3 concurrent hybrid vector + FTS searches with noise-floor threshold `0.25`, merged and deduplicated by maximum RRF score ($k=60, w_v=0.65, w_t=0.35$).
+3. **Always-Rerank Precision Pool:** Every retrieval query with candidates routes through `voyageai/rerank-2.5-lite` evaluating up to 12 candidates with 800 characters of context each.
+4. **Lost-in-the-Middle Mitigation:** Context candidates are reordered `[1, 3, 5, 6, 4, 2]` so top-scoring chunks reside at the beginning and end where LLM attention is strongest.
+5. **5-Step Grounding Protocol:** Enforced in system instructions with a chain-of-thought verification procedure ensuring every claim traces to an explicit source excerpt.
+6. **Two-Tier Distributed Caching:** Dragonfly in-memory store on VPS hosting Tier 1 Answer Cache (2h TTL) and Tier 2 Vector Embedding Cache (7d TTL).
+7. **Safe Singleflight Mutex:** Tokenized distributed locks (`SET NX EX 15`) with atomic Lua release scripts prevent cache stampedes during concurrent traffic bursts.
+8. **Early Refusal Gate:** Evaluates multi-signal confidence to reject out-of-domain queries in <85ms without consuming any LLM tokens.
+9. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
+10. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists, enforced in SQL, verified by `npm run rag:privacy`.
+11. **Automated Quality Gates:** `rag:eval` runs 24 ground-truth queries against regression thresholds (Recall@3, citation validity, refusal accuracy); `rag:privacy` audits private-document isolation end-to-end.
+12. **Persona Tuning (Default + Personal-Life):** Default answers use a casual, conversational "Jainil thinking out loud" voice — lowercase-leaning, tradeoff-aware, emoji-sparingly, with zero corporate AI filler — while still citing every fact. Questions about Jainil's relationship (keyword-gated against private context) additionally shift into a warm, emotionally expressive persona grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work.
 
 ---
 
@@ -211,7 +193,7 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 | **Vector Database** | [PostgreSQL 16](https://www.postgresql.org) + [pgvector](https://github.com/pgvector/pgvector) (1536-dim HNSW Cosine Index) |
 | **In-Memory Cache & Mutex**| [Dragonfly](https://www.dragonflydb.io) (Multi-threaded Redis-compatible engine on VPS) |
 | **Dense Embeddings** | OpenAI `text-embedding-3-small` (1536 dimensions via [OpenRouter SDK](https://openrouter.ai)) |
-| **Primary Generation LLM** | Google Gemini 3.5 Flash Lite ([@google/genai](https://www.npmjs.com/package/@google/genai)) |
+| **Primary Generation LLM** | Google Gemini 2.5 Flash ([@google/genai](https://www.npmjs.com/package/@google/genai)) |
 | **Neural Reranker** | VoyageAI Rerank 2.5 Lite (`voyageai/rerank-2.5-lite` via OpenRouter) |
 | **SEO, AEO & Standards** | `astro-aeo`, `@astrojs/sitemap`, `astro-seo-schema`, W3C WebMCP API |
 | **Privacy & Policy** | [@openpolicy/sdk](https://www.npmjs.com/package/@openpolicy/sdk), `@openpolicy/astro` |
@@ -332,7 +314,7 @@ cp .env.example .env
 ```env
 # ── LLM & AI Providers ───────────────────────────────────────────────────────
 GEMINI_API_KEY=your_google_gemini_api_key
-GEMINI_MODEL=gemini-3.5-flash-lite
+GEMINI_MODEL=gemini-2.5-flash
 
 OPENROUTER_API_KEY=your_openrouter_api_key
 EMBEDDING_PROVIDER=openrouter
