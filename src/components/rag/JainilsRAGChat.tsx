@@ -149,7 +149,7 @@ export const JainilsRAGChat: React.FC = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hi! I'm Jainil's RAG assistant. Ask me anything about his portfolio, resume, skills, or published articles — every answer cites its source.",
+      content: "hey! i'm Jainil's RAG assistant — ask me anything about his portfolio, resume, skills, or published articles. every answer cites its source 🧑‍💻",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -246,7 +246,7 @@ export const JainilsRAGChat: React.FC = () => {
         {
           id: assistantMsgId,
           role: 'assistant',
-          content: "Sorry, I couldn't reach the knowledge base. Try again, or email Jainil directly at jainilprajapati9@gmail.com.",
+          content: "ugh, couldn't reach the knowledge base right now 😭 try again in a sec, or just email Jainil directly at jainilprajapati9@gmail.com",
         },
       ]);
     } finally {

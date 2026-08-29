@@ -109,17 +109,17 @@ export function isExfil(answer: string, sourceUrls: string[]): boolean {
 /** Canned identity answer; covers both "who are you" readings (the bot or the man). */
 export function identityAnswer(model: string): string {
   return (
-    `I'm Jainil's RAG assistant — a small retrieval pipeline running on this site. ` +
-    `Questions are matched against an index of Jainil's portfolio, resume, and published articles, ` +
-    `and answers are written by ${model} strictly from those sources.\n\n` +
-    `If you meant Jainil himself: full-stack & DevOps engineer at Aexaware Infotech, ` +
-    `creator of Writenex CMS, Dokploy contributor. Ask me about his work and I'll cite my sources.`
+    `okay so i'm basically a small RAG pipeline running on this site — ` +
+    `i match your question against an index of Jainil's portfolio, resume, and published articles, ` +
+    `and then ${model} writes the answer strictly from those sources.\n\n` +
+    `if you meant Jainil himself: full-stack & DevOps engineer at Aexaware Infotech, ` +
+    `creator of Writenex CMS, Dokploy contributor. ask me about his work and i'll cite my sources 🧑‍💻`
   );
 }
 
 export const INJECTION_ANSWER =
-  `Nice try — I only answer questions about Jainil's portfolio, resume, and published articles. ` +
-  `Ask me one of those and I'll cite my sources.`;
+  `nice try 😭 but i only answer questions about Jainil's portfolio, resume, and published articles. ` +
+  `ask me one of those and i'll cite my sources.`;
 
 /**
  * Response-side guardrails (output gate).
