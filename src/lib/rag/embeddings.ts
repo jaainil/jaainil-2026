@@ -37,6 +37,7 @@ export async function embedText(
           requestBody: {
             model: EMBEDDING_MODEL,
             input: cleanText,
+            dimensions: EMBEDDING_DIMENSION,
           },
         });
 
@@ -85,6 +86,7 @@ export async function embedBatch(
           requestBody: {
             model: EMBEDDING_MODEL,
             input: slice,
+            dimensions: EMBEDDING_DIMENSION,
           },
         });
 
