@@ -23,6 +23,8 @@ function getAllMarkdownFiles(dir: string, fileList: string[] = []): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const entry of entries) {
+    // Skip symlinks — they can point to parent dirs and cause infinite recursion.
+    if (entry.isSymbolicLink()) continue;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       getAllMarkdownFiles(fullPath, fileList);

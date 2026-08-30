@@ -22,6 +22,19 @@ let totalErrors = 0;
 
 export function getRerankerTelemetry(): RerankerStats {
   const sorted = [...rerankerLatencies].sort((a, b) => a - b);
+
+  if (sorted.length === 0) {
+    return {
+      attempts: totalAttempts,
+      successes: totalSuccesses,
+      timeouts: totalTimeouts,
+      errors: totalErrors,
+      circuitState: rerankerCircuit.getState(),
+      p50Ms: 0,
+      p95Ms: 0,
+    };
+  }
+
   const p50Idx = Math.min(Math.floor(sorted.length * 0.50), sorted.length - 1);
   const p95Idx = Math.min(Math.ceil(sorted.length * 0.95) - 1, sorted.length - 1);
 
@@ -31,8 +44,8 @@ export function getRerankerTelemetry(): RerankerStats {
     timeouts: totalTimeouts,
     errors: totalErrors,
     circuitState: rerankerCircuit.getState(),
-    p50Ms: sorted[p50Idx] || 0,
-    p95Ms: sorted[p95Idx] || 0,
+    p50Ms: sorted[p50Idx],
+    p95Ms: sorted[p95Idx],
   };
 }
 

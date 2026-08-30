@@ -48,7 +48,12 @@ export const POST: APIRoute = async ({ request }) => {
       .map((t: any) => ({
         role: t.role as 'user' | 'assistant',
         content: (t.role === 'assistant'
-          ? t.content.replace(/\[\[(\d+)\]\]\([^)]*\)/g, '[$1]').replace(PERSONAL_CLOSER.trim(), '')
+          // Collapse citation links [[1]](url) → [1] and strip the auto-appended
+          // personal closer (plain string replace is fragile; escape the literal
+          // for a regex so whitespace variants and multiple occurrences are caught).
+          ? t.content
+              .replace(/\[\[(\d+)\]\]\([^)]*\)/g, '[$1]')
+              .replace(new RegExp(PERSONAL_CLOSER.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '')
           : t.content
         ).trim().slice(0, 1000),
       }))

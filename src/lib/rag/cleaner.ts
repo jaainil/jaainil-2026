@@ -45,10 +45,16 @@ export function extractFrontmatterAndBody(rawSource: string): { frontmatter: Rec
         const key = line.slice(0, colonIdx).trim();
         let value = line.slice(colonIdx + 1).trim();
 
-        if (value === '' || value === '[]') {
+        if (value === '') {
+          // Multiline array — subsequent `- item` lines belong to this key.
           frontmatter[key] = [];
           currentKey = key;
           inArray = true;
+        } else if (value === '[]') {
+          // Inline empty array — already closed, do NOT enter array mode.
+          frontmatter[key] = [];
+          currentKey = key;
+          inArray = false;
         } else if (value.startsWith('[') && value.endsWith(']')) {
           const items = value
             .slice(1, -1)

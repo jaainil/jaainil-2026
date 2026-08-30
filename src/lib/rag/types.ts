@@ -57,6 +57,8 @@ export interface SearchOptions {
   rrfK?: number;
   vectorWeight?: number;
   textWeight?: number;
+  /** Pass true to include private documents (for RAG grounding only — never expose to users). */
+  includePrivate?: boolean;
 }
 
 export interface RAGSource {

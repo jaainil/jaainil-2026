@@ -172,7 +172,7 @@ export async function checkRateLimit(
     let ttl = await client.ttl(key);
     if (count === 1 || ttl < 0) {
       await client.expire(key, windowSeconds);
-      ttl = windowSeconds;
+      ttl = windowSeconds; // use the freshly-set window, not the stale -1
     }
     return {
       allowed: count <= limit,
@@ -214,12 +214,14 @@ export async function purgeRagAnswerAndSearchCaches(): Promise<number> {
 }
 
 export async function closeCache(): Promise<void> {
-  if (redisClient) {
-    try {
-      await redisClient.quit();
-    } catch {
-      redisClient.disconnect();
-    }
-    redisClient = null;
+  // Capture a local reference before any await — the 'end' event handler can
+  // null out the module-level variable between the try and catch.
+  const client = redisClient;
+  if (!client) return;
+  redisClient = null;
+  try {
+    await client.quit();
+  } catch {
+    client.disconnect();
   }
 }

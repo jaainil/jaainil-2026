@@ -31,15 +31,15 @@ export async function embedText(
 
   let attempts = 0;
   while (attempts < 5) {
-      attempts++;
-      try {
-        const res: any = await openrouter.embeddings.generate({
-          requestBody: {
-            model: EMBEDDING_MODEL,
-            input: cleanText,
-            dimensions: EMBEDDING_DIMENSION,
-          },
-        });
+    attempts++;
+    try {
+      const res: any = await openrouter.embeddings.generate({
+        requestBody: {
+          model: EMBEDDING_MODEL,
+          input: cleanText,
+          dimensions: EMBEDDING_DIMENSION,
+        },
+      });
 
       const vector = res.data?.[0]?.embedding;
       if (!vector || vector.length !== EMBEDDING_DIMENSION) {
@@ -91,10 +91,18 @@ export async function embedBatch(
         });
 
         if (res.data && res.data.length === slice.length) {
-          batchValues = res.data
+          const candidates: number[][] = res.data
             .sort((a: any, b: any) => a.index - b.index)
             .map((d: any) => d.embedding);
-          batchSucceeded = true;
+          // Validate every vector — a partial/null entry should trigger the
+          // individual fallback rather than a corrupt batch silently reaching DB.
+          const allValid = candidates.every(
+            (v) => Array.isArray(v) && v.length === EMBEDDING_DIMENSION
+          );
+          if (allValid) {
+            batchValues = candidates;
+            batchSucceeded = true;
+          }
         }
       } catch {
         await new Promise((r) => setTimeout(r, Math.pow(2, attempts) * 600));

@@ -54,12 +54,11 @@ export async function initSchema(): Promise<void> {
       );
     `);
 
-    // Ensure columns exist on older tables
-    await client.query(`
-      ALTER TABLE documents ADD COLUMN IF NOT EXISTS source_hash TEXT;
-      ALTER TABLE documents ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT now();
-      ALTER TABLE documents ADD COLUMN IF NOT EXISTS is_private BOOLEAN NOT NULL DEFAULT false;
-    `);
+    // Ensure columns exist on older tables (each ALTER must be a separate call —
+    // node-postgres only executes the first statement in a multi-statement string)
+    await client.query(`ALTER TABLE documents ADD COLUMN IF NOT EXISTS source_hash TEXT;`);
+    await client.query(`ALTER TABLE documents ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT now();`);
+    await client.query(`ALTER TABLE documents ADD COLUMN IF NOT EXISTS is_private BOOLEAN NOT NULL DEFAULT false;`);
 
     // Self-healing backfill: anything under the pvt/ knowledge path is private,
     // even if an older ingest marked it public (e.g. frontmatter url overrides).
@@ -100,10 +99,8 @@ export async function initSchema(): Promise<void> {
       );
     `);
 
-    await client.query(`
-      ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS content_hash TEXT;
-      ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
-    `);
+    await client.query(`ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS content_hash TEXT;`);
+    await client.query(`ALTER TABLE document_chunks ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';`);
 
     // 4. Indexes
     await client.query(`

@@ -54,7 +54,10 @@ export async function hybridSearch(
 
   // 2. Parallel Database Execution
   const [vectorRows, textRows] = await withDb(async (client) => {
-    let filterClause = '';
+    // By default exclude private docs. Chat passes includePrivate:true so that
+    // private knowledge chunks can be used as [BACKGROUND] grounding context
+    // without ever being surfaced to the user as citable sources.
+    let filterClause = options.includePrivate ? '' : ' AND d.is_private = false';
     const queryParams: any[] = [];
 
     if (category) {

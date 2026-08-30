@@ -100,7 +100,8 @@ const PROMPT_ECHO_RE =
 export function isExfil(answer: string, sourceUrls: string[]): boolean {
   if (PROMPT_ECHO_RE.test(answer)) return true;
   const allowed = new Set(sourceUrls.map((u) => u.replace(/\/$/, '')));
-  for (const url of answer.match(/https?:\/\/[^\s)>\]]+/g) ?? []) {
+  // `\>` is explicitly escaped so the character class is unambiguous across engines.
+  for (const url of answer.match(/https?:\/\/[^\s)\>[\]]+/g) ?? []) {
     if (!allowed.has(url.replace(/[).,\]]+$/, '').replace(/\/$/, ''))) return true;
   }
   return false;
@@ -138,7 +139,7 @@ const SSN_RE = /\b\d{3}-\d{2}-\d{4}\b/g;
 
 /** Redacts emails, phone numbers, SSNs, and API-key-shaped secrets; keeps Jainil's public contacts. */
 export function redactPii(text: string): string {
-  let out = text.replace(EMAIL_RE, (m) => (m.toLowerCase() === 'jainilprajapati9@gmail.com' ? m : '[redacted email]'));
+  let out = text.replace(EMAIL_RE, (m) => (m.toLowerCase() === 'jainilprajapati9@gmail.com'.toLowerCase() ? m : '[redacted email]'));
   out = out.replace(PHONE_CANDIDATE_RE, (m) => {
     const digits = m.replace(/\D/g, '');
     if (ALLOWED_CONTACT_DIGITS.has(digits) || [...ALLOWED_CONTACT_DIGITS].some((a) => digits.endsWith(a))) return m;
