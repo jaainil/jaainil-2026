@@ -1,0 +1,72 @@
+---
+// Live stats from the self-hosted Umami share API (CORS is open on it).
+// Renders nothing until data arrives; hides itself entirely if the API is down.
+const SHARE_ID = 'TskA5LvjHLrwy039';
+const UMAMI_BASE = 'https://umami.altctrlreturn.com';
+---
+
+<div id="live-stats" class="hidden mt-4 pt-4" style="border-top: 2px dashed var(--color-border-soft);">
+  <p class="text-sm font-bold flex items-center gap-2 flex-wrap" style="color: var(--color-text-muted);">
+    <span class="relative inline-flex w-2.5 h-2.5 shrink-0" aria-hidden="true">
+      <span class="absolute inset-0 rounded-full animate-ping" style="background: var(--piece); opacity: 0.5;"></span>
+      <span class="relative inline-flex w-2.5 h-2.5 rounded-full" style="background: var(--piece); border: 1.5px solid var(--keyline);"></span>
+    </span>
+    <span id="live-stats-text" aria-live="polite">Counting readers…</span>
+  </p>
+</div>
+
+<script is:inline>
+  (function () {
+    var SHARE_ID = 'TskA5LvjHLrwy039';
+    var BASE = 'https://umami.altctrlreturn.com';
+    var MONTH = 30 * 24 * 60 * 60 * 1000;
+
+    function flag(code) {
+      if (!code || code.length !== 2) return '';
+      return String.fromCodePoint(
+        ...code.toUpperCase().split('').map(function (c) { return 127397 + c.charCodeAt(0); })
+      );
+    }
+
+    function countryName(code) {
+      try {
+        return new Intl.DisplayNames(['en'], { type: 'region' }).of(code.toUpperCase()) || code;
+      } catch (e) {
+        return code;
+      }
+    }
+
+    function render(visitors, lastCountry) {
+      var box = document.getElementById('live-stats-text');
+      if (!box) return;
+      var n = visitors.toLocaleString('en');
+      var text = n + (visitors === 1 ? ' reader' : ' readers') + ' in the last 30 days';
+      if (lastCountry) {
+        text += ' · last one from ' + countryName(lastCountry) + ' ' + flag(lastCountry);
+      }
+      box.textContent = text;
+      var wrap = document.getElementById('live-stats');
+      if (wrap) wrap.classList.remove('hidden');
+    }
+
+    fetch(BASE + '/api/share/' + SHARE_ID)
+      .then(function (r) { return r.json(); })
+      .then(function (share) {
+        var end = Date.now();
+        var start = end - MONTH;
+        var headers = { 'x-umami-share-token': share.token };
+        return Promise.all([
+          fetch(BASE + '/api/websites/' + share.websiteId + '/stats?startAt=' + start + '&endAt=' + end, { headers: headers }),
+          fetch(BASE + '/api/websites/' + share.websiteId + '/sessions?startAt=' + start + '&endAt=' + end + '&pageSize=1', { headers: headers }),
+        ])
+          .then(function (rs) { return Promise.all(rs.map(function (r) { return r.json(); })); })
+          .then(function (both) {
+            var stats = both[0] || {};
+            var sessions = both[1] || {};
+            var last = sessions.data && sessions.data[0];
+            render(stats.visitors || 0, last ? last.country : null);
+          });
+      })
+      .catch(function () { /* stat strip stays hidden if Umami is unreachable */ });
+  })();
+</script>

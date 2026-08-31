@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import BaseLayout from '../layouts/BaseLayout.astro';
+import LiveReaders from '../components/LiveReaders.astro';
 import { getCollection } from 'astro:content';
 import type { Article } from '../types';
 
@@ -314,6 +315,7 @@ const homePageSchema = {
               <li class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[3px]" style="background: var(--piece); border: 2px solid var(--keyline);"></span>Next.js apps</li>
               <li class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-[3px]" style="background: var(--marker); border: 2px solid var(--keyline);"></span>CI on every push</li>
             </ul>
+            <LiveReaders />
           </div>
         </div>
       </div>
