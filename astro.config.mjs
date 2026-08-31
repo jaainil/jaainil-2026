@@ -1,9 +1,10 @@
+import 'dotenv/config';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel';
+import node from '@astrojs/node';
 
 import aeo from 'astro-aeo';
 import umami from '@yeskunall/astro-umami';
@@ -11,7 +12,7 @@ import writenex from '@imjp/writenex-astro';
 import icon from 'astro-icon';
 
 export default defineConfig({
-  output: 'static',
+  output: 'server',
   site: 'https://jaainil.com',
   redirects: {
     '/the-art-of-feature-flagging-jiocinemas-approach-to-managing-features-at-scale': '/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale',
@@ -19,7 +20,12 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
-    writenex(),
+    writenex({
+      allowProduction: true,
+      remoteCms: {
+        enabled: true,
+      },
+    }),
     icon(),
     umami({
       id: '8169229f-6d5b-4ffc-ac38-9036661b5d94',
@@ -116,5 +122,5 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  adapter: vercel(),
+  adapter: node({ mode: 'standalone' }),
 });
