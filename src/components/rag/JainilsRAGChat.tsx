@@ -52,8 +52,8 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
           <sup key={`${keyPrefix}-n-${m.index}`}>
             <a
               href={m[2]}
-              target={m[2].startsWith('http') ? '_blank' : undefined}
-              rel={m[2].startsWith('http') ? 'noopener noreferrer' : undefined}
+              target="_blank"
+              rel="noopener noreferrer"
               title="View source"
               className="inline-grid place-items-center min-w-[18px] h-[18px] mx-0.5 px-1 rounded-md text-[10px] font-black align-super transition-transform hover:-translate-y-0.5"
               style={{
@@ -72,8 +72,8 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
           <a
             key={`${keyPrefix}-l-${m.index}`}
             href={m[2]}
-            target={m[2].startsWith('http') ? '_blank' : undefined}
-            rel={m[2].startsWith('http') ? 'noopener noreferrer' : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-bold underline underline-offset-2"
             style={{ color: 'var(--color-link)' }}
           >
@@ -142,19 +142,136 @@ function RagMarkdown({ text }: { text: string }) {
   return <div>{out}</div>;
 }
 
+const STORAGE_KEY_MESSAGES = 'ragchat_messages_v1';
+const STORAGE_KEY_OPEN = 'ragchat_open_v1';
+
+const INITIAL_MESSAGES: Message[] = [
+  {
+    id: 'welcome',
+    role: 'assistant',
+    content: "hey! i'm Jainil's RAG assistant — ask me anything about his portfolio, resume, skills, or published articles. every answer cites its source 🧑‍💻",
+  },
+];
+
 export const JainilsRAGChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: "hey! i'm Jainil's RAG assistant — ask me anything about his portfolio, resume, skills, or published articles. every answer cites its source 🧑‍💻",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [isLoading, setIsLoading] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isInitialMessagesMount = useRef(true);
+  const isInitialOpenMount = useRef(true);
+
+  // Restore messages and open state on client mount (across page navigation and refresh)
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem(STORAGE_KEY_MESSAGES);
+      if (savedMessages) {
+        const parsed = JSON.parse(savedMessages);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+        }
+      }
+    } catch {
+      /* ignore storage access error */
+    }
+
+    try {
+      const savedOpen = sessionStorage.getItem(STORAGE_KEY_OPEN);
+      if (savedOpen === 'true') {
+        setIsOpen(true);
+      }
+    } catch {
+      /* ignore storage access error */
+    }
+  }, []);
+
+  // Persist messages to localStorage when updated
+  useEffect(() => {
+    if (isInitialMessagesMount.current) {
+      isInitialMessagesMount.current = false;
+      return;
+    }
+    try {
+      if (messages.length > 1 || (messages.length === 1 && messages[0].id !== 'welcome')) {
+        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(messages));
+      } else {
+        localStorage.removeItem(STORAGE_KEY_MESSAGES);
+      }
+    } catch {
+      /* ignore storage quota or private mode */
+    }
+  }, [messages]);
+
+  // Persist open state to sessionStorage so it stays open during navigation/refresh
+  useEffect(() => {
+    if (isInitialOpenMount.current) {
+      isInitialOpenMount.current = false;
+      return;
+    }
+    try {
+      sessionStorage.setItem(STORAGE_KEY_OPEN, isOpen ? 'true' : 'false');
+    } catch {
+      /* ignore */
+    }
+  }, [isOpen]);
+
+  const handleResetChat = () => {
+    setMessages(INITIAL_MESSAGES);
+    try {
+      localStorage.removeItem(STORAGE_KEY_MESSAGES);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  // Lock background scroll (touchpad, wheel, mobile touch) when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Focus input field smoothly
+    const focusTimer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+
+    // Compensate for scrollbar disappearance to prevent layout jumping
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    // Prevent touch dragging from scrolling background page on mobile / touchpads
+    const handleTouchMove = (e: TouchEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (messagesContainerRef.current && messagesContainerRef.current.contains(target)) {
+        return;
+      }
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      clearTimeout(focusTimer);
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isOpen]);
 
   // ponytail: localStorage flag instead of "seen N times" logic — fine for a hint
   useEffect(() => {
@@ -180,9 +297,19 @@ export const JainilsRAGChat: React.FC = () => {
     }
   };
 
+  // Scroll safely inside messages container without scrolling outer window/page
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+    if (!isOpen) return;
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    requestAnimationFrame(() => {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth',
+      });
+    });
+  }, [messages, isLoading, isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -331,23 +458,32 @@ export const JainilsRAGChat: React.FC = () => {
 
       {/* Modal Backdrop */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" style={{ background: 'rgba(16, 21, 27, 0.55)' }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overscroll-contain"
+          style={{ background: 'rgba(16, 21, 27, 0.55)', overscrollBehavior: 'contain' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsOpen(false);
+            }
+          }}
+        >
           <div
-            className="relative w-full max-w-2xl h-[85vh] max-h-[700px] flex flex-col rounded-2xl overflow-hidden"
+            className="relative w-full max-w-2xl h-[85vh] max-h-[700px] flex flex-col rounded-2xl overflow-hidden overscroll-contain"
             style={{
               backgroundColor: 'var(--paper)',
               border: '2px solid var(--keyline)',
               boxShadow: '0 6px 0 var(--keyline)',
               color: 'var(--ink)',
+              overscrollBehavior: 'contain',
             }}
             role="dialog"
             aria-label="Chat with Jainil's AI assistant"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '2px solid var(--keyline)' }}>
+            <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: '2px solid var(--keyline)' }}>
               <div className="flex items-center gap-3">
                 <span
-                  className="grid place-items-center w-9 h-9 rounded-lg"
+                  className="grid place-items-center w-9 h-9 rounded-lg shrink-0"
                   style={{ background: 'var(--piece)', border: '2px solid var(--keyline)' }}
                 >
                   <BrickGlyph />
@@ -361,20 +497,39 @@ export const JainilsRAGChat: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                aria-label="Close chat"
-                className="grid place-items-center w-9 h-9 rounded-lg transition-transform hover:-translate-y-0.5 cursor-pointer"
-                style={{ border: '2px solid var(--keyline)', background: 'var(--paper)', color: 'var(--ink)', boxShadow: '0 2px 0 var(--keyline)' }}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.6" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-2">
+                {messages.length > 1 && (
+                  <button
+                    onClick={handleResetChat}
+                    aria-label="Reset chat conversation"
+                    title="Reset conversation"
+                    className="grid place-items-center w-9 h-9 rounded-lg transition-transform hover:-translate-y-0.5 cursor-pointer"
+                    style={{ border: '2px solid var(--keyline)', background: 'var(--paper)', color: 'var(--ink)', boxShadow: '0 2px 0 var(--keyline)' }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close chat"
+                  className="grid place-items-center w-9 h-9 rounded-lg transition-transform hover:-translate-y-0.5 cursor-pointer"
+                  style={{ border: '2px solid var(--keyline)', background: 'var(--paper)', color: 'var(--ink)', boxShadow: '0 2px 0 var(--keyline)' }}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.6" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 text-sm stud-grid">
+            <div
+              ref={messagesContainerRef}
+              className="flex-1 overflow-y-auto overscroll-contain p-5 space-y-4 text-sm stud-grid"
+              style={{ overscrollBehavior: 'contain' }}
+            >
               {messages.map((m) => (
                 <div key={m.id} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
                   <div
@@ -411,8 +566,8 @@ export const JainilsRAGChat: React.FC = () => {
                             <a
                               key={idx}
                               href={s.url}
-                              target={s.url.startsWith('http') ? '_blank' : undefined}
-                              rel={s.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg font-bold transition-transform hover:-translate-y-0.5"
                               style={{
                                 border: '2px solid var(--keyline)',
@@ -466,7 +621,7 @@ export const JainilsRAGChat: React.FC = () => {
 
             {/* Sample Prompts */}
             {messages.length === 1 && (
-              <div className="px-5 py-3 flex flex-wrap gap-2" style={{ borderTop: '2px dashed var(--color-border-soft, #7fa8cc)' }}>
+              <div className="px-5 py-3 flex flex-wrap gap-2 shrink-0" style={{ borderTop: '2px dashed var(--color-border-soft, #7fa8cc)' }}>
                 {SAMPLE_QUESTIONS.map((q, idx) => (
                   <button
                     key={idx}
@@ -491,10 +646,11 @@ export const JainilsRAGChat: React.FC = () => {
                 e.preventDefault();
                 handleSend(input);
               }}
-              className="p-4 flex gap-2"
+              className="p-4 flex gap-2 shrink-0"
               style={{ borderTop: '2px solid var(--keyline)' }}
             >
               <input
+                ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
