@@ -1,0 +1,241 @@
+---
+title: How Cloudflare Saved 100 Terabytes of RAM Optimizing Its 1.1.1.1 DNS Cache (and What Rust Devs Can Steal)
+draft: false
+description: "Cloudflare cut its DNS cache entries from 953 to 420 bytes with five Rust data structure changes — freeing ~100 TB of RAM while making lookups 19% faster. Here's exactly how they did it."
+category: Tech
+tags:
+  - Cloudflare DNS cache memory optimization
+  - Rust memory optimization
+  - Vec vs Box slice
+  - enum size Rust
+  - DNS cache performance
+  - data structure memory layout
+imageUrl: ./how-cloudflare-saved-100-terabytes-of-ram-optimizi-mtsdgbv9.png
+---
+
+Most infrastructure cost stories follow the same boring arc: traffic grew, so the fleet grew, so the bill grew. Cloudflare's latest engineering post inverts it entirely.
+
+The company announced that it freed roughly **100 terabytes of RAM** across the fleet powering 1.1.1.1 — one of the largest public DNS resolvers on Earth — without adding a single server or touching a single DIMM slot. No new hardware. No capacity trade. Just five changes to how a DNS cache entry is laid out in Rust.
+
+And here's the part that should get every systems engineer's attention: the cache didn't just get smaller. It got **faster**. Insert throughput rose 43%. Lookup latency dropped 19%. This wasn't a memory-for-speed compromise — it was a free lunch, delivered by someone finally asking *"why does a 4-byte A record take up 144 bytes?"*
+
+Let's break down exactly what Cloudflare did, why each optimization works, and which of these patterns you can lift for your own hot paths — even if you've never written a line of DNS code.
+
+## The Scale That Makes One Byte Worth 250 GB
+
+To understand why these optimizations matter so much, you need to understand the denominator.
+
+Cloudflare's DNS resolution platform — internally codenamed **Big Pineapple** — sits behind 1.1.1.1, Gateway DNS, DNS Firewall, AS112, and several other DNS services. At any given moment, it stores **more than 250 billion live DNS cache entries**.
+
+Do the math and the stakes become absurd: wasting a *single byte* per entry costs more than **250 GB of memory across the fleet**. When your data structure choices multiply across a quarter-trillion objects, "we'll just use `Vec` because that's the default" quietly becomes a seven-figure line item.
+
+That's the real lesson of this story. It's not really about DNS. It's about what happens when default data structure choices meet extreme scale — and why "premature optimization" stops being premature somewhere around the billionth object.
+
+## Quick Primer: Why DNS Caching Exists at All
+
+If DNS is fresh in your mind, skip this. But a 30-second refresher helps the optimizations click.
+
+When your laptop asks for `example.com`, the request bounces through a chain: your resolver asks a root server, which points to the `.com` top-level domain server, which points to example.com's authoritative name server, which finally hands back the A record. That whole rigmarole can take hundreds of milliseconds.
+
+So resolvers **cache** the answer. The next time anyone asks for `example.com`, the answer comes back in well under a millisecond. Caching is the single biggest performance lever in DNS — which is why the *size* of your cache (how many answers you can hold in RAM) directly controls your hit rate, and why every wasted byte in a cache entry is an answer you *could* have served from memory but can't.
+
+## Optimization 1: Killing the Capacity Field (Vec and String → Boxed Slices)
+
+A Rust `Vec<T>` is three things: a pointer to heap memory, a length, and a **capacity** — headroom reserved for future growth. Same story for `String`, which is essentially a `Vec<u8>` wearing a trench coat.
+
+Capacity is genuinely useful when a collection grows. But here's the thing about a DNS cache entry: **once it's stored, it never changes again**. The capacity field serves zero purpose — it just sits there, costing 8 bytes per `Vec` and reserving heap space that will never be used.
+
+```rust
+// Before: 8 Vec/String fields per entry
+pub struct CacheEntry {
+    records: Vec<Record>,
+    authorities: Vec<Record>,
+    additionals: Vec<Record>,
+    owner: String,
+    // ...
+}
+
+// After: fixed-size, no capacity field
+pub struct CacheEntry {
+    records: Box<[Record]>,
+    authorities: Box<[Record]>,
+    additionals: Box<[Record]>,
+    owner: Box<str>,
+    // ...
+}
+```
+
+`Box<[T]>` (a boxed slice) and `Box<str>` can't grow after creation, so they drop the capacity field entirely *and* allocate exactly the heap space needed — nothing reserved for a growth that will never come.
+
+Each cache entry held **8 `Vec`/`String` fields**. The swap saved **64 bytes per entry** in struct overhead alone, plus all the over-allocated heap slack. Multiplied across 250+ billion entries, this single change recovered **over 15 terabytes**.
+
+This is the most quietly instructive part of the whole post: for write-once data on a hot path, the "growable by default" choice isn't neutral. It's a tax you're paying on every single object, forever.
+
+## Optimization 2: Fewer Lists, Fewer Pointers
+
+Look at the shape of a DNS response and something repetitive jumps out. Every response has three record sections — answer, authority, and additional — and the naive implementation stores each as its own `Box<[T]>`.
+
+That's three pointers (8 bytes each) and three lengths (8 bytes each), even when two of the sections are often empty. Forty-eight bytes of envelope to describe data that could fit in a fraction of that.
+
+Cloudflare's fix is a pattern worth stealing: **collapse the sections into a single list, and mark section boundaries with 2-byte `u16` offsets**.
+
+```
+single slice: [ answer records | authority records | additional records ]
+                ^offset=0         ^offset=u16         ^offset=u16
+```
+
+DNS record counts per section comfortably fit in 16 bits, so nothing is lost. Two 16-byte list headers (pointer + length, ×2) become two 2-byte integers: **28 bytes saved per entry**.
+
+They applied the same instinct elsewhere: packing several boolean fields into a single bitflag. This is where Rust's memory layout gets sneaky in a good way — structs get padded to alignment boundaries, so deleting one small field can shrink the whole struct by *more* than that field's size, because the padding disappears with it. It pays to actually run `std::mem::size_of::<YourStruct>()` instead of assuming the compiler packed things tightly for you.
+
+## Optimization 3: Dropping the Owner Name
+
+A DNS record looks like this: owner, class, TTL, record type, data. Here's the kicker — the **owner** (the domain name the record belongs to) is almost always identical to the name that was queried. When you look up `example.com`, the A record you get back is *owned by* `example.com`.
+
+Which means the cache was storing the same domain name twice: once in the cache key, once inside every record.
+
+Cloudflare's fix: make the owner **optional**. When the owner matches the queried name — the common case — store nothing and reconstruct it from the cache key at read time, since the key is already in hand during every lookup. When it genuinely differs (like the A records hiding behind a CNAME chain), store the full name on the heap.
+
+```rust
+pub struct Record {
+    owner: Option<Box<Name>>,
+    class: Class,
+    ttl: Ttl,
+    rtype: Rtype,
+    data: RecordData,
+}
+```
+
+`None` means "look at the cache key." `Some` means "this name lives here."
+
+This is a nice example of a memory optimization that costs a little code complexity (the record is no longer self-contained) in exchange for eliminating heap allocations on the hot path. A fair trade — and a reminder that "self-contained data structure" is a design preference, not a law of physics.
+
+## Optimization 4: Boxing the Enum Variants
+
+Now for the one that makes Rust developers wince, because it exploits a real footgun.
+
+Rust `enum`s are **sum types sized for their largest variant**. If your `RecordData` enum can hold a NAPTR record (Cloudflare's largest cached type, at 136 bytes), *every* variant of that enum occupies that same space — tag included. So a 4-byte A record? 144 bytes. A 16-byte AAAA record? Still 144 bytes.
+
+And since A and AAAA records make up **over 80% of Cloudflare's DNS traffic**, most records were burning over 120 bytes each on pure padding.
+
+The fix: box the large variants and move them to the heap. Common small variants stay inline; rare giants get a pointer.
+
+```rust
+pub enum RecordData {
+    // Small and common variants are stored inline
+    A(Ipv4Addr),
+    Aaaa(Ipv6Addr),
+    // Large variants are stored on the heap
+    Txt(Box<Txt>),
+    Naptr(Box<Naptr>),
+    Svcb(Box<Svcb>),
+    // ...
+}
+```
+
+For A and AAAA records, this saved **120 bytes per record**. And it's honest engineering: Cloudflare admits NAPTR now pays *slightly more* (pointer + allocation overhead) — but NAPTR records are rare enough that the trade is obviously worth it.
+
+The catch, as anyone who's done this knows: boxing scatters your data across the heap, and you start losing **cache locality** — the CPU has to chase pointers to memory that may not be in cache. Cold data means slow lookups. This is a real cost, and the next optimization is largely the answer to it.
+
+## Optimization 5: Storing Records in Wire Format (The Big One)
+
+The first four optimizations all polish the *parsed* representation of a DNS record. The fifth asks a more radical question: **why store a parsed representation at all?**
+
+Think about what a resolver actually does with cached records. For most record types, it copies them — nearly unchanged — into the outgoing response. A rich, typed, enum-based struct is lovely for *reading* code, but if the hot path is "copy bytes back out," you're paying to parse on the way in and re-serialize on the way out for nothing.
+
+So Cloudflare's final change stores record data as **raw wire-format bytes** — literally the bytes as they arrived over the network — packed into one contiguous `Box<[u8]>`, each record prefixed by a 2-byte length so the buffer can still be walked sequentially.
+
+This kills three costs at once:
+
+* **Enum overhead gone.** No more 24-byte tax per record, no more boxed allocations from optimization 4.
+* **Cache locality restored.** Records live in one contiguous buffer instead of scattered heap allocations. Reading an entry means scanning one buffer, not chasing pointers.
+* **Re-serialization skipped.** A, AAAA, TXT, and DNSSEC records now copy *directly* from the cached buffer into the response. Only name-bearing records (CNAME, NS, MX, SOA) still need parsing, because DNS name compression requires knowing where names live.
+
+There's also a clever allocation trick hiding in the insert path: records are serialized into a **reusable scratch buffer** that persists across insertions, then copied into a right-sized `Box<[u8]>`. This replaces N separate per-record allocations with one allocation per entry — which is why insert throughput jumped 13% from this step alone.
+
+The trade-off? Records can no longer be randomly indexed — you iterate the buffer sequentially. Cloudflare judged this negligible because cache entries hold few records (1–4 in their benchmark traffic mix). And since most traffic copies straight through, this single change reduced lookup latency by 5% in benchmarks.
+
+## The Results: Smaller *and* Faster
+
+Cloudflare measured everything twice — a synthetic benchmark with a production-like traffic mix (56% A, 25% AAAA, 19% TXT stand-ins, 1–4 records per entry), and real resident memory across the production rollout, which ran from **May 18 to July 6, 2026** in stepped releases.
+
+Here's the scorecard:
+
+| Metric                             | Before            | After             | Change                    |
+| ---------------------------------- | ----------------- | ----------------- | ------------------------- |
+| Per-entry memory footprint         | 953 bytes         | 420 bytes         | **−56%**                  |
+| Per-entry allocations              | 1.1 KB            | 461 bytes         | −58%                      |
+| Cache insert throughput            | 625,000 entries/s | 893,000 entries/s | **+43%**                  |
+| Cache lookup latency               | 828 ns            | 670 ns            | **−19%**                  |
+| Production p99 memory per instance | 9.3 GB            | 5.3 GB            | −43%                      |
+| Production p90 memory per instance | 6.5 GB            | 3.8 GB            | −42%                      |
+| Fleet-wide memory freed            | —                 | **\~100 TB**      | ≈ 130 Gen 13 servers' RAM |
+
+The fleet-wide figure is the one that made headlines: \~100 TB reclaimed, equivalent to the RAM in about **130 of Cloudflare's 768 GB Gen 13 servers** — at a time when server-grade DDR5 prices are climbing steeply.
+
+Note the honest caveat baked into Cloudflare's methodology: production savings came in slightly below the per-entry math (43% vs 56%) because resident memory includes non-cache process data. That's why they published both numbers. Good benchmarking hygiene, and a model for how to report this kind of work.
+
+## What Cloudflare Did With the Savings
+
+This is my favorite detail, because it reframes the whole exercise. Cloudflare isn't banking 100 TB of idle RAM as a cost line item — it's **reinvesting it into larger cache capacity at the same memory budget**.
+
+More cache capacity → higher hit rates → fewer queries to upstream authoritative servers → faster answers for everyone. The memory optimization compounds into a latency optimization for the entire internet-facing product. That's the actual payoff of layout work on hot paths: not a smaller bill, but a bigger, faster system for free.
+
+## Five Patterns You Can Steal (No DNS Required)
+
+You don't need 250 billion cache entries for these to apply. If you're building anything with a memory-resident hot path — a cache, an in-process index, a session store, an embedded database — the patterns transfer directly:
+
+### 1. Write-once data doesn't deserve growable containers
+
+If a collection never mutates after creation, `Vec` and `String` are paying for growth you'll never use. Fixed slices (`Box<[T]>`, `Box<str>`) drop the capacity field and the heap slack. Check `size_of` on your hottest structs.
+
+### 2. Rare large variants shouldn't tax common small ones
+
+Enum sizing is a real Rust footgun. If one giant variant inflates every instance of a sum type, box the giants. Just budget for the cache-locality cost and have a plan for it (see #4).
+
+### 3. Don't store what you can reconstruct
+
+The owner-name optimization is a specific case of a general rule: if a value is derivable from data you already have in hand (the cache key), storing a copy is pure waste. Duplication feels safe; it's usually just lazy.
+
+### 4. Serialized bytes can beat parsed structs
+
+If your hot path mostly emits data back out unchanged, wire-format storage beats a rich in-memory AST on *both* memory and CPU. Parse lazily, only where semantics demand it (like DNS name compression).
+
+### 5. Audit allocations, not just bytes
+
+Per-entry allocations dropped 58% (1.1 KB → 461 bytes) — and that mattered as much as the footprint for throughput. Fewer allocations means less allocator pressure, fewer cache misses, and faster inserts. A reusable scratch buffer is often the cheapest win on this list.
+
+And the meta-lesson for anyone who's rolled their eyes at "premature optimization": at scale, default data structure choices *are* the optimization. Nobody wrote sloppy code here — they wrote idiomatic Rust, benchmarked honestly, and iterated. That's the whole playbook.
+
+## Key Takeaways
+
+* **Scale changes the math.** At 250+ billion cache entries, one wasted byte costs 250 GB. At that scale, data layout *is* infrastructure cost.
+* **Five Rust layout changes cut per-entry memory from 953 to 420 bytes (−56%)** and freed \~100 TB fleet-wide — with zero new hardware.
+* **It got faster too:** insert throughput +43%, lookup latency −19%. Memory optimization and performance optimization turned out to be the same work.
+* **The biggest single win** was storing records as raw wire-format bytes — skipping parse/re-serialize cycles entirely and restoring cache locality that boxing had cost.
+* **The savings are being reinvested** into larger cache capacity, not banked — turning a memory optimization into a latency optimization for 1.1.1.1's users.
+* **The patterns generalize:** fixed slices for write-once data, boxing rare large enum variants, reconstructing instead of duplicating, and serialized-over-parsed storage for copy-dominated hot paths.
+
+## FAQs
+
+**What is Big Pineapple?**
+Cloudflare's internal name for the DNS resolution platform behind 1.1.1.1, Gateway DNS, DNS Firewall, and AS112. It's a relatively new system — the Rust rewrite of 1.1.1.1 shipped not long ago — which is part of why these optimizations were still on the table.
+
+**Did Cloudflare trade speed for memory?**
+No — that's the remarkable part. Both insert throughput (+43%) and lookup latency (−19%) improved. Fewer allocations and better memory locality meant space and speed optimizations pointed in the same direction.
+
+**Why did A records waste so much memory before?**
+Because Rust enums are sized for their largest variant. The largest cached type (NAPTR, \~136 bytes) forced every record — including 4-byte A records — into a 144-byte allocation, despite A and AAAA making up over 80% of traffic.
+
+**How did they verify the savings?**
+Two ways: a synthetic benchmark using a custom allocator that tracked per-entry memory and matched production traffic distribution (56% A, 25% AAAA, 19% TXT stand-ins), plus real production resident-memory measurements across the May 18 – July 6, 2026 rollout. Production gains (43% p99 reduction) were slightly smaller than benchmark gains (56%) because process memory includes non-cache data.
+
+**What's happening to the freed 100 TB?**
+Cloudflare is reinvesting it into larger cache capacity at the same memory budget, which should raise cache hit rates and reduce upstream query volume to authoritative DNS servers.
+
+**Can I apply these techniques outside of DNS?**
+Yes — most of them. Fixed slices for write-once data, boxing large enum variants, eliminating duplicated derivable fields, and wire-format storage for copy-dominated hot paths all transfer to caches, indexes, session stores, and any memory-resident data structure where object counts are high.
+
+***
+
+**CTA:** If this kind of deep-dive into real systems engineering is your jam, share this post with the Rust developer on your team who keeps saying "we'll optimize it later" — and bookmark it for the next time someone claims memory optimization always means trading speed. Want me to break down how to run the same kind of memory audit on your own Rust structs with `size_of` and a custom allocator? Let me know in the comments, and I'll write that follow-up next.
