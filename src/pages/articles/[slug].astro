@@ -137,13 +137,13 @@ const breadcrumbSchema = {
         </h1>
 
         {article.data.imageUrl && (
-          <div class="mt-8 rounded-xl overflow-hidden" style="border: 2px solid var(--keyline); background-color: var(--color-image-bg);">
+          <div class="mt-8 rounded-xl overflow-hidden aspect-video" style="border: 2px solid var(--keyline); background-color: var(--color-image-bg);">
             <Image
               src={article.data.imageUrl}
               alt={article.data.imageAlt || article.data.title}
-              class="w-full object-cover"
-              width={800}
-              height={600}
+              class="w-full h-full object-cover"
+              width={1200}
+              height={675}
               format="webp"
               quality={85}
               loading="eager"
