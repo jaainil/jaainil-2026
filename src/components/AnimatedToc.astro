@@ -13,36 +13,77 @@ const { items } = Astro.props;
       aria-label="On this page"
       style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
     >
-      <!-- Collapsed bar: current section -->
+      <!-- Collapsed bar: displays upcoming section -->
       <button
         id="toc-toggle"
-        class="flex items-center gap-2.5 pl-3 pr-3.5 py-2.5 cursor-pointer w-full"
+        class="flex items-center gap-2 pl-2.5 pr-3 py-2 cursor-pointer w-full text-left select-none"
         aria-expanded="false"
         aria-controls="toc-panel"
+        aria-label="Table of contents navigation"
       >
-        <svg viewBox="0 0 24 24" class="w-4 h-4 shrink-0" aria-hidden="true">
-          <rect x="3" y="7" width="18" height="11" rx="2" fill="var(--piece)" stroke="var(--keyline)" stroke-width="2"/>
-          <circle cx="8.5" cy="7" r="2.4" fill="var(--piece)" stroke="var(--keyline)" stroke-width="2"/>
-          <circle cx="15.5" cy="7" r="2.4" fill="var(--piece)" stroke="var(--keyline)" stroke-width="2"/>
-        </svg>
-        <span id="toc-current" class="text-sm font-bold truncate max-w-[260px] sm:max-w-[340px]" style="color: var(--ink);"></span>
-        <svg id="toc-chevron" class="w-4 h-4 shrink-0 ml-1 transition-transform duration-200" fill="none" stroke="var(--ink)" stroke-width="2.6" viewBox="0 0 24 24" aria-hidden="true">
+        <span
+          id="toc-badge"
+          class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider shrink-0 transition-colors"
+          style="border: 1.5px solid var(--keyline); background: var(--marker); color: #10151b;"
+        >
+          NEXT
+        </span>
+        <span
+          id="toc-next-title"
+          class="text-sm font-bold truncate max-w-[210px] sm:max-w-[320px]"
+          style="color: var(--ink);"
+        ></span>
+        <svg
+          id="toc-chevron"
+          class="w-4 h-4 shrink-0 ml-1 transition-transform duration-200"
+          fill="none"
+          stroke="var(--ink)"
+          stroke-width="2.6"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M18 15l-6-6-6 6" />
         </svg>
       </button>
 
       <!-- Expanded panel: full contents -->
       <div id="toc-panel" class="hidden border-t-2" style="border-color: var(--keyline);">
-        <ul id="toc-list" class="py-2 max-h-[50vh] overflow-y-auto">
+        <div
+          class="px-4 py-2 flex items-center justify-between border-b text-[11px] font-bold"
+          style="border-color: var(--color-border-soft); background: var(--color-surface-elevated);"
+        >
+          <span class="uppercase tracking-wider font-black" style="color: var(--ink);">
+            On this page
+          </span>
+          <span
+            id="toc-progress-text"
+            style="color: var(--color-text-muted);"
+          ></span>
+        </div>
+        <ul id="toc-list" class="py-1.5 max-h-[48vh] overflow-y-auto">
           {items.map((item, i) => (
             <li>
               <a
                 href={`#${item.id}`}
-                class="toc-link flex items-center gap-3 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[var(--color-hover)]"
+                class="toc-link flex items-center justify-between gap-3 px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--color-hover)]"
                 data-id={item.id}
+                data-index={i}
               >
-                <span class="toc-num grid place-items-center w-6 h-6 shrink-0 rounded-md text-[11px] font-black" style="border: 2px solid var(--keyline); background: var(--paper); color: var(--ink);">{i + 1}</span>
-                <span class="truncate" style="color: var(--color-text-secondary);">{item.title}</span>
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span
+                    class="toc-num grid place-items-center w-6 h-6 shrink-0 rounded-md text-[11px] font-black"
+                    style="border: 2px solid var(--keyline); background: var(--paper); color: var(--ink);"
+                  >
+                    {i + 1}
+                  </span>
+                  <span class="toc-title truncate" style="color: var(--color-text-secondary);">
+                    {item.title}
+                  </span>
+                </div>
+                <span
+                  class="toc-status text-[9px] font-black uppercase px-1.5 py-0.5 rounded tracking-wider shrink-0 hidden"
+                  style="border: 1.5px solid var(--keyline);"
+                ></span>
               </a>
             </li>
           ))}
@@ -58,15 +99,24 @@ const { items } = Astro.props;
     const toggle = document.getElementById('toc-toggle');
     const panel = document.getElementById('toc-panel');
     const chevron = document.getElementById('toc-chevron');
-    const currentEl = document.getElementById('toc-current');
+    const badgeEl = document.getElementById('toc-badge');
+    const nextTitleEl = document.getElementById('toc-next-title');
+    const progressEl = document.getElementById('toc-progress-text');
     const links = dock.querySelectorAll('.toc-link');
-    const nums = dock.querySelectorAll('.toc-num');
 
     const setOpen = (open) => {
       dock.dataset.open = String(open);
       panel.classList.toggle('hidden', !open);
       chevron.style.transform = open ? 'rotate(180deg)' : '';
       toggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        update();
+        const { currentIndex } = getHeadingState();
+        if (currentIndex >= 0) {
+          const currentLink = dock.querySelector(`.toc-link[data-index="${currentIndex}"]`);
+          currentLink?.scrollIntoView({ block: 'nearest' });
+        }
+      }
     };
 
     toggle.addEventListener('click', () => setOpen(dock.dataset.open !== 'true'));
@@ -78,43 +128,128 @@ const { items } = Astro.props;
     });
     links.forEach((link) => link.addEventListener('click', () => setOpen(false)));
 
-    const getActiveId = () => {
-      const scrollY = window.scrollY + 120;
-      let current = items[0].id;
-      let closest = Infinity;
+    const TRIGGER_OFFSET = 110;
 
-      for (const item of items) {
-        const el = document.getElementById(item.id);
+    const getHeadingState = () => {
+      let currentIndex = -1;
+
+      for (let i = 0; i < items.length; i++) {
+        const el = document.getElementById(items[i].id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          const top = rect.top + window.scrollY;
-          const distance = Math.abs(top - scrollY);
-          if (rect.top <= 140 && distance < closest) {
-            current = item.id;
-            closest = distance;
+          if (rect.top <= TRIGGER_OFFSET) {
+            currentIndex = i;
           }
         }
       }
-      return current;
+
+      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 120);
+      if (isAtBottom) {
+        currentIndex = items.length - 1;
+      }
+
+      const nextIndex = currentIndex + 1;
+      return { currentIndex, nextIndex };
     };
 
     const update = () => {
-      const activeId = getActiveId();
-      const active = items.find((i) => i.id === activeId);
-      if (currentEl && active) currentEl.textContent = active.title;
+      const { currentIndex, nextIndex } = getHeadingState();
 
+      // Update collapsed bottom bar
+      if (nextIndex < items.length) {
+        const nextItem = items[nextIndex];
+        if (badgeEl) {
+          badgeEl.textContent = 'NEXT';
+          badgeEl.style.background = 'var(--marker)';
+          badgeEl.style.color = '#10151b';
+        }
+        if (nextTitleEl) {
+          nextTitleEl.textContent = nextItem.title;
+        }
+      } else {
+        // Last section reached / end of article
+        if (badgeEl) {
+          badgeEl.textContent = 'END';
+          badgeEl.style.background = 'var(--piece)';
+          badgeEl.style.color = '#ffffff';
+        }
+        if (nextTitleEl) {
+          nextTitleEl.textContent = 'All caught up · End of article';
+        }
+      }
+
+      // Update header progress text in the drawer
+      if (progressEl) {
+        if (currentIndex < 0) {
+          progressEl.textContent = `Intro · ${items.length} sections`;
+        } else if (currentIndex === items.length - 1) {
+          progressEl.textContent = `Completed · ${items.length}/${items.length}`;
+        } else {
+          progressEl.textContent = `Section ${currentIndex + 1} of ${items.length}`;
+        }
+      }
+
+      // Update links inside the drawer
       links.forEach((link) => {
-        const isActive = link.getAttribute('data-id') === activeId;
-        link.style.background = isActive ? 'var(--color-hover)' : '';
+        const idx = Number(link.getAttribute('data-index'));
         const num = link.querySelector('.toc-num');
-        if (num) {
-          num.style.background = isActive ? 'var(--piece)' : 'var(--paper)';
-          num.style.color = isActive ? '#ffffff' : 'var(--ink)';
+        const title = link.querySelector('.toc-title');
+        const status = link.querySelector('.toc-status');
+
+        const isCurrent = idx === currentIndex;
+        const isNext = idx === nextIndex;
+
+        if (isCurrent) {
+          link.style.background = 'var(--color-hover)';
+          if (title) {
+            title.style.color = 'var(--ink)';
+            title.style.fontWeight = '700';
+          }
+          if (num) {
+            num.style.background = 'var(--piece)';
+            num.style.color = '#ffffff';
+          }
+          if (status) {
+            status.textContent = 'READING';
+            status.style.background = 'var(--piece)';
+            status.style.color = '#ffffff';
+            status.classList.remove('hidden');
+          }
+        } else if (isNext) {
+          link.style.background = '';
+          if (title) {
+            title.style.color = 'var(--ink)';
+            title.style.fontWeight = '600';
+          }
+          if (num) {
+            num.style.background = 'var(--marker)';
+            num.style.color = '#10151b';
+          }
+          if (status) {
+            status.textContent = 'NEXT';
+            status.style.background = 'var(--marker)';
+            status.style.color = '#10151b';
+            status.classList.remove('hidden');
+          }
+        } else {
+          link.style.background = '';
+          if (title) {
+            title.style.color = 'var(--color-text-secondary)';
+            title.style.fontWeight = '500';
+          }
+          if (num) {
+            num.style.background = 'var(--paper)';
+            num.style.color = 'var(--ink)';
+          }
+          if (status) {
+            status.classList.add('hidden');
+          }
         }
       });
     };
 
     update();
     window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
   }
 </script>

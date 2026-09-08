@@ -9,13 +9,18 @@ const discussionsUrl = 'https://github.com/jaainil/jaainil-2026/discussions';
 ---
 
 <section class="mt-12 max-w-4xl mx-auto rounded-2xl overflow-hidden" aria-label="Comments" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
-  <div class="px-6 sm:px-10 py-5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1" style="border-bottom: 2px solid var(--keyline);">
+  <div class="px-6 sm:px-10 py-5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-x-4 gap-y-2" style="border-bottom: 2px solid var(--keyline);">
     <h2 class="text-xl sm:text-2xl font-black tracking-tight" style="color: var(--ink);">Margin notes</h2>
-    <p class="text-sm font-semibold" style="color: var(--color-text-muted);">
-      The thread lives on
-      <a href={discussionsUrl} target="_blank" rel="noopener noreferrer" class="font-bold underline underline-offset-4 decoration-2" style="color: var(--color-link);">GitHub Discussions</a>
-      — sign in there to join.
-    </p>
+    <div class="text-right sm:text-right">
+      <p class="text-sm font-semibold" style="color: var(--color-text-muted);">
+        The thread lives on
+        <a href={discussionsUrl} target="_blank" rel="noopener noreferrer" class="font-bold underline underline-offset-4 decoration-2" style="color: var(--color-link);">GitHub Discussions</a>
+        — sign in there to join.
+      </p>
+      <p class="text-[11px] mt-0.5" style="color: var(--color-text-muted);">
+        Third-party embed: comments are processed under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--color-link);">GitHub's Privacy Statement</a>.
+      </p>
+    </div>
   </div>
   <div class="px-2 sm:px-6 py-2 giscus-frame-host">
     <script

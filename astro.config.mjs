@@ -16,6 +16,15 @@ export default defineConfig({
   site: 'https://jaainil.com',
   redirects: {
     '/the-art-of-feature-flagging-jiocinemas-approach-to-managing-features-at-scale': '/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale',
+    '/privacy': '/legal/privacy',
+    '/privacy-policy': '/legal/privacy',
+    '/terms': '/legal/terms',
+    '/terms-of-service': '/legal/terms',
+    '/terms-and-conditions': '/legal/terms',
+    '/cookies': '/legal/cookies',
+    '/cookie-policy': '/legal/cookies',
+    '/refund': '/legal/refund',
+    '/refund-policy': '/legal/refund',
   },
   integrations: [
     react(),

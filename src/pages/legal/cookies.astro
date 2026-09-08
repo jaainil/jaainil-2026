@@ -10,12 +10,46 @@ const markdown = fs.readFileSync(filePath, 'utf-8');
 const content = marked.parse(markdown);
 ---
 
-<BaseLayout title="Cookie Policy — Jainil Prajapati" description="Cookie policy for jaainil.com - Learn about the cookies and privacy-first analytics used.">
+<BaseLayout title="Cookie & Storage Policy — Jainil Prajapati" description="Cookie and browser storage policy for jaainil.com - Details on privacy-first cookieless analytics and local storage preferences.">
   <div class="mx-auto max-w-4xl px-4 sm:px-6 pt-10 sm:pt-14 pb-16">
     <div class="rounded-2xl p-6 sm:p-10 lg:p-12" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
-      <h1 class="text-3xl sm:text-4xl font-black tracking-tight mb-2" style="color: var(--ink);">Cookie Policy</h1>
+      <!-- Breadcrumb -->
+      <nav class="mb-6 flex items-center gap-2 text-xs font-bold" aria-label="Breadcrumb">
+        <a href="/" class="hover:underline underline-offset-4" style="color: var(--color-link);">Home</a>
+        <span style="color: var(--color-text-muted);" aria-hidden="true">/</span>
+        <span style="color: var(--color-text-muted);">Legal</span>
+        <span style="color: var(--color-text-muted);" aria-hidden="true">/</span>
+        <span style="color: var(--ink);">Cookie Policy</span>
+      </nav>
+
+      <!-- Legal Hub Quick Links -->
+      <div class="flex flex-wrap gap-2 mb-8 pb-6" style="border-bottom: 2px dashed var(--color-border-soft);" role="navigation" aria-label="Legal Documents">
+        <a href="/legal/privacy" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-transform hover:-translate-y-0.5" style="border: 2px solid var(--keyline); background: var(--paper); color: var(--ink);">Privacy Policy</a>
+        <a href="/legal/terms" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-transform hover:-translate-y-0.5" style="border: 2px solid var(--keyline); background: var(--paper); color: var(--ink);">Terms of Service</a>
+        <a href="/legal/cookies" class="px-3 py-1.5 rounded-lg text-xs font-bold" style="border: 2px solid var(--keyline); background: var(--action); color: #ffffff;" aria-current="page">Cookie Policy</a>
+        <a href="/legal/refund" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-transform hover:-translate-y-0.5" style="border: 2px solid var(--keyline); background: var(--paper); color: var(--ink);">Refund Policy</a>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 p-4 rounded-xl" style="border: 2px solid var(--keyline); background: var(--color-surface-elevated);">
+        <div>
+          <p class="font-extrabold text-sm" style="color: var(--ink);">Manage Storage Preferences</p>
+          <p class="text-xs font-semibold" style="color: var(--color-text-muted);">Review or modify your storage consent settings on this browser anytime.</p>
+        </div>
+        <button
+          type="button"
+          data-open-cookie-preferences
+          class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-transform hover:-translate-y-0.5 cursor-pointer shrink-0"
+          style="background: var(--action); color: #ffffff; border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline);"
+          aria-label="Open cookie preferences modal"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          Cookie Settings
+        </button>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight mb-2" style="color: var(--ink);">Cookie & Storage Policy</h1>
       <p class="text-sm font-bold mb-8 pb-6" style="color: var(--color-text-muted); border-bottom: 2px dashed var(--color-border-soft);">
-        Last updated: January 1, 2026
+        Last updated: September 8, 2026
       </p>
       <div class="prose max-w-none prose-headings:font-extrabold prose-headings:tracking-tight" set:html={content} />
     </div>
@@ -24,4 +58,7 @@ const content = marked.parse(markdown);
 
 <style is:global>
   .prose a { color: var(--color-link); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .prose table { display: block; max-width: 100%; overflow-x: auto; border: 2px solid var(--keyline); border-radius: 12px; }
+  .prose th, .prose td { padding: 10px 14px; border: 1px solid var(--color-border-soft); }
+  .prose th { background: var(--color-surface-elevated); font-weight: 800; }
 </style>

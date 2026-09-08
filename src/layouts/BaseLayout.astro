@@ -3,6 +3,7 @@ import '@fontsource-variable/rubik';
 
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 import JainilsRAGChat from '../components/rag/JainilsRAGChat';
 import { SEO } from 'astro-seo';
 import { Schema } from 'astro-seo-schema';
@@ -244,12 +245,20 @@ const articleSchema = articleData ? {
     -->`} />
     <div class="min-h-screen" style="background-color: var(--color-bg);">
         <div class="min-h-screen flex flex-col">
+          <a
+            href="#main-content"
+            class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2.5 focus:rounded-xl focus:font-bold focus:shadow-[0_3px_0_var(--keyline)] focus:outline-none"
+            style="background: var(--marker); color: #10151b; border: 2px solid var(--keyline);"
+          >
+            Skip to main content
+          </a>
           <Navbar />
-          <main class="grow">
+          <main id="main-content" class="grow">
             <slot />
           </main>
           <Footer />
           <JainilsRAGChat client:load />
+          <CookieConsent />
         </div>
     </div>
     <script is:inline>

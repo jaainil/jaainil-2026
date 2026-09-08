@@ -401,7 +401,7 @@ export const JainilsRAGChat: React.FC = () => {
           border: '2px solid var(--keyline)',
           boxShadow: '0 3px 0 var(--keyline)',
         }}
-        aria-label="Open Jainil's AI chat"
+        aria-label="Open Jainil's AI chat assistant (or press Command K)"
       >
         <BrickGlyph />
         <span className="hidden md:inline">Ask Jainil's AI</span>
@@ -477,6 +477,7 @@ export const JainilsRAGChat: React.FC = () => {
               overscrollBehavior: 'contain',
             }}
             role="dialog"
+            aria-modal="true"
             aria-label="Chat with Jainil's AI assistant"
           >
             {/* Header */}
@@ -493,7 +494,7 @@ export const JainilsRAGChat: React.FC = () => {
                     Ask Jainil's AI
                   </h3>
                   <p className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                    Grounded in the portfolio, resume & 25+ field notes
+                    Grounded in portfolio & field notes · AI-generated (verify critical facts)
                   </p>
                 </div>
               </div>
@@ -646,37 +647,52 @@ export const JainilsRAGChat: React.FC = () => {
                 e.preventDefault();
                 handleSend(input);
               }}
-              className="p-4 flex gap-2 shrink-0"
+              className="p-4 flex flex-col gap-2 shrink-0"
               style={{ borderTop: '2px solid var(--keyline)' }}
             >
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about Jainil's work, resume, or articles..."
-                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold outline-none"
-                style={{
-                  background: 'var(--paper)',
-                  color: 'var(--ink)',
-                  border: '2px solid var(--keyline)',
-                  boxShadow: '0 2px 0 var(--keyline)',
-                }}
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="px-4 py-2.5 rounded-xl font-bold text-sm transition-transform hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 cursor-pointer"
-                style={{
-                  background: 'var(--action)',
-                  color: '#fff',
-                  border: '2px solid var(--keyline)',
-                  boxShadow: '0 3px 0 var(--keyline)',
-                }}
-              >
-                Send
-              </button>
+              <div className="flex gap-2">
+                <label htmlFor="rag-chat-input" className="sr-only">
+                  Ask a question about Jainil's work, resume, or articles
+                </label>
+                <input
+                  id="rag-chat-input"
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask about Jainil's work, resume, or articles..."
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold outline-none"
+                  style={{
+                    background: 'var(--paper)',
+                    color: 'var(--ink)',
+                    border: '2px solid var(--keyline)',
+                    boxShadow: '0 2px 0 var(--keyline)',
+                  }}
+                  disabled={isLoading}
+                  aria-describedby="rag-form-consent"
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading || !input.trim()}
+                  aria-label="Send question to Jainil's AI"
+                  className="px-4 py-2.5 rounded-xl font-bold text-sm transition-transform hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 cursor-pointer"
+                  style={{
+                    background: 'var(--action)',
+                    color: '#fff',
+                    border: '2px solid var(--keyline)',
+                    boxShadow: '0 2px 0 var(--keyline)',
+                  }}
+                >
+                  Send
+                </button>
+              </div>
+              <p id="rag-form-consent" className="text-[11px] leading-tight px-1 font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                By submitting, you consent to AI processing of your question to retrieve answers. No personal data is stored or sold. Do not submit sensitive details. Read our{' '}
+                <a href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="font-bold underline underline-offset-2" style={{ color: 'var(--color-link)' }}>
+                  Privacy Policy
+                </a>
+                .
+              </p>
             </form>
           </div>
         </div>

@@ -1,0 +1,141 @@
+---
+/**
+ * Cookie & Storage Consent Banner / Preferences Dialog.
+ * Styled in the 'Build Instructions' booklet aesthetic.
+ * WCAG AA accessible, keyboard-friendly, GDPR & DPDP compliant.
+ */
+---
+
+<aside
+  id="cookie-consent-banner"
+  class="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-md z-40 hidden transition-all duration-300"
+  role="region"
+  aria-label="Storage and privacy preferences"
+>
+  <div
+    class="rounded-2xl p-5 sm:p-6"
+    style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline); color: var(--ink);"
+  >
+    <div class="flex items-start gap-3 mb-3">
+      <span
+        class="grid place-items-center w-8 h-8 rounded-lg shrink-0 mt-0.5"
+        style="background: var(--marker); border: 2px solid var(--keyline);"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="#10151b" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="8" cy="9" r="1.5" fill="#10151b" />
+          <circle cx="15" cy="8" r="1" fill="#10151b" />
+          <circle cx="10" cy="14" r="1.5" fill="#10151b" />
+          <circle cx="15" cy="15" r="1.5" fill="#10151b" />
+        </svg>
+      </span>
+      <div class="flex-1">
+        <h2 class="text-base font-extrabold tracking-tight leading-snug" style="color: var(--ink);">
+          Privacy & Storage Notice
+        </h2>
+        <p class="text-xs leading-relaxed mt-1 font-medium" style="color: var(--color-text-secondary);">
+          We use strictly necessary browser storage for theme preferences and active AI chat sessions, alongside privacy-first, cookieless analytics to count readers. No advertising cookies or cross-site tracking.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-2 text-xs" style="border-top: 2px dashed var(--color-border-soft);">
+      <a
+        href="/legal/cookies"
+        class="font-bold underline underline-offset-4 decoration-2"
+        style="color: var(--color-link);"
+      >
+        Read Cookie Policy
+      </a>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="cookie-reject-btn"
+          class="px-3.5 py-2 rounded-xl font-bold transition-transform hover:-translate-y-0.5 cursor-pointer"
+          style="background: var(--paper); color: var(--ink); border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline);"
+          aria-label="Accept essential storage only"
+        >
+          Essential only
+        </button>
+        <button
+          type="button"
+          id="cookie-accept-btn"
+          class="px-4 py-2 rounded-xl font-bold transition-transform hover:-translate-y-0.5 cursor-pointer"
+          style="background: var(--action); color: #ffffff; border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline);"
+          aria-label="Accept all storage and analytics"
+        >
+          Accept all
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  function initCookieConsent() {
+    const banner = document.getElementById('cookie-consent-banner');
+    if (!banner) return;
+
+    const acceptBtn = document.getElementById('cookie-accept-btn');
+    const rejectBtn = document.getElementById('cookie-reject-btn');
+    const STORAGE_KEY = 'cookie_consent_v1';
+    const DATE_KEY = 'cookie_consent_date';
+
+    function setConsent(choice: 'all' | 'essential') {
+      try {
+        localStorage.setItem(STORAGE_KEY, choice);
+        localStorage.setItem(DATE_KEY, new Date().toISOString());
+      } catch (e) {
+        /* storage full or private mode */
+      }
+      hideBanner();
+    }
+
+    function showBanner() {
+      banner.classList.remove('hidden');
+    }
+
+    function hideBanner() {
+      banner.classList.add('hidden');
+    }
+
+    acceptBtn?.addEventListener('click', () => setConsent('all'));
+    rejectBtn?.addEventListener('click', () => setConsent('essential'));
+
+    // Check if consent has already been given
+    try {
+      const existingConsent = localStorage.getItem(STORAGE_KEY);
+      if (!existingConsent) {
+        // Show after a brief 1.2s delay so initial content loads first
+        setTimeout(showBanner, 1200);
+      }
+    } catch (e) {
+      // Fallback
+    }
+
+    // Allow user to re-open preferences anytime via elements with data-open-cookie-preferences
+    function setupTriggers() {
+      document.querySelectorAll('[data-open-cookie-preferences]').forEach((trigger) => {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          showBanner();
+          banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          acceptBtn?.focus();
+        });
+      });
+    }
+
+    setupTriggers();
+    window.addEventListener('open-cookie-preferences', showBanner);
+    document.addEventListener('astro:after-swap', setupTriggers);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCookieConsent);
+  } else {
+    initCookieConsent();
+  }
+  document.addEventListener('astro:after-swap', initCookieConsent);
+</script>

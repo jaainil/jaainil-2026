@@ -4,7 +4,7 @@ const year = new Date().getFullYear();
 
 <footer style="background: var(--color-footer-bg); border-top: 2px solid var(--keyline);">
   <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
-    <div class="flex flex-col md:flex-row md:items-start justify-between gap-8">
+    <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-8">
       <div class="max-w-sm">
         <div class="flex items-center gap-3 mb-3">
           <span class="grid place-items-center w-8 h-8 rounded-md" style="background: var(--piece); border: 2px solid var(--keyline);">
@@ -18,11 +18,14 @@ const year = new Date().getFullYear();
           <span class="font-extrabold text-base" style="color: var(--color-footer-heading);">Jainil Prajapati</span>
         </div>
         <p class="text-sm leading-relaxed" style="color: var(--color-footer-text);">
-          This site is one page of Astro and Tailwind, hand-built, no template. Set and printed in Anand, Gujarat.
+          Hand-built engineering portfolio and technical publication. Handcrafted with Astro and Tailwind CSS. Printed and deployed from Anand, Gujarat, India.
+        </p>
+        <p class="text-xs mt-3 font-semibold" style="color: var(--color-text-muted);">
+          Operator & Data Fiduciary: Jainil Prajapati · Anand, Gujarat 388001, India
         </p>
       </div>
 
-      <nav class="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm" aria-label="Footer">
+      <nav class="grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm" aria-label="Footer">
         <div>
           <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Pages</h2>
           <ul class="space-y-2">
@@ -43,18 +46,52 @@ const year = new Date().getFullYear();
           </ul>
         </div>
         <div>
-          <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Feeds</h2>
+          <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Legal & Privacy</h2>
           <ul class="space-y-2">
-            <li><a href="/rss.xml" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">RSS</a></li>
+            <li><a href="/legal/privacy" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Privacy Policy</a></li>
+            <li><a href="/legal/terms" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Terms of Service</a></li>
+            <li><a href="/legal/cookies" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Cookie Policy</a></li>
+            <li><a href="/legal/refund" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Refund Policy</a></li>
+            <li>
+              <button
+                type="button"
+                data-open-cookie-preferences
+                class="text-left hover:underline underline-offset-4 cursor-pointer"
+                style="color: var(--color-footer-text);"
+              >
+                Cookie settings
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: var(--color-footer-heading);">Feeds & Info</h2>
+          <ul class="space-y-2">
+            <li><a href="/rss.xml" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">RSS Feed</a></li>
             <li><a href="/llms.txt" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">llms.txt</a></li>
+            <li><a href="/llms-full.txt" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">llms-full.txt</a></li>
+            <li><a href="/sitemap-index.xml" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Sitemap</a></li>
           </ul>
         </div>
       </nav>
     </div>
 
-    <div class="mt-10 pt-5 flex flex-col sm:flex-row justify-between gap-2 text-xs" style="border-top: 1px solid var(--color-footer-border); color: var(--color-footer-text);">
-      <p>© {year} Jainil Prajapati</p>
-      <p>Full-stack & DevOps engineer · jaainil.com</p>
+    <div class="mt-10 pt-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs" style="border-top: 1px solid var(--color-footer-border); color: var(--color-footer-text);">
+      <div>
+        <p>© {year} Jainil Prajapati. All rights reserved.</p>
+        <p class="mt-0.5" style="color: var(--color-footer-text); opacity: 0.85;">
+          Full-stack Developer & DevOps Engineer · jaainil.com · Anand, Gujarat 388001, India
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <a href="mailto:jainilprajapati9@gmail.com" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">jainilprajapati9@gmail.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="tel:+919725284302" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">+91 97252 84302</a>
+        <span aria-hidden="true">·</span>
+        <a href="/legal/privacy" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Privacy</a>
+        <span aria-hidden="true">·</span>
+        <a href="/legal/terms" class="hover:underline underline-offset-4" style="color: var(--color-footer-text);">Terms</a>
+      </div>
     </div>
   </div>
 </footer>
