@@ -35,10 +35,53 @@ export default defineConfig({
     }),
     icon(),
     robotsTxt({
+      host: 'jaainil.com',
+      sitemap: 'https://jaainil.com/sitemap-index.xml',
       policy: [
         {
           userAgent: '*',
           allow: '/',
+          disallow: ['/api/'],
+        },
+        {
+          userAgent: 'Googlebot',
+          allow: '/',
+        },
+        {
+          userAgent: 'Bingbot',
+          allow: '/',
+        },
+        {
+          userAgent: 'GPTBot',
+          allow: '/',
+        },
+        {
+          userAgent: 'ChatGPT-User',
+          allow: '/',
+        },
+        {
+          userAgent: 'PerplexityBot',
+          allow: '/',
+        },
+        {
+          userAgent: 'ClaudeBot',
+          allow: '/',
+        },
+        {
+          userAgent: 'anthropic-ai',
+          allow: '/',
+        },
+        {
+          userAgent: 'Google-Extended',
+          allow: '/',
+        },
+        {
+          userAgent: 'Applebot-Extended',
+          allow: '/',
+        },
+        {
+          userAgent: 'CCBot',
+          disallow: '/',
         },
       ],
     }),
@@ -73,8 +116,8 @@ export default defineConfig({
       },
     }),
     llms({
-      name: 'Jainil Prajapati',
-      description: 'Full-Stack Developer & DevOps Engineer. Technical articles, DevOps workflows, Linux systems, and open-source contributions.',
+      name: 'Jainil Prajapati (Jaanil)',
+      description: 'Official portfolio and technical writings of Jainil Prajapati (also known online as Jaanil or Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems.',
     }),
   ],
   vite: {

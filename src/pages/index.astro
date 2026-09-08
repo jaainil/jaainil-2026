@@ -239,36 +239,86 @@ const homePageSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfilePage',
   '@id': `${SITE_URL}/#webpage`,
-  name: 'Jainil Prajapati — Full-Stack Developer & DevOps Engineer',
-  description: 'Portfolio and technical writings of Jainil Prajapati. Full-stack development, Docker workflows, CI/CD automation, Linux administration, and Dokploy open-source contributions.',
+  name: 'Jainil Prajapati (Jaanil) — Full-Stack Developer & DevOps Engineer',
+  alternateName: ['Jainil Prajapati', 'Jaanil', 'Jainil', 'Jaainil', 'jaainil.com'],
+  description: 'Official portfolio and technical writings of Jainil Prajapati (also known online as Jaanil or Jaainil). Full-stack development, Docker workflows, CI/CD automation, Linux administration, and Dokploy open-source contributions.',
   url: SITE_URL,
   inLanguage: 'en',
   isPartOf: { '@id': `${SITE_URL}/#website` },
   about: { '@id': `${SITE_URL}/#person` },
   mainEntity: { '@id': `${SITE_URL}/#person` },
 };
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${SITE_URL}/#faq`,
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Who is Jainil Prajapati (Jaanil)?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Jainil Prajapati (known online as Jaanil or Jaainil) is a Full-Stack Developer and DevOps Engineer based in Anand, Gujarat, India. He builds production web applications with Next.js and Astro, containerizes services with Docker, orchestrates CI/CD with GitHub Actions, and administers Linux (Debian) servers.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What open-source software and projects has Jainil built?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Jainil authored Writenex CMS on npm (@imjp/writenex-astro), an automated visual editor for Astro collections. He also contributed 10+ merged deployment blueprints to the official Dokploy templates repository, created the India AI Tracker, and published 25+ technical deep dives on Shravonix.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is Jainil\'s core technical stack?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'His full-stack engineering stack includes TypeScript, Next.js, React, Astro, Node.js, Express, Prisma ORM, and PostgreSQL. His DevOps toolkit covers Docker, Docker Compose, GitHub Actions, Debian Linux administration, Nginx reverse proxies, UFW, and Proxmox VE.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How can you hire or contact Jainil Prajapati?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Jainil is available for full-time software engineering and DevOps roles, as well as freelance systems development. Reach him directly by email at jainilprajapati9@gmail.com, telephone at +91 97252 84302, or connect via GitHub (@jaainil) and LinkedIn (/in/jaainil).',
+      },
+    },
+  ],
+};
 ---
 
 <BaseLayout
-  title="Jainil Prajapati — Full-Stack Developer & DevOps Engineer"
-  description="Portfolio and technical writings of Jainil Prajapati. Full-stack development, Docker workflows, CI/CD automation, Linux administration, and Dokploy open-source contributions."
+  title="Jainil Prajapati (Jaanil) — Full-Stack Developer & DevOps Engineer"
+  description="Official portfolio and engineering notes of Jainil Prajapati (also known online as Jaanil / Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems."
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(homePageSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
   </Fragment>
 
   <!-- HERO: the cover page of the booklet -->
   <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-16 pb-14">
     <div class="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
       <div class="lg:col-span-6">
-        <p class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-bold mb-6" style="background: var(--marker); border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline); color: #10151b;">
-          Open to full-time roles
-        </p>
+        <div class="flex flex-wrap items-center gap-2.5 mb-6">
+          <p class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-bold" style="background: var(--marker); border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline); color: #10151b;">
+            Open to full-time roles
+          </p>
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wide" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline); color: var(--color-text-secondary);">
+            Online alias: <strong class="ml-1 text-[var(--ink)]">Jaanil</strong> · @jaainil
+          </span>
+        </div>
         <h1 class="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[0.95] mb-5" style="color: var(--ink);">
           Jainil Prajapati
         </h1>
-        <p class="text-lg sm:text-xl leading-relaxed max-w-xl mb-8 font-medium" style="color: var(--color-text-secondary);">
-          Full-stack developer and DevOps engineer in Gujarat, India. I build the web app and the infrastructure under it, then write up how it went.
+        <p class="text-lg sm:text-xl leading-relaxed max-w-xl mb-4 font-medium" style="color: var(--color-text-secondary);">
+          Full-stack developer and DevOps engineer in Gujarat, India. Known online as <strong>Jaanil</strong> (<strong>Jaainil</strong>). I build the web app and the infrastructure under it, then write up how it went.
+        </p>
+        <p class="text-sm leading-relaxed max-w-xl mb-8 p-3 rounded-xl font-medium" style="background: var(--color-surface-elevated); border: 2px dashed var(--color-border-soft); color: var(--color-text-muted);">
+          <strong style="color: var(--ink);">Quick Overview:</strong> Jainil Prajapati (Jaanil) is the creator of the Writenex Astro CMS (@imjp/writenex-astro), a Dokploy upstream contributor, and author of 25+ systems articles on Shravonix. Experienced in Next.js, Node.js, Docker, CI/CD, and Debian Linux.
         </p>
         <div class="flex flex-wrap items-center gap-3 mb-6">
           <a
@@ -525,8 +575,65 @@ const homePageSchema = {
     </div>
   </section>
 
+  <!-- FAQ / QUICK ANSWERS -->
+  <section id="faq" class="border-y-2 py-14" style="border-color: var(--keyline); background: var(--paper);">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="max-w-2xl mb-10">
+        <span class="px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wide inline-block mb-3" style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;">
+          Direct Answers
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-3" style="color: var(--ink);">Frequently asked questions</h2>
+        <p class="text-lg leading-relaxed" style="color: var(--color-text-secondary);">
+          Direct reference answers for evaluators, search engines, and AI assistants researching Jainil Prajapati (Jaanil).
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="rounded-2xl p-6 sm:p-7 flex flex-col" style="background: var(--color-surface-elevated); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--piece); color: #fff;">01</span>
+            <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">Who is Jainil Prajapati (Jaanil)?</h3>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
+            Jainil Prajapati (known online as <strong>Jaanil</strong> or <strong>Jaainil</strong>) is a Full-Stack Developer and DevOps Engineer based in Anand, Gujarat, India. He builds production applications with Next.js, Node.js, and Astro, containerizes services with Docker, orchestrates CI/CD with GitHub Actions, and administers Linux (Debian) servers.
+          </p>
+        </div>
+
+        <div class="rounded-2xl p-6 sm:p-7 flex flex-col" style="background: var(--color-surface-elevated); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--action); color: #fff;">02</span>
+            <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">What open-source projects has Jainil built?</h3>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
+            Jainil authored <a href="https://www.npmjs.com/package/@imjp/writenex-astro" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">Writenex CMS</a> on npm (@imjp/writenex-astro), an automated visual editor for Astro collections. He also contributed 10+ merged deployment blueprints to the official <a href="https://github.com/Dokploy/templates" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">Dokploy templates</a> repository and built the India AI Tracker dashboard.
+          </p>
+        </div>
+
+        <div class="rounded-2xl p-6 sm:p-7 flex flex-col" style="background: var(--color-surface-elevated); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;">03</span>
+            <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">What is Jainil's core technical stack?</h3>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
+            His full-stack engineering stack includes TypeScript, Next.js, React, Astro, Node.js, Express, Prisma ORM, and PostgreSQL. His infrastructure and DevOps toolkit covers Docker, Docker Compose, GitHub Actions, Debian Linux administration, Nginx reverse proxies, UFW firewall security, and Proxmox VE hypervisors.
+          </p>
+        </div>
+
+        <div class="rounded-2xl p-6 sm:p-7 flex flex-col" style="background: var(--color-surface-elevated); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--plate); color: var(--ink);">04</span>
+            <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">How can you hire or contact Jainil Prajapati?</h3>
+          </div>
+          <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
+            Jainil is available for full-time software engineering and DevOps roles, as well as freelance systems development. Reach him directly by email at <a href="mailto:jainilprajapati9@gmail.com" class="underline font-bold" style="color: var(--color-link);">jainilprajapati9@gmail.com</a>, call <a href="tel:+919725284302" class="underline font-bold" style="color: var(--color-link);">+91 97252 84302</a>, or connect via <a href="https://github.com/jaainil" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">GitHub (@jaainil)</a> and <a href="https://www.linkedin.com/in/jaainil/" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">LinkedIn</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
-  <section id="contact" class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
+  <section id="contact" class="mx-auto max-w-6xl px-4 sm:px-6 py-14 sm:py-16">
     <div class="rounded-2xl p-7 sm:p-10 grid lg:grid-cols-12 gap-8" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
       <div class="lg:col-span-7">
         <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-4" style="color: var(--ink);">Open a build slot</h2>
