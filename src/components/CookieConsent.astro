@@ -8,7 +8,7 @@
 
 <aside
   id="cookie-consent-banner"
-  class="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-md z-40 hidden transition-all duration-300"
+  class="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-md z-[60] hidden transition-all duration-300"
   role="region"
   aria-label="Storage and privacy preferences"
 >
@@ -73,6 +73,14 @@
   </div>
 </aside>
 
+<style>
+  /* When TOC dock is present on the page, elevate the cookie banner cleanly on top of it */
+  :global(body:has(#toc-dock)) #cookie-consent-banner,
+  #cookie-consent-banner.has-toc {
+    bottom: 4.75rem;
+  }
+</style>
+
 <script>
   function initCookieConsent() {
     const banner = document.getElementById('cookie-consent-banner');
@@ -82,6 +90,15 @@
     const rejectBtn = document.getElementById('cookie-reject-btn');
     const STORAGE_KEY = 'cookie_consent_v1';
     const DATE_KEY = 'cookie_consent_date';
+
+    function updateTocOffset() {
+      const tocDock = document.getElementById('toc-dock');
+      if (tocDock) {
+        banner.classList.add('has-toc');
+      } else {
+        banner.classList.remove('has-toc');
+      }
+    }
 
     function setConsent(choice: 'all' | 'essential') {
       try {
@@ -94,6 +111,7 @@
     }
 
     function showBanner() {
+      updateTocOffset();
       banner.classList.remove('hidden');
     }
 
@@ -128,8 +146,10 @@
     }
 
     setupTriggers();
+    updateTocOffset();
     window.addEventListener('open-cookie-preferences', showBanner);
     document.addEventListener('astro:after-swap', setupTriggers);
+    document.addEventListener('astro:after-swap', updateTocOffset);
   }
 
   if (document.readyState === 'loading') {
