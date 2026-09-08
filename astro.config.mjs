@@ -23,8 +23,6 @@ export default defineConfig({
     '/terms-and-conditions': '/legal/terms',
     '/cookies': '/legal/cookies',
     '/cookie-policy': '/legal/cookies',
-    '/refund': '/legal/refund',
-    '/refund-policy': '/legal/refund',
   },
   integrations: [
     react(),

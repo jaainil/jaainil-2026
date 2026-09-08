@@ -1,0 +1,297 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ReadingProgressBar from '../../components/react/ReadingProgressBar';
+import BackToTop from '../../components/react/BackToTop';
+import AnimatedToc from '../../components/AnimatedToc.astro';
+import { Schema } from 'astro-seo-schema';
+import { marked } from 'marked';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export interface LegalDoc {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  lastUpdated: string;
+  filePath: string;
+}
+
+const LEGAL_DOCS: Record<string, LegalDoc> = {
+  privacy: {
+    slug: 'privacy',
+    title: 'Privacy Policy',
+    description: 'Learn how your data is protected on jaainil.com under the Indian DPDP Act 2023, GDPR, and CCPA.',
+    category: 'Legal & Privacy',
+    lastUpdated: '8 Sep 2026',
+    filePath: 'public/policies/privacy-policy.md',
+  },
+  terms: {
+    slug: 'terms',
+    title: 'Terms of Service',
+    description: 'Usage terms, intellectual property, AI assistant disclaimers, and open-source code licenses for jaainil.com.',
+    category: 'Legal & Terms',
+    lastUpdated: '8 Sep 2026',
+    filePath: 'public/policies/terms-of-service.md',
+  },
+  cookies: {
+    slug: 'cookies',
+    title: 'Cookie & Storage Policy',
+    description: 'Information regarding privacy-first cookieless analytics and browser local storage preferences on jaainil.com.',
+    category: 'Legal & Cookies',
+    lastUpdated: '8 Sep 2026',
+    filePath: 'public/policies/cookie-policy.md',
+  },
+};
+
+export async function getStaticPaths() {
+  return [
+    { params: { slug: 'privacy' }, props: { docKey: 'privacy' } },
+    { params: { slug: 'terms' }, props: { docKey: 'terms' } },
+    { params: { slug: 'cookies' }, props: { docKey: 'cookies' } },
+  ];
+}
+
+const { docKey } = Astro.props;
+const doc = LEGAL_DOCS[docKey];
+
+const absoluteFilePath = path.join(process.cwd(), doc.filePath);
+const rawMarkdown = fs.readFileSync(absoluteFilePath, 'utf-8');
+
+// Configure custom renderer so headings receive matching anchor IDs for AnimatedToc
+const renderer = {
+  heading({ tokens, depth, text }: any) {
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const parsed = (this as any).parser.parseInline(tokens);
+    return `<h${depth} id="${id}">${parsed}</h${depth}>\n`;
+  },
+};
+
+marked.use({ renderer });
+const htmlContent = marked.parse(rawMarkdown);
+
+// Extract H2 headings for the AnimatedToc signature dock
+const tokens = marked.lexer(rawMarkdown);
+const TOC_ITEMS = tokens
+  .filter((t: any) => t.type === 'heading' && t.depth === 2)
+  .map((t: any) => ({
+    id: t.text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+    title: t.text,
+  }));
+
+const otherDocs = Object.values(LEGAL_DOCS).filter((d) => d.slug !== doc.slug);
+
+const SITE_URL = 'https://jaainil.com';
+const pageUrl = `${SITE_URL}/legal/${doc.slug}`;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: SITE_URL,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Legal',
+      item: `${SITE_URL}/legal/privacy`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: doc.title,
+      item: pageUrl,
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${doc.title} — Jainil Prajapati`}
+  description={doc.description}
+>
+  <Fragment slot="head">
+    <Schema item={breadcrumbSchema as any} />
+  </Fragment>
+
+  <ReadingProgressBar client:only="react" />
+  <BackToTop client:only="react" />
+
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 pt-8 sm:pt-12 pb-16">
+    <div
+      class="max-w-4xl mx-auto rounded-2xl overflow-hidden"
+      style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);"
+    >
+      <!-- Sheet header: matching articles/[slug].astro -->
+      <div class="p-6 sm:p-10 lg:p-12 pb-0">
+        <!-- Breadcrumb navigation -->
+        <nav class="mb-4 flex items-center gap-2 text-xs font-bold" aria-label="Breadcrumb">
+          <a href="/" class="hover:underline underline-offset-4" style="color: var(--color-link);">Home</a>
+          <span style="color: var(--color-text-muted);" aria-hidden="true">/</span>
+          <span style="color: var(--color-text-muted);">Legal</span>
+          <span style="color: var(--color-text-muted);" aria-hidden="true">/</span>
+          <span style="color: var(--ink);">{doc.title}</span>
+        </nav>
+
+        <div class="flex flex-wrap items-center gap-3 mb-5">
+          <span
+            class="px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wide"
+            style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;"
+          >
+            {doc.category}
+          </span>
+          <span class="text-sm font-bold" style="color: var(--color-text-muted);">
+            Last updated: {doc.lastUpdated}
+          </span>
+        </div>
+
+        <h1
+          class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.08] max-w-4xl"
+          style="color: var(--ink);"
+        >
+          {doc.title}
+        </h1>
+
+        <p class="text-base sm:text-lg mt-4 font-medium leading-relaxed" style="color: var(--color-text-secondary);">
+          {doc.description}
+        </p>
+
+        <!-- Quick Switcher Tabs & Author Strip -->
+        <div
+          class="mt-8 pt-6 flex flex-wrap items-center justify-between gap-4"
+          style="border-top: 2px dashed var(--color-border-soft);"
+        >
+          <div class="flex items-center gap-3">
+            <img
+              src="/profile.png"
+              alt="Jainil Prajapati"
+              class="w-10 h-10 rounded-xl object-cover"
+              style="border: 2px solid var(--keyline); background-color: var(--color-image-bg);"
+              loading="lazy"
+              decoding="async"
+              width="40"
+              height="40"
+            />
+            <div>
+              <p class="text-sm font-bold leading-tight" style="color: var(--ink);">
+                Jainil Prajapati
+              </p>
+              <p class="text-xs font-semibold" style="color: var(--color-text-muted);">
+                Data Fiduciary · Anand, Gujarat, India
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2" role="navigation" aria-label="Legal Documents Navigation">
+            {Object.values(LEGAL_DOCS).map((item) => (
+              <a
+                href={`/legal/${item.slug}`}
+                class={`px-3 py-1.5 rounded-lg text-xs font-bold transition-transform ${item.slug === doc.slug ? '' : 'hover:-translate-y-0.5'}`}
+                style={
+                  item.slug === doc.slug
+                    ? 'border: 2px solid var(--keyline); background: var(--action); color: #ffffff;'
+                    : 'border: 2px solid var(--keyline); background: var(--paper); color: var(--ink); box-shadow: 0 2px 0 var(--keyline);'
+                }
+                aria-current={item.slug === doc.slug ? 'page' : undefined}
+              >
+                {item.title}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {doc.slug === 'cookies' && (
+          <div
+            class="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl"
+            style="border: 2px solid var(--keyline); background: var(--color-surface-elevated);"
+          >
+            <div>
+              <p class="font-extrabold text-sm" style="color: var(--ink);">Manage Storage Preferences</p>
+              <p class="text-xs font-semibold" style="color: var(--color-text-muted);">
+                Review or modify your storage consent settings on this browser at any time.
+              </p>
+            </div>
+            <button
+              type="button"
+              data-open-cookie-preferences
+              class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-transform hover:-translate-y-0.5 cursor-pointer shrink-0"
+              style="background: var(--action); color: #ffffff; border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline);"
+              aria-label="Open cookie preferences modal"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Cookie Settings
+            </button>
+          </div>
+        )}
+      </div>
+
+      <!-- Body: matching articles/[slug].astro max-w-[72ch] centered rhythm -->
+      <div class="py-10 lg:py-12 px-6 sm:px-10 lg:px-12">
+        <div class="max-w-[72ch] mx-auto">
+          <div
+            class="prose prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-img:rounded-xl prose-img:border-2"
+            style="border-color: var(--keyline);"
+            set:html={htmlContent}
+          />
+        </div>
+      </div>
+
+      <!-- Animated Table of Contents signature dock -->
+      {TOC_ITEMS.length >= 2 && <AnimatedToc items={TOC_ITEMS} />}
+    </div>
+
+    <!-- Other legal policies: styled like 'More notes' on article slug page -->
+    <div class="mt-12 max-w-4xl mx-auto">
+      <h2 class="text-2xl sm:text-3xl font-black tracking-tight mb-6" style="color: var(--ink);">
+        Other legal documents
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {otherDocs.map((other) => (
+          <a
+            href={`/legal/${other.slug}`}
+            class="group flex flex-col h-full rounded-2xl p-6 transition-transform hover:-translate-y-1"
+            style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);"
+          >
+            <span
+              class="self-start px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wide mb-3"
+              style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;"
+            >
+              {other.category}
+            </span>
+            <h3
+              class="text-xl font-extrabold tracking-tight leading-snug group-hover:underline underline-offset-4 decoration-2 mb-2"
+              style="color: var(--ink);"
+            >
+              {other.title}
+            </h3>
+            <p class="text-sm leading-relaxed mb-4 font-medium" style="color: var(--color-text-secondary);">
+              {other.description}
+            </p>
+            <span class="mt-auto text-xs font-bold flex items-center gap-1" style="color: var(--color-link);">
+              Read document
+              <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .prose a { color: var(--color-link); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .prose table { display: block; max-width: 100%; overflow-x: auto; border: 2px solid var(--keyline); border-radius: 12px; }
+  .prose th, .prose td { padding: 10px 14px; border: 1px solid var(--color-border-soft); }
+  .prose th { background: var(--color-surface-elevated); font-weight: 800; }
+  .prose hr { border-color: var(--keyline); border-width: 1px; margin-top: 2rem; margin-bottom: 2rem; }
+</style>
