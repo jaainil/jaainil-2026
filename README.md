@@ -4,6 +4,10 @@
 > **Author:** Jainil Prajapati (Full-Stack & DevOps Engineer, Creator of [Writenex CMS](https://github.com/imjp9/writenex-astro), Contributor to [Dokploy/templates](https://github.com/Dokploy/templates))  
 > **Contact:** [jainilprajapati9@gmail.com](mailto:jainilprajapati9@gmail.com) • [LinkedIn](https://www.linkedin.com/in/jaainil/) • [GitHub](https://github.com/jaainil) • [npm](https://www.npmjs.com/~imjp)
 
+<div align="center">
+  <a href="https://astro.build"><img src="https://astro.badg.es/v2/built-with-astro/large.svg" alt="Built with Astro" width="288" height="48"></a>
+</div>
+
 ---
 
 ## 🌟 Overview
