@@ -81,9 +81,14 @@ export default defineConfig({
         },
         {
           userAgent: 'CCBot',
-          disallow: '/',
+          allow: '/',
         },
       ],
+      transform(content) {
+        return content.replace(/User-agent: ([^\r\n]+)/g, (match) => {
+          return `${match}\nContent-Signal: ai-train=yes, search=yes, ai-input=yes`;
+        });
+      },
     }),
     sitemap({
       serialize(item) {
