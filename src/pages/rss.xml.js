@@ -4,6 +4,9 @@ import { getCollection } from 'astro:content';
 import { marked } from 'marked';
 import fs from 'node:fs';
 
+const SITE_OWNER_EMAIL = 'jainilprajapati9@gmail.com';
+const SITE_OWNER_NAME = 'Jainil Prajapati';
+
 function escapeXml(unsafe) {
   return String(unsafe || '')
     .replace(/&/g, '&amp;')
@@ -133,6 +136,12 @@ export async function GET(context) {
       const articleLink = `/articles/${article.id}/`;
       const imageInfo = getArticleImageInfo(article.data.imageUrl, siteUrl);
 
+      // Get author name and format RFC 822 compliant author string (email (Name))
+      const authorName = (article.data.authors || [])
+        .map((authorId) => authorMap.get(authorId) || authorId)
+        .join(', ') || SITE_OWNER_NAME;
+      const authorRfc822 = `${SITE_OWNER_EMAIL} (${authorName})`;
+
       // Get markdown body
       let rawMarkdown = article.body || '';
       if (!rawMarkdown && article.filePath && fs.existsSync(article.filePath)) {
@@ -159,19 +168,21 @@ export async function GET(context) {
         pubDate: article.data.publishedAt,
         description: article.data.description,
         link: articleLink,
-        author: (article.data.authors || []).map((authorId) => authorMap.get(authorId) || authorId).join(', '),
+        author: authorRfc822,
         categories: [article.data.category, ...(article.data.tags || [])],
         content: fullContent,
       };
 
+      let itemCustomData = `<dc:creator>${escapeXml(authorName)}</dc:creator>`;
       if (imageInfo) {
         item.enclosure = {
           url: imageInfo.url,
           length: 0,
           type: imageInfo.type,
         };
-        item.customData = `<media:content url="${escapeXml(imageInfo.url)}" medium="image" type="${escapeXml(imageInfo.type)}" /><media:thumbnail url="${escapeXml(imageInfo.url)}" />`;
+        itemCustomData += `<media:content url="${escapeXml(imageInfo.url)}" medium="image" type="${escapeXml(imageInfo.type)}" /><media:thumbnail url="${escapeXml(imageInfo.url)}" />`;
       }
+      item.customData = itemCustomData;
 
       return item;
     })
@@ -184,8 +195,9 @@ export async function GET(context) {
     xmlns: {
       atom: 'http://www.w3.org/2005/Atom',
       media: 'http://search.yahoo.com/mrss/',
+      dc: 'http://purl.org/dc/elements/1.1/',
     },
     items,
-    customData: `<language>en-us</language><atom:link href="${new URL('/rss.xml', siteUrl).toString()}" rel="self" type="application/rss+xml"/>`,
+    customData: `<language>en-us</language><managingEditor>${SITE_OWNER_EMAIL} (${SITE_OWNER_NAME})</managingEditor><webMaster>${SITE_OWNER_EMAIL} (${SITE_OWNER_NAME})</webMaster><atom:link href="${new URL('/rss.xml', siteUrl).toString()}" rel="self" type="application/rss+xml"/>`,
   });
 }
