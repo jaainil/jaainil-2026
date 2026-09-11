@@ -18,9 +18,7 @@ export default defineConfig({
   redirects: {
     '/the-art-of-feature-flagging-jiocinemas-approach-to-managing-features-at-scale': '/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale/',
     '/authors/jainil-prajapati': '/about/',
-    '/authors/jainil-prajapati/': '/about/',
     '/authors': '/about/',
-    '/authors/': '/about/',
     '/cdn-cgi/l/email-protection': '/#contact',
     '/privacy': '/legal/privacy/',
     '/privacy-policy': '/legal/privacy/',
