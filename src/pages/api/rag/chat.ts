@@ -80,3 +80,14 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 };
+
+export const GET: APIRoute = async () => {
+  return new Response(
+    JSON.stringify({ error: 'Method Not Allowed. Send a POST request with JSON body { question: string }.' }),
+    {
+      status: 405,
+      headers: { 'Content-Type': 'application/json', 'Allow': 'POST' },
+    }
+  );
+};
+
