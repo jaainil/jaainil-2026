@@ -2,7 +2,7 @@
 
 _Full-Stack Developer & DevOps Engineer | AI Enthusiast_
 
-jainilprajapati9@gmail.com · +91 9725284302 · Anand, Gujarat, India · [Portfolio](https://jaainil.com/)
+jainilprajapati9@gmail.com · +91 9725284302 · Anand, Gujarat, India · [https://jaainil.com](https://jaainil.com)
 
 ## Summary
 
@@ -10,21 +10,19 @@ Full-Stack Developer & DevOps Engineer passionate about building scalable SaaS p
 
 ## Profiles
 
-- **LinkedIn** ([https://www.linkedin.com/in/jaainil/](https://www.linkedin.com/in/jaainil/))
-- **GitHub** ([https://github.com/jaainil](https://github.com/jaainil))
-- **npmjs** ([https://www.npmjs.com/~imjp](https://www.npmjs.com/~imjp))
+- **GitHub** — jaainil ([https://github.com/jaainil](https://github.com/jaainil))
+- **npmjs** — ~imjp ([https://www.npmjs.com/~imjp](https://www.npmjs.com/~imjp))
+- **LinkedIn** — jaainil ([https://www.linkedin.com/in/jaainil/](https://www.linkedin.com/in/jaainil/))
 
 ## Skills
 
 - **Frontend** — Astro.js, React, Next.js, Remix.js, Vite, TailwindCSS, Radix UI
 - **Backend** — Node.js, Prisma, REST APIs, Stripe Integration
-- **DevOps** — Linux, Docker, Docker Compose, GitHub Actions, CI/CD Pipelines, Nginx, Proxmox VE, Vercel
 - **Databases** — PostgreSQL, MySQL, MongoDB, Redis, Supabase
-- **Design Tools** — Photoshop, Illustrator, Figma, Canva
-- **Video Editing** — Adobe Premiere Pro, Adobe After Effects
-- **Soft Skills** — Problem-Solving, Team Collaboration, Communication
-- **Networking & Protocols** — TCP/IP & DNS, DHCP & Subnetting, IPv4/IPv6, Firewalls (UFW), Port Forwarding, Nginx Reverse Proxy
+- **DevOps** — Linux, Docker, Docker Compose, GitHub Actions, CI/CD Pipelines, Nginx, Proxmox VE, Vercel
+- **AI Tools** — Codex, Claude Code, OpenCode, Hermes Agent, Paperclip
 - **Tools & Systems** — Git & GitHub, Bash Scripting, Postman, Hardware Diagnostics, BIOS/UEFI, SSH & Remote Support
+- **Networking & Protocols** — TCP/IP & DNS, DHCP & Subnetting, IPv4/IPv6, Firewalls (UFW), Port Forwarding, Nginx Reverse Proxy
 
 ## Experience
 
@@ -48,19 +46,25 @@ _Vadodara_
 
 Participated in a national 24-hour hackathon solving real-world challenges using AI-powered web tools.
 
-### End of Year Snap AR Lens Creation Hackathon,  — Hack2skill
+### End of Year Snap AR Lens Creation Hackathon — Hack2skill
 
 Built an interactive Snapchat Lens using Snap AR Studio; explored 3D modeling and visual effects for AR content.
 
-### Web Development Bootcamp — Web3Dev
-
-Completed hands-on bootcamp covering HTML, CSS, JavaScript, and Web3 fundamentals.
-
-### Responsive Web Design — freeCodeCamp
-
-Mastered cross-device compatible layouts using HTML and CSS.
-
 ## Projects
+
+### Jainil's RAG — Production-Grade AI Retrieval System
+
+- Built a production-grade **Retrieval-Augmented Generation (RAG)** system for portfolio and knowledge-base search.
+- Implemented **hybrid retrieval** using PostgreSQL, pgvector semantic search, Full-Text Search, and Reciprocal Rank Fusion (RRF).
+- Added **multi-query expansion** and neural reranking to improve retrieval accuracy.
+- Built a **two-tier Dragonfly cache** with distributed singleflight locking to prevent cache stampedes.
+- Implemented **confidence-based routing** and early refusal for irrelevant queries.
+- Added **prompt-injection protection, PII redaction, circuit breakers, and fallback mechanisms**.
+- Built a citation pipeline ensuring responses remain **strictly grounded in retrieved sources**.
+- Achieved **100% Recall@3, 100% citation validity, and 100% refusal accuracy** across 24 evaluation cases.
+- Optimized cached responses to approximately **10–80ms latency**.
+
+[https://jaainil.com](https://jaainil.com)
 
 ### Writenex – Open Source CMS for Astro
 
@@ -83,15 +87,6 @@ Mastered cross-device compatible layouts using HTML and CSS.
 
 [https://blog-maker.vercel.app/](https://blog-maker.vercel.app/)
 
-### Shravonix — AI Tech Blog
-
-- Built the entire site from scratch using **Astro** focused on performance and SEO
-- Achieved **90+ PageSpeed score across all pages** with optimized Core Web Vitals
-- Integrated **Writenex CMS** (self-built) for content management
-- Grew to **5K+ monthly readers** covering LLMs, open-source AI, and developer workflows
-
-[https://shravonix.com](https://shravonix.com)
-
 ### MemoryView AI Resources Hub
 
 - Curated 150+ AI/ML learning resources for developers, researchers, and students.
@@ -101,7 +96,14 @@ Mastered cross-device compatible layouts using HTML and CSS.
 
 [https://remix-llm-resoures.vercel.app/](https://remix-llm-resoures.vercel.app/)
 
-## GitHub Contributions
+### Shravonix — AI Tech Blog (Recently acquired by Eagle Pressure Systems)
+
+- Built the entire site from scratch using **Astro** focused on performance and SEO
+- Achieved **90+ PageSpeed score across all pages** with optimized Core Web Vitals
+- Integrated **Writenex CMS** (self-built) for content management
+- Grew to **5K+ monthly readers** covering LLMs, open-source AI, and developer workflows
+
+## Contributions
 
 ### Dokploy/templates — Open Source Contributor
 
@@ -113,9 +115,7 @@ Mastered cross-device compatible layouts using HTML and CSS.
 
 [https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil](https://github.com/Dokploy/templates/pulls?q=is%3Apr+author%3Ajaainil)
 
-## Leadership & Community
-
-### r/AI_India (Past Moderator)
+### r/AI_India
 
 - Grew the community from 1K to 21K members
 - Curated discussions on LLMs, AI startups, and Indian AI policies
@@ -127,8 +127,12 @@ Mastered cross-device compatible layouts using HTML and CSS.
 
 ### Sardar Vallabhbhai Patel Institute of Technology — B.E Information Technology (2021 – Present)
 
-_Grade: CGPA: 7.03_
+_Anand, Gujarat · Grade: CGPA: 7.03_
+
+[https://svitvasad.ac.in/](https://svitvasad.ac.in/)
 
 ### Saraswati Shishukunj School — 12th Grade - Science (Physics, Chemistry, Mathematics) (03/2020 - 03/2021)
 
 _Grade: 75%_
+
+[https://www.saraswatiborsad.org/](https://www.saraswatiborsad.org/)
