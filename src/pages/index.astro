@@ -308,7 +308,7 @@ const faqSchema = {
             Open to full-time roles
           </p>
           <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wide" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 2px 0 var(--keyline); color: var(--color-text-secondary);">
-            Online alias: <strong class="ml-1 text-[var(--ink)]">Jaanil</strong> · @jaainil
+            Online alias: <strong class="ml-1 text-(--ink)">Jaanil</strong> · @jaainil
           </span>
         </div>
         <h1 class="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[0.95] mb-5" style="color: var(--ink);">
@@ -560,7 +560,7 @@ const faqSchema = {
       {latestArticles.map((article, i) => (
         <a
           href={`/articles/${article.id}`}
-          class={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 px-6 py-5 transition-colors hover:bg-[var(--color-hover)] ${i > 0 ? 'border-t-2' : ''}`}
+          class={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 px-6 py-5 transition-colors hover:bg-(--color-hover) ${i > 0 ? 'border-t-2' : ''}`}
           style="border-color: var(--keyline);"
         >
           <span class="text-2xl font-black w-8 shrink-0" style="color: var(--piece);">{String(i + 1).padStart(2, '0')}</span>

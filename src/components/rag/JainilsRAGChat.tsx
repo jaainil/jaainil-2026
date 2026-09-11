@@ -415,14 +415,14 @@ export const JainilsRAGChat: React.FC = () => {
 
       {/* Mobile hint bubble — names the unlabeled icon */}
       <div
-        className={`md:hidden fixed bottom-[12.25rem] left-4 z-30 transition-all duration-300 ease-out ${
+        className={`md:hidden fixed bottom-49 left-4 z-30 transition-all duration-300 ease-out ${
           showHint && !isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1.5 opacity-0'
         }`}
         aria-hidden={!showHint || isOpen}
       >
         <div
           aria-hidden="true"
-          className="absolute top-full -mt-[7px] left-[19px] w-3 h-3 rotate-45"
+          className="absolute top-full mt-[-7px] left-[19px] w-3 h-3 rotate-45"
           style={{ background: 'var(--paper)', borderRight: '2px solid var(--keyline)', borderBottom: '2px solid var(--keyline)' }}
         />
         <button
