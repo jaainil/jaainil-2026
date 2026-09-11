@@ -22,6 +22,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect('/#contact', 301);
   }
 
+  // Rewrite /api/rag/chat to /api/rag/chat/ so clients posting without trailing slash work seamlessly
+  if (pathname === '/api/rag/chat') {
+    return context.rewrite('/api/rag/chat/');
+  }
+
   // Only redirect standard routes (not static files with extensions, not API, not _astro internal)
   if (
     pathname !== '/' &&
