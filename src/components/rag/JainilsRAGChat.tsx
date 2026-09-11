@@ -688,7 +688,7 @@ export const JainilsRAGChat: React.FC = () => {
               </div>
               <p id="rag-form-consent" className="text-[11px] leading-tight px-1 font-medium" style={{ color: 'var(--color-text-muted)' }}>
                 By submitting, you consent to AI processing of your question to retrieve answers. No personal data is stored or sold. Do not submit sensitive details. Read our{' '}
-                <a href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="font-bold underline underline-offset-2" style={{ color: 'var(--color-link)' }}>
+                <a href="/legal/privacy/" target="_blank" rel="noopener noreferrer" className="font-bold underline underline-offset-2" style={{ color: 'var(--color-link)' }}>
                   Privacy Policy
                 </a>
                 .

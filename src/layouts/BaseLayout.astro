@@ -33,7 +33,11 @@ const {
   articleData = null,
   resolvedAuthors = null,
 } = Astro.props;
-const url = new URL(Astro.url.pathname, Astro.site || SITE_URL);
+let canonicalPath = Astro.url.pathname;
+if (!canonicalPath.endsWith('/') && !canonicalPath.split('/').pop()?.includes('.')) {
+  canonicalPath += '/';
+}
+const url = new URL(canonicalPath, Astro.site || SITE_URL);
 const currentUrl = url.toString();
 // astro-llms-md emits a markdown twin per page: /about -> /about.md, / -> /home.md
 const markdownUrl = `${SITE_URL}${Astro.url.pathname === '/' ? '/home' : Astro.url.pathname.replace(/\/$/, '')}.md`;
@@ -131,12 +135,12 @@ const schemaAuthors = resolvedAuthors
       '@type': 'Person',
       name: a.name,
       ...(a.avatarUrl && { image: a.avatarUrl }),
-      url: a.slug ? `${SITE_URL}/authors/${a.slug}` : `${SITE_URL}/about`,
+      url: a.slug ? `${SITE_URL}/authors/${a.slug}/` : `${SITE_URL}/about/`,
     }))
   : articleData?.authors?.map((slug: string) => ({
       '@type': 'Person',
       name: slug,
-      url: `${SITE_URL}/authors/${slug}`,
+      url: `${SITE_URL}/authors/${slug}/`,
     }));
 
 const articleSchema = articleData ? {
@@ -300,7 +304,7 @@ const articleSchema = articleData ? {
                   role: 'Full-Stack Developer & DevOps Engineer',
                   location: 'Anand, Gujarat, India',
                   site: 'https://jaainil.com',
-                  articlesUrl: 'https://jaainil.com/articles',
+                  articlesUrl: 'https://jaainil.com/articles/',
                   servicesUrl: 'https://jaainil.com/services.md',
                   llmsTxt: 'https://jaainil.com/llms.txt',
                   github: 'https://github.com/jaainil',

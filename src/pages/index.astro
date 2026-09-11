@@ -550,7 +550,7 @@ const faqSchema = {
           I write up what I learn at Shravonix. Latest three:
         </p>
       </div>
-      <a href="/articles" class="inline-flex items-center gap-2 font-bold underline underline-offset-4 decoration-2 hover:opacity-80" style="color: var(--color-link);">
+      <a href="/articles/" class="inline-flex items-center gap-2 font-bold underline underline-offset-4 decoration-2 hover:opacity-80" style="color: var(--color-link);">
         All {totalArticlesCount} notes
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m0 0l-6-6m6 6l-6 6" /></svg>
       </a>
@@ -559,7 +559,7 @@ const faqSchema = {
     <div class="rounded-2xl overflow-hidden" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
       {latestArticles.map((article, i) => (
         <a
-          href={`/articles/${article.id}`}
+          href={`/articles/${article.id}/`}
           class={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 px-6 py-5 transition-colors hover:bg-(--color-hover) ${i > 0 ? 'border-t-2' : ''}`}
           style="border-color: var(--keyline);"
         >
@@ -661,7 +661,7 @@ const faqSchema = {
           </a>
         </div>
         <p class="mt-4 text-xs font-semibold" style="color: var(--color-text-muted);">
-          Privacy notice: Your contact details are used solely to reply to your inquiry. We never share or sell your information. See our <a href="/legal/privacy" class="font-bold underline underline-offset-2" style="color: var(--color-link);">Privacy Policy</a>.
+          Privacy notice: Your contact details are used solely to reply to your inquiry. We never share or sell your information. See our <a href="/legal/privacy/" class="font-bold underline underline-offset-2" style="color: var(--color-link);">Privacy Policy</a>.
         </p>
       </div>
 

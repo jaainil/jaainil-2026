@@ -33,7 +33,7 @@ const fmtDate = (iso: string) =>
   new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
 const SITE_URL = 'https://jaainil.com';
-const pageUrl = `${SITE_URL}/articles`;
+const pageUrl = `${SITE_URL}/articles/`;
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -65,7 +65,7 @@ const itemListSchema = {
   itemListElement: articles.map((article, index) => ({
     '@type': 'ListItem',
     position: index + 1,
-    url: `${SITE_URL}/articles/${article.id}`,
+    url: `${SITE_URL}/articles/${article.id}/`,
     name: article.title,
   })),
 };
@@ -122,7 +122,7 @@ const itemListSchema = {
     <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {articles.map((article: Article) => (
         <a
-          href={`/articles/${article.id}`}
+          href={`/articles/${article.id}/`}
           data-category={article.category}
           data-title={article.title.toLowerCase()}
           data-description={(article.description ?? '').toLowerCase()}
