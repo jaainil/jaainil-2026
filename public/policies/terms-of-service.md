@@ -130,7 +130,7 @@ If any provision of these Terms is found to be unlawful, void, or unenforceable,
 If you have any questions or concerns regarding these Terms of Service, please contact:
 
 - **Jainil Prajapati**  
-- **Location:** Anand, Gujarat 388001, India  
+- **Location:** Vasad, Anand, Gujarat 388306, India  
 - **Email:** [jainilprajapati9@gmail.com](mailto:jainilprajapati9@gmail.com)  
 - **Phone:** [+91 97252 84302](tel:+919725284302)  
 - **Website:** [https://jaainil.com](https://jaainil.com)

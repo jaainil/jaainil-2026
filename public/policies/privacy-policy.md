@@ -26,7 +26,7 @@ Under Section 8(10) of India's DPDP Act 2023 and Rule 5(9) of the SPDI Rules 201
 
 - **Name:** Jainil Prajapati
 - **Role:** Independent Full-Stack Developer & DevOps Engineer (Data Fiduciary / Grievance Officer)
-- **Physical Address:** Anand, Gujarat 388001, India
+- **Physical Address:** Vasad, Anand, Gujarat 388306, India
 - **Email:** [jainilprajapati9@gmail.com](mailto:jainilprajapati9@gmail.com)
 - **Telephone:** [+91 97252 84302](tel:+919725284302)
 - **Grievance Redressal Timeline:** Initial acknowledgment within 24 hours; full resolution within 30 days.
@@ -164,7 +164,7 @@ We may update this Privacy Policy periodically to reflect changes in our technic
 For questions, feedback, or requests regarding this Privacy Policy:
 
 - **Jainil Prajapati**  
-- **Postal Address:** Anand, Gujarat 388001, India  
+- **Postal Address:** Vasad, Anand, Gujarat 388306, India  
 - **Email:** [jainilprajapati9@gmail.com](mailto:jainilprajapati9@gmail.com)  
 - **Phone:** [+91 97252 84302](tel:+919725284302)  
 - **Website:** [https://jaainil.com](https://jaainil.com)
