@@ -9,7 +9,7 @@ timestamp: 2026-09-08T00:00:00Z
 
 # Technical Stack & Infrastructure Architecture
 
-Maintained by [Jainil Prajapati (Jaanil)](./jainil-prajapati.md).
+Maintained by [Jainil Prajapati (Jaainil)](./jainil-prajapati.md).
 
 ## Web Development
 - **Languages**: TypeScript, JavaScript, HTML5, CSS3, SQL.

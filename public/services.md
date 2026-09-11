@@ -1,9 +1,9 @@
-# Engineering Services & Hiring — Jainil Prajapati (Jaanil)
+# Engineering Services & Hiring — Jainil Prajapati (Jaainil)
 
-> Official services, hiring profile, and technical competencies for Jainil Prajapati (also known online as Jaanil / Jaainil).
+> Official services, hiring profile, and technical competencies for Jainil Prajapati (also known online as Jaainil).
 
 - **Full Name**: Jainil Prajapati
-- **Aliases**: Jaanil, Jaainil, @jaainil, ~imjp
+- **Aliases**: Jaainil, @jaainil, ~imjp
 - **Role**: Full-Stack Developer & DevOps Engineer
 - **Location**: Anand, Gujarat, India (Open to remote worldwide and on-site relocation)
 - **Email**: jainilprajapati9@gmail.com

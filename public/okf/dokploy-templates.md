@@ -9,7 +9,7 @@ timestamp: 2026-09-08T00:00:00Z
 
 # Dokploy Deployment Templates Upstream Contributions
 
-[Jainil Prajapati (Jaanil)](./jainil-prajapati.md) is an active upstream contributor to Dokploy, an open-source alternative to Heroku, Netlify, and Vercel.
+[Jainil Prajapati (Jaainil)](./jainil-prajapati.md) is an active upstream contributor to Dokploy, an open-source alternative to Heroku, Netlify, and Vercel.
 
 ## Contributions
 

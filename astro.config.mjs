@@ -136,8 +136,8 @@ export default defineConfig({
       },
     }),
     llms({
-      name: 'Jainil Prajapati (Jaanil)',
-      description: 'Official portfolio and technical writings of Jainil Prajapati (also known online as Jaanil or Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems.',
+      name: 'Jainil Prajapati (Jaainil)',
+      description: 'Official portfolio and technical writings of Jainil Prajapati (also known online as Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems.',
     }),
   ],
   vite: {

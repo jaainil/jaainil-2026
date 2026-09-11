@@ -1,20 +1,20 @@
 ---
 type: Person
-title: Jainil Prajapati (Jaanil)
+title: Jainil Prajapati (Jaainil)
 description: Entity definition, aliases, biographical details, and verified accomplishments of Jainil Prajapati.
 resource: https://jaainil.com/about
-tags: [person, jainil, jaanil, jaainil, devops, full-stack]
+tags: [person, jainil, jaainil, devops, full-stack]
 timestamp: 2026-09-08T00:00:00Z
 ---
 
-# Jainil Prajapati (Jaanil)
+# Jainil Prajapati (Jaainil)
 
-**Jainil Prajapati** (commonly known online as **Jaanil** or **Jaainil**, handle **@jaainil**) is a Full-Stack Developer and DevOps Engineer based in Anand, Gujarat, India. He builds production applications with Next.js, Node.js, and Astro, containerizes services with Docker, orchestrates CI/CD with GitHub Actions, and administers Linux (Debian) servers.
+**Jainil Prajapati** (commonly known online as **Jaainil**, handle **@jaainil**) is a Full-Stack Developer and DevOps Engineer based in Anand, Gujarat, India. He builds production applications with Next.js, Node.js, and Astro, containerizes services with Docker, orchestrates CI/CD with GitHub Actions, and administers Linux (Debian) servers.
 
 ## Key Facts & Identifiers
 
 - **Full Name**: Jainil Prajapati
-- **Aliases**: Jainil, Jaanil, Jaainil, imjp
+- **Aliases**: Jainil, Jaainil, imjp
 - **Primary Website**: https://jaainil.com
 - **Current Employment**: Full-Stack Developer & DevOps Engineer at Aexaware Infotech Pvt. Ltd. (Vadodara)
 - **Education**: B.E. in Information Technology from Sardar Vallabhbhai Patel Institute of Technology (SVIT)

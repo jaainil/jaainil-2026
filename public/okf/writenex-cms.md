@@ -9,7 +9,7 @@ timestamp: 2026-09-08T00:00:00Z
 
 # Writenex CMS (@imjp/writenex-astro)
 
-Writenex CMS is an open-source visual content management integration created by [Jainil Prajapati (Jaanil)](./jainil-prajapati.md) for Astro web applications.
+Writenex CMS is an open-source visual content management integration created by [Jainil Prajapati (Jaainil)](./jainil-prajapati.md) for Astro web applications.
 
 ## Technical Specifications
 

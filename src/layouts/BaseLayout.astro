@@ -27,8 +27,8 @@ const SITE_URL = 'https://jaainil.com';
 const PROFILE_IMAGE = `${SITE_URL}/profile.png`;
 
 const {
-  title = 'Jainil Prajapati (Jaanil) — Full-Stack Developer & DevOps Engineer',
-  description = 'Official portfolio and engineering notes of Jainil Prajapati (also known online as Jaanil / Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems.',
+  title = 'Jainil Prajapati (Jaainil) — Full-Stack Developer & DevOps Engineer',
+  description = 'Official portfolio and engineering notes of Jainil Prajapati (also known online as Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems.',
   image = PROFILE_IMAGE,
   articleData = null,
   resolvedAuthors = null,
@@ -55,13 +55,13 @@ const personSchema = {
   '@type': 'Person',
   '@id': `${SITE_URL}/#person`,
   name: 'Jainil Prajapati',
-  alternateName: ['Jainil', 'Jaanil', 'Jaainil', 'imjp', 'jaainil'],
+  alternateName: ['Jainil', 'Jaainil', 'imjp', 'jaainil'],
   givenName: 'Jainil',
   familyName: 'Prajapati',
-  additionalName: 'Jaanil',
+  additionalName: 'Jaainil',
   gender: 'Male',
   jobTitle: 'Full-Stack Developer & DevOps Engineer',
-  description: 'Jainil Prajapati (known online as Jaanil or Jaainil) is a Full-Stack Developer and DevOps Engineer specializing in Next.js, Node.js, Docker containerization, CI/CD pipeline automation, and Linux systems.',
+  description: 'Jainil Prajapati (known online as Jaainil) is a Full-Stack Developer and DevOps Engineer specializing in Next.js, Node.js, Docker containerization, CI/CD pipeline automation, and Linux systems.',
   disambiguatingDescription: 'Software engineer, DevOps specialist, Dokploy open-source contributor, and author of @imjp/writenex-astro based in Anand, Gujarat, India.',
   url: SITE_URL,
   image: `${SITE_URL}/profile.png`,
@@ -117,9 +117,9 @@ const siteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
-  name: 'Jainil Prajapati (Jaanil) — Full-Stack Developer & DevOps Engineer',
-  alternateName: ['Jainil Prajapati', 'Jaanil', 'Jainil', 'Jaainil', 'jaainil.com', 'Jainil Prajapati Portfolio & Blog'],
-  description: 'Official portfolio and technical writings of Jainil Prajapati (Jaanil / Jaainil). Full-stack development, DevOps pipelines, Docker containerization, Linux administration, and open-source ecosystems.',
+  name: 'Jainil Prajapati (Jaainil) — Full-Stack Developer & DevOps Engineer',
+  alternateName: ['Jainil Prajapati', 'Jaainil', 'jaainil.com', 'Jainil Prajapati Portfolio & Blog'],
+  description: 'Official portfolio and technical writings of Jainil Prajapati (Jaainil). Full-stack development, DevOps pipelines, Docker containerization, Linux administration, and open-source ecosystems.',
   url: SITE_URL,
   inLanguage: 'en',
   publisher: {
@@ -200,7 +200,7 @@ const articleSchema = articleData ? {
         },
         optional: {
           description: description,
-          siteName: 'Jainil Prajapati (Jaanil)',
+          siteName: 'Jainil Prajapati (Jaainil)',
         },
         ...(articleData && {
           article: {
@@ -234,8 +234,8 @@ const articleSchema = articleData ? {
           { rel: 'describedby', type: 'text/markdown', href: '/okf/index.md' },
         ],
         meta: [
-          { name: 'keywords', content: 'Jainil, Jainil Prajapati, Jaanil, Jaainil, jaainil.com, Full-Stack Developer, DevOps Engineer, Docker, CI/CD, Next.js, Astro, Dokploy, Shravonix' },
-          { name: 'author', content: 'Jainil Prajapati (Jaanil)' },
+          { name: 'keywords', content: 'Jainil, Jainil Prajapati, Jaainil, jaainil.com, Full-Stack Developer, DevOps Engineer, Docker, CI/CD, Next.js, Astro, Dokploy, Shravonix' },
+          { name: 'author', content: 'Jainil Prajapati (Jaainil)' },
           { name: 'theme-color', content: '#000000' },
           { name: 'color-scheme', content: 'dark light' },
         ],
@@ -293,14 +293,14 @@ const articleSchema = articleData ? {
             tools: [
               {
                 name: 'getSiteInfo',
-                description: 'Get developer profile, aliases, contact details, and site purpose for Jainil Prajapati (Jaanil)',
+                description: 'Get developer profile, aliases, contact details, and site purpose for Jainil Prajapati (Jaainil)',
                 inputSchema: {
                   type: 'object',
                   properties: {}
                 },
                 execute: async () => ({
                   name: 'Jainil Prajapati',
-                  aliases: ['Jainil', 'Jaanil', 'Jaainil', 'imjp'],
+                  aliases: ['Jainil', 'Jaainil', 'imjp'],
                   role: 'Full-Stack Developer & DevOps Engineer',
                   location: 'Anand, Gujarat, India',
                   site: 'https://jaainil.com',

@@ -9,7 +9,7 @@ timestamp: 2026-09-08T00:00:00Z
 
 # Shravonix Technical Publication
 
-Shravonix is an independent technical publication founded by [Jainil Prajapati (Jaanil)](./jainil-prajapati.md) in 2024.
+Shravonix is an independent technical publication founded by [Jainil Prajapati (Jaainil)](./jainil-prajapati.md) in 2024.
 
 ## Overview
 
