@@ -135,12 +135,12 @@ const schemaAuthors = resolvedAuthors
       '@type': 'Person',
       name: a.name,
       ...(a.avatarUrl && { image: a.avatarUrl }),
-      url: a.slug ? `${SITE_URL}/authors/${a.slug}/` : `${SITE_URL}/about/`,
+      url: `${SITE_URL}/about/`,
     }))
   : articleData?.authors?.map((slug: string) => ({
       '@type': 'Person',
       name: slug,
-      url: `${SITE_URL}/authors/${slug}/`,
+      url: `${SITE_URL}/about/`,
     }));
 
 const articleSchema = articleData ? {

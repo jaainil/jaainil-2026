@@ -17,6 +17,11 @@ export default defineConfig({
   trailingSlash: 'always',
   redirects: {
     '/the-art-of-feature-flagging-jiocinemas-approach-to-managing-features-at-scale': '/articles/jio-hotstar-s-feature-flagging-how-they-ship-at-scale/',
+    '/authors/jainil-prajapati': '/about/',
+    '/authors/jainil-prajapati/': '/about/',
+    '/authors': '/about/',
+    '/authors/': '/about/',
+    '/cdn-cgi/l/email-protection': '/#contact',
     '/privacy': '/legal/privacy/',
     '/privacy-policy': '/legal/privacy/',
     '/terms': '/legal/terms/',
@@ -43,47 +48,57 @@ export default defineConfig({
         {
           userAgent: '*',
           allow: '/',
-          disallow: ['/api/'],
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'Googlebot',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'Bingbot',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'GPTBot',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'ChatGPT-User',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'PerplexityBot',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'ClaudeBot',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'anthropic-ai',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'Google-Extended',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'Applebot-Extended',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
         {
           userAgent: 'CCBot',
           allow: '/',
+          disallow: ['/api/', '/cdn-cgi/'],
         },
       ],
       transform(content) {
