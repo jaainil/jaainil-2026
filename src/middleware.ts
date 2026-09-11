@@ -4,6 +4,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const { url } = context;
   const { pathname, search } = url;
 
+  // Redirect www to non-www apex domain
+  if (url.hostname === 'www.jaainil.com') {
+    const targetUrl = new URL(context.request.url);
+    targetUrl.hostname = 'jaainil.com';
+    targetUrl.protocol = 'https:';
+    return context.redirect(targetUrl.toString(), 301);
+  }
+
   // Redirect legacy /authors/* to /about/
   if (pathname === '/authors' || pathname.startsWith('/authors/')) {
     return context.redirect('/about/', 301);
