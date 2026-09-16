@@ -44,6 +44,7 @@
   --keyline: #111111;
   --piece: #e53935;
   --piece-deep: #b3211e;
+  --piece-text: #10151b;
   --marker: #ffcd00;
   --action: #147bd1;
   --action-deep: #0d5ea8;
@@ -64,7 +65,7 @@
   --color-accent-bg: #147bd1;
   --color-accent-text: #ffffff;
   --color-image-bg: #d9e9f8;
-  --color-btn-primary-bg: #147bd1;
+  --color-btn-primary-bg: #0d5ea8;
   --color-btn-primary-text: #ffffff;
   --color-btn-primary-hover: #0d5ea8;
   --color-btn-secondary-bg: #ffffff;
@@ -121,9 +122,19 @@
 }
 
 html {
+  color-scheme: light;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--plate) var(--color-surface);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
 }
 
 @layer base {

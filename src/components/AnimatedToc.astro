@@ -16,7 +16,7 @@ const { items } = Astro.props;
       <!-- Collapsed bar: displays upcoming section -->
       <button
         id="toc-toggle"
-        class="flex items-center gap-2 pl-2.5 pr-3 py-2 cursor-pointer w-full text-left select-none"
+        class="flex items-center gap-2 pl-2.5 pr-3 py-2 min-h-11 cursor-pointer w-full text-left select-none"
         aria-expanded="false"
         aria-controls="toc-panel"
         aria-label="Table of contents navigation"
@@ -65,7 +65,7 @@ const { items } = Astro.props;
             <li>
               <a
                 href={`#${item.id}`}
-                class="toc-link flex items-center justify-between gap-3 px-4 py-2 text-sm font-semibold transition-colors hover:bg-(--color-hover)"
+                class="toc-link flex items-center justify-between gap-3 px-4 py-2 min-h-11 text-sm font-semibold transition-colors hover:bg-(--color-hover)"
                 data-id={item.id}
                 data-index={i}
               >
@@ -121,7 +121,10 @@ const { items } = Astro.props;
 
     toggle.addEventListener('click', () => setOpen(dock.dataset.open !== 'true'));
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && dock.dataset.open === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
     });
     document.addEventListener('click', (e) => {
       if (dock.dataset.open === 'true' && !dock.contains(e.target)) setOpen(false);
@@ -171,7 +174,7 @@ const { items } = Astro.props;
         if (badgeEl) {
           badgeEl.textContent = 'END';
           badgeEl.style.background = 'var(--piece)';
-          badgeEl.style.color = '#ffffff';
+          badgeEl.style.color = 'var(--piece-text)';
         }
         if (nextTitleEl) {
           nextTitleEl.textContent = 'All caught up · End of article';
@@ -198,6 +201,8 @@ const { items } = Astro.props;
 
         const isCurrent = idx === currentIndex;
         const isNext = idx === nextIndex;
+        if (isCurrent) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
 
         if (isCurrent) {
           link.style.background = 'var(--color-hover)';
@@ -207,12 +212,12 @@ const { items } = Astro.props;
           }
           if (num) {
             num.style.background = 'var(--piece)';
-            num.style.color = '#ffffff';
+            num.style.color = 'var(--piece-text)';
           }
           if (status) {
             status.textContent = 'READING';
             status.style.background = 'var(--piece)';
-            status.style.color = '#ffffff';
+            status.style.color = 'var(--piece-text)';
             status.classList.remove('hidden');
           }
         } else if (isNext) {

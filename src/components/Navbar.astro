@@ -20,11 +20,11 @@ const links = [
             <circle cx="15.5" cy="15.5" r="2" fill="#fff" opacity="0.9"/>
           </svg>
         </span>
-        <span class="font-extrabold text-lg tracking-tight" style="color: var(--ink);">Jainil Prajapati</span>
+        <span class="font-extrabold text-base sm:text-lg tracking-tight" style="color: var(--ink);">Jainil Prajapati</span>
       </a>
 
       <div class="flex items-center gap-2">
-        <nav class="hidden md:flex items-center gap-2" aria-label="Main">
+        <nav class="hidden lg:flex items-center gap-2" aria-label="Main">
           {links.map((l) => (
             <a
               href={l.href}
@@ -39,7 +39,7 @@ const links = [
         <button
           id="theme-toggle"
           aria-label="Toggle dark mode"
-          class="grid place-items-center w-10 h-10 rounded-lg cursor-pointer transition-colors"
+          class="grid place-items-center w-11 h-11 rounded-lg cursor-pointer transition-colors"
           style="border: 2px solid var(--keyline); background: var(--marker); box-shadow: 0 2px 0 var(--keyline); color: #10151b;"
         >
           <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
@@ -54,7 +54,8 @@ const links = [
           id="mobile-menu-btn"
           aria-label="Toggle menu"
           aria-expanded="false"
-          class="md:hidden grid place-items-center w-10 h-10 rounded-lg cursor-pointer"
+          aria-controls="mobile-menu"
+          class="lg:hidden grid place-items-center w-11 h-11 rounded-lg cursor-pointer"
           style="border: 2px solid var(--keyline); background: var(--paper); box-shadow: 0 2px 0 var(--keyline); color: var(--ink);"
         >
           <svg id="menu-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
@@ -68,8 +69,8 @@ const links = [
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden md:hidden border-t-2" style="border-color: var(--keyline); background: var(--page);">
-    <div class="px-4 py-4 flex flex-col gap-2">
+  <div id="mobile-menu" class="hidden lg:hidden border-t-2 max-h-[calc(100dvh-4rem)] overflow-y-auto" style="border-color: var(--keyline); background: var(--page);">
+    <nav class="px-4 py-4 flex flex-col gap-2" aria-label="Mobile main">
       {links.map((l) => (
         <a
           href={l.href}
@@ -79,7 +80,7 @@ const links = [
           {l.label}
         </a>
       ))}
-    </div>
+    </nav>
   </div>
 </header>
 
@@ -90,6 +91,7 @@ const links = [
 
     function updateIcons() {
       const isDark = html.classList.contains('dark');
+      toggles.forEach((btn) => btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode'));
       document.querySelectorAll('#icon-sun, .theme-icon-sun').forEach((el) => el.classList.toggle('hidden', !isDark));
       document.querySelectorAll('#icon-moon, .theme-icon-moon').forEach((el) => el.classList.toggle('hidden', isDark));
     }
@@ -100,7 +102,9 @@ const links = [
       btn.addEventListener('click', () => {
         html.classList.toggle('dark');
         const isDark = html.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        try {
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        } catch { /* The current theme still works when storage is unavailable. */ }
         updateIcons();
       });
     });
@@ -110,20 +114,26 @@ const links = [
     const iconOpen = document.getElementById('menu-icon-open');
     const iconClose = document.getElementById('menu-icon-close');
 
-    menuBtn?.addEventListener('click', () => {
-      const isExpanded = !menu?.classList.contains('hidden');
-      menu?.classList.toggle('hidden');
-      iconOpen?.classList.toggle('hidden');
-      iconClose?.classList.toggle('hidden');
-      menuBtn.setAttribute('aria-expanded', String(!isExpanded));
+    function setMenuOpen(open: boolean) {
+      menu?.classList.toggle('hidden', !open);
+      iconOpen?.classList.toggle('hidden', open);
+      iconClose?.classList.toggle('hidden', !open);
+      menuBtn?.setAttribute('aria-expanded', String(open));
+      menuBtn?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+
+    setMenuOpen(false);
+    menuBtn?.addEventListener('click', () => setMenuOpen(menuBtn.getAttribute('aria-expanded') !== 'true'));
+    menuBtn?.closest('header')?.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menuBtn.getAttribute('aria-expanded') === 'true') {
+        setMenuOpen(false);
+        menuBtn.focus();
+      }
     });
 
     document.querySelectorAll('.mobile-nav-link').forEach((link) => {
       link.addEventListener('click', () => {
-        menu?.classList.add('hidden');
-        iconOpen?.classList.remove('hidden');
-        iconClose?.classList.add('hidden');
-        menuBtn?.setAttribute('aria-expanded', 'false');
+        setMenuOpen(false);
       });
     });
   }

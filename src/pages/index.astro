@@ -324,7 +324,7 @@ const faqSchema = {
           <a
             href="#builds"
             class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
-            style="background: var(--action); color: #fff; border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+            style="background: var(--color-btn-primary-bg); color: var(--color-btn-primary-text); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
             aria-label="Jump to builds section"
           >
             See the builds
@@ -481,7 +481,7 @@ const faqSchema = {
             <ol class="space-y-3 mb-5">
               {b.steps.map((s, si) => (
                 <li class="flex items-start gap-3">
-                  <span class="grid place-items-center w-7 h-7 shrink-0 rounded-lg text-sm font-black" style={`border: 2px solid var(--keyline); ${si === b.steps.length - 1 ? 'background: var(--piece); color: #fff;' : 'background: var(--paper); color: var(--ink);'}`}>{si + 1}</span>
+                  <span class="grid place-items-center w-7 h-7 shrink-0 rounded-lg text-sm font-black" style={`border: 2px solid var(--keyline); ${si === b.steps.length - 1 ? 'background: var(--piece); color: var(--piece-text);' : 'background: var(--paper); color: var(--ink);'}`}>{si + 1}</span>
                   <span class="text-sm leading-relaxed pt-1" style="color: var(--color-text-secondary);">{s}</span>
                 </li>
               ))}
@@ -498,7 +498,7 @@ const faqSchema = {
               target={b.link.href.startsWith('http') ? '_blank' : undefined}
               rel={b.link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
               class="mt-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
-              style="background: var(--action); color: #fff; border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+              style="background: var(--color-btn-primary-bg); color: var(--color-btn-primary-text); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
             >
               {b.link.label}
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7m0 0H8m9 0v9" /></svg>
@@ -568,7 +568,7 @@ const faqSchema = {
           <span class="text-2xl font-black w-8 shrink-0" style="color: var(--piece);">{String(i + 1).padStart(2, '0')}</span>
           <span class="flex-1">
             <span class="block font-extrabold text-lg leading-snug" style="color: var(--ink);">{article.title}</span>
-            <span class="block text-sm mt-0.5" style="color: var(--color-text-muted);">{fmtDate(article.publishedAt)} · {article.category} · {article.readingTime || '5 min read'}</span>
+            <span class="block text-sm mt-0.5" style="color: var(--color-text-muted);">{fmtDate(article.publishedAt)} · {article.category} · {article.readTime || '5 min read'}</span>
           </span>
           <svg class="w-5 h-5 shrink-0 hidden sm:block" fill="none" stroke="var(--ink)" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
         </a>
@@ -593,7 +593,7 @@ const faqSchema = {
       <div class="grid md:grid-cols-2 gap-6">
         <div class="rounded-2xl p-6 sm:p-7 flex flex-col" style="background: var(--color-surface-elevated); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
           <div class="flex items-center gap-3 mb-3">
-            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--piece); color: #fff;">01</span>
+            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--piece); color: var(--piece-text);">01</span>
             <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">Who is Jainil Prajapati (Jaainil)?</h3>
           </div>
           <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
@@ -603,7 +603,7 @@ const faqSchema = {
 
         <div class="rounded-2xl p-6 sm:p-7 flex flex-col" style="background: var(--color-surface-elevated); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
           <div class="flex items-center gap-3 mb-3">
-            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--action); color: #fff;">02</span>
+            <span class="grid place-items-center w-7 h-7 rounded-lg text-xs font-black shrink-0" style="border: 2px solid var(--keyline); background: var(--color-btn-primary-bg); color: var(--color-btn-primary-text);">02</span>
             <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">What open-source projects has Jainil built?</h3>
           </div>
           <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
@@ -627,7 +627,7 @@ const faqSchema = {
             <h3 class="text-xl font-extrabold tracking-tight" style="color: var(--ink);">How can you hire or contact Jainil Prajapati?</h3>
           </div>
           <p class="text-sm sm:text-base leading-relaxed font-medium" style="color: var(--color-text-secondary);">
-            Jainil is available for full-time software engineering and DevOps roles, as well as freelance systems development. Reach him directly by email at <Fragment set:html="<!--email_off-->" /><a href="mailto:jainilprajapati9@gmail.com" class="underline font-bold" style="color: var(--color-link);">jainilprajapati9@gmail.com</a><Fragment set:html="<!--/email_off-->" />, call <a href="tel:+919725284302" class="underline font-bold" style="color: var(--color-link);">+91 97252 84302</a>, or connect via <a href="https://github.com/jaainil" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">GitHub (@jaainil)</a> and <a href="https://www.linkedin.com/in/jaainil/" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">LinkedIn</a>.
+            Jainil is available for full-time software engineering and DevOps roles, as well as freelance systems development. Reach him directly by email at <Fragment set:html="<!--email_off-->" /><a href="mailto:jainilprajapati9@gmail.com" class="underline font-bold wrap-anywhere" style="color: var(--color-link);">jainilprajapati9@gmail.com</a><Fragment set:html="<!--/email_off-->" />, call <a href="tel:+919725284302" class="underline font-bold" style="color: var(--color-link);">+91 97252 84302</a>, or connect via <a href="https://github.com/jaainil" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">GitHub (@jaainil)</a> and <a href="https://www.linkedin.com/in/jaainil/" target="_blank" rel="noopener noreferrer" class="underline font-bold" style="color: var(--color-link);">LinkedIn</a>.
           </p>
         </div>
       </div>
@@ -646,8 +646,8 @@ const faqSchema = {
           <Fragment set:html="<!--email_off-->" />
           <a
             href="mailto:jainilprajapati9@gmail.com"
-            class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold transition-transform hover:-translate-y-0.5"
-            style="background: var(--piece); color: #fff; border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
+            class="inline-flex max-w-full items-center gap-2 px-4 sm:px-6 py-3.5 rounded-xl text-sm sm:text-base font-bold transition-transform hover:-translate-y-0.5"
+            style="background: var(--piece); color: var(--piece-text); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline);"
             aria-label="Send email to jainilprajapati9@gmail.com"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>

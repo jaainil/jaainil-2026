@@ -58,7 +58,7 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
               className="inline-grid place-items-center min-w-[18px] h-[18px] mx-0.5 px-1 rounded-md text-[10px] font-black align-super transition-transform hover:-translate-y-0.5"
               style={{
                 background: 'var(--piece)',
-                color: '#fff',
+                color: 'var(--piece-text)',
                 border: '1.5px solid var(--keyline)',
                 textDecoration: 'none',
               }}
@@ -540,8 +540,8 @@ export const JainilsRAGChat: React.FC = () => {
                     style={
                       m.role === 'user'
                         ? {
-                            background: 'var(--action)',
-                            color: '#ffffff',
+                            background: 'var(--color-btn-primary-bg)',
+                            color: 'var(--color-btn-primary-text)',
                             border: '2px solid var(--keyline)',
                             boxShadow: '0 3px 0 var(--keyline)',
                           }
@@ -579,7 +579,7 @@ export const JainilsRAGChat: React.FC = () => {
                             >
                               <span
                                 className="grid place-items-center w-4 h-4 rounded text-[9px] font-black"
-                                style={{ background: 'var(--piece)', color: '#fff', border: '1.5px solid var(--keyline)' }}
+                                style={{ background: 'var(--piece)', color: 'var(--piece-text)', border: '1.5px solid var(--keyline)' }}
                               >
                                 {idx + 1}
                               </span>
@@ -608,9 +608,9 @@ export const JainilsRAGChat: React.FC = () => {
               ))}
 
               {isLoading && (
-                <div className="flex items-center gap-2 text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
+                <div role="status" className="flex items-center gap-2 text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>
                   <span
-                    className="inline-block w-3.5 h-3.5 rounded-[4px] animate-bounce"
+                    className="inline-block w-3.5 h-3.5 rounded-[4px]"
                     style={{ background: 'var(--piece)', border: '2px solid var(--keyline)' }}
                     aria-hidden="true"
                   />
@@ -661,7 +661,7 @@ export const JainilsRAGChat: React.FC = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about Jainil's work, resume, or articles..."
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold outline-none"
+                  className="min-w-0 flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold"
                   style={{
                     background: 'var(--paper)',
                     color: 'var(--ink)',
@@ -677,8 +677,8 @@ export const JainilsRAGChat: React.FC = () => {
                   aria-label="Send question to Jainil's AI"
                   className="px-4 py-2.5 rounded-xl font-bold text-sm transition-transform hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0 cursor-pointer"
                   style={{
-                    background: 'var(--action)',
-                    color: '#fff',
+                    background: 'var(--color-btn-primary-bg)',
+                    color: 'var(--color-btn-primary-text)',
                     border: '2px solid var(--keyline)',
                     boxShadow: '0 2px 0 var(--keyline)',
                   }}
