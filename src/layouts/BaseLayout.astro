@@ -17,6 +17,7 @@ interface ResolvedAuthor {
 
 interface Props {
   title?: string;
+  noindex?: boolean;
   description?: string;
   image?: string;
   articleData?: any;
@@ -27,8 +28,9 @@ const SITE_URL = 'https://jaainil.com';
 const PROFILE_IMAGE = `${SITE_URL}/profile.png`;
 
 const {
-  title = 'Jainil Prajapati (Jaainil) — Full-Stack Developer & DevOps Engineer',
-  description = 'Official portfolio and engineering notes of Jainil Prajapati (also known online as Jaainil). Full-Stack Developer & DevOps Engineer specializing in Next.js, Node.js, Docker, CI/CD pipelines, and Linux systems.',
+  title = 'Jainil Prajapati (Jaainil) | Full-Stack & DevOps Engineer',
+  noindex = false,
+  description = 'Meet Jainil Prajapati, known online as Jaainil. Full-stack developer and DevOps engineer in Gujarat, India. Explore his projects, open-source work and articles.',
   image = PROFILE_IMAGE,
   articleData = null,
   resolvedAuthors = null,
@@ -47,8 +49,7 @@ const resolvedOgImage = image?.startsWith('http')
   : image?.startsWith('/')
     ? `${SITE_URL}${image}`
     : PROFILE_IMAGE;
-const LOGO_URL = `${SITE_URL}/shravonix.png`;
-const OG_FALLBACK = `${SITE_URL}/og.jpg`;
+
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -118,8 +119,8 @@ const siteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
-  name: 'Jainil Prajapati (Jaainil) — Full-Stack Developer & DevOps Engineer',
-  alternateName: ['Jainil Prajapati', 'Jaainil', 'jaainil.com', 'Jainil Prajapati Portfolio & Blog'],
+  name: 'Jainil Prajapati',
+  alternateName: ['Jaainil', 'Jainil', 'jaainil.com'],
   description: 'Official portfolio and technical writings of Jainil Prajapati (Jaainil). Full-stack development, DevOps pipelines, Docker containerization, Linux administration, and open-source ecosystems.',
   url: SITE_URL,
   inLanguage: 'en',
@@ -135,8 +136,11 @@ const schemaAuthors = resolvedAuthors
   ? resolvedAuthors.map((a) => ({
       '@type': 'Person',
       name: a.name,
-      ...(a.avatarUrl && { image: a.avatarUrl }),
-      url: `${SITE_URL}/about/`,
+      ...(a.avatarUrl && { image: new URL(a.avatarUrl, SITE_URL).href }),
+      ...(a.slug === 'jainil-prajapati' && {
+        '@id': `${SITE_URL}/#person`,
+        url: `${SITE_URL}/about/`,
+      }),
     }))
   : articleData?.authors?.map((slug: string) => ({
       '@type': 'Person',
@@ -150,7 +154,7 @@ const articleSchema = articleData ? {
   '@id': `${currentUrl}#article`,
   headline: articleData.title,
   description: articleData.description,
-  image: [image || OG_FALLBACK],
+  image: [resolvedOgImage],
   author: schemaAuthors,
   publisher: {
     '@id': `${SITE_URL}/#person`,
@@ -191,7 +195,9 @@ const articleSchema = articleData ? {
     <SEO
       title={title}
       description={description}
-      canonical={currentUrl}
+      canonical={noindex ? null : currentUrl}
+      noindex={noindex}
+      robotsExtras={noindex ? undefined : "max-image-preview:large"}
       openGraph={{
         basic: {
           title: title,
@@ -209,7 +215,7 @@ const articleSchema = articleData ? {
             modifiedTime: articleData.updatedAt
               ? (articleData.updatedAt instanceof Date ? articleData.updatedAt.toISOString() : articleData.updatedAt)
               : (articleData.publishedAt instanceof Date ? articleData.publishedAt.toISOString() : articleData.publishedAt),
-            authors: articleData.authors || ['Jainil Prajapati'],
+            authors: schemaAuthors?.flatMap((author: { url?: string }) => author.url ? [author.url] : []) || [],
             section: articleData.category || 'Technology',
             tags: articleData.tags || [],
           },
@@ -235,7 +241,6 @@ const articleSchema = articleData ? {
           { rel: 'describedby', type: 'text/markdown', href: '/okf/index.md' },
         ],
         meta: [
-          { name: 'keywords', content: 'Jainil, Jainil Prajapati, Jaainil, jaainil.com, Full-Stack Developer, DevOps Engineer, Docker, CI/CD, Next.js, Astro, Dokploy, Shravonix' },
           { name: 'author', content: 'Jainil Prajapati (Jaainil)' },
           { name: 'theme-color', content: '#000000' },
           { name: 'color-scheme', content: 'dark light' },

@@ -7,7 +7,7 @@ category: Programming
 imageUrl: ./cover-mtbbk4k7.png
 ---
 
-## Introduction
+### Introduction
 
 Most portfolio websites have an About page, a projects page, a résumé, and maybe a contact form.
 
@@ -47,7 +47,7 @@ This article is basically a technical breakdown of what I built, why I built it 
 
 ***
 
-# Why I Built RAG Instead of a Normal Portfolio Chatbot
+## Why I Built RAG Instead of a Normal Portfolio Chatbot
 
 The easiest version of this project would have been something like this:
 
@@ -106,7 +106,7 @@ That is where this project slowly stopped being "a chatbot for my portfolio" and
 
 ***
 
-# What Jainil's RAG Actually Does
+## What Jainil's RAG Actually Does
 
 The system powers the AI assistant on my portfolio and searches across things like:
 
@@ -139,7 +139,7 @@ It's how the pieces are connected.
 
 ***
 
-# The Architecture
+## The Architecture
 
 At a high level, this is what happens when someone asks a question.
 
@@ -227,7 +227,7 @@ My portfolio is also a place where I can build things and experiment.
 
 ***
 
-# Building the Knowledge Base
+## Building the Knowledge Base
 
 The RAG system is useless if the source data is messy.
 
@@ -292,7 +292,7 @@ The overlap helps prevent important information from being split exactly between
 
 ***
 
-# PostgreSQL + pgvector
+## PostgreSQL + pgvector
 
 I didn't want to add a completely separate vector database just for this.
 
@@ -351,7 +351,7 @@ Which brings us to one of the most important parts of the whole system.
 
 ***
 
-# Why I Didn't Use Only Vector Search
+## Why I Didn't Use Only Vector Search
 
 Vector search is great.
 
@@ -412,7 +412,7 @@ A RAG system for legal documents, customer support, source code, and a personal 
 
 ***
 
-# Adding Intent Classification
+## Adding Intent Classification
 
 Before retrieval, the system tries to understand what category of question the user is asking.
 
@@ -478,7 +478,7 @@ And cheap signals become surprisingly powerful when combined with other signals.
 
 ***
 
-# The Confidence Problem
+## The Confidence Problem
 
 One of the biggest RAG mistakes is assuming that if retrieval returns something, the answer must exist.
 
@@ -540,7 +540,7 @@ Sometimes the correct answer is simply:
 
 ***
 
-# Fast Path vs Deep Path
+## Fast Path vs Deep Path
 
 Not every query deserves the same amount of processing.
 
@@ -550,7 +550,7 @@ That would just increase latency and cost.
 
 So I created two routes.
 
-## ⚡ Fast Path
+### ⚡ Fast Path
 
 For decisive matches:
 
@@ -564,7 +564,7 @@ Skip reranker
 Send context to LLM
 ```
 
-## 🧠 Deep Path
+### 🧠 Deep Path
 
 For ambiguous matches:
 
@@ -588,7 +588,7 @@ This matters because a RAG system shouldn't spend maximum resources on every req
 
 ***
 
-# Reranking Only When It Actually Helps
+## Reranking Only When It Actually Helps
 
 For ambiguous queries, I use VoyageAI's reranking model through OpenRouter.
 
@@ -616,13 +616,13 @@ More on that later.
 
 ***
 
-# Dragonfly: Caching More Than Just Answers
+## Dragonfly: Caching More Than Just Answers
 
 I use Dragonfly as a Redis-compatible in-memory layer.
 
 There are multiple caches.
 
-## Tier 1: Answer Cache
+### Tier 1: Answer Cache
 
 Repeated questions can return directly from cache.
 
@@ -643,7 +643,7 @@ That means a repeated question can avoid:
 
 And return in roughly tens of milliseconds.
 
-## Tier 2: Embedding Cache
+### Tier 2: Embedding Cache
 
 Generating the same embedding repeatedly is also wasteful.
 
@@ -657,7 +657,7 @@ There is also a search-result cache for avoiding repeated retrieval work.
 
 ***
 
-# Preventing Cache Stampedes
+## Preventing Cache Stampedes
 
 Caching sounds easy until multiple people ask the same uncached question simultaneously.
 
@@ -710,7 +710,7 @@ Distributed systems are full of these small details.
 
 ***
 
-# Guardrails: Because Users Are Creative
+## Guardrails: Because Users Are Creative
 
 Any public AI endpoint will eventually receive something like:
 
@@ -777,7 +777,7 @@ You have just made it harder.
 
 ***
 
-# Citation Integrity
+## Citation Integrity
 
 I wanted answers to point back to the pages they came from.
 
@@ -821,7 +821,7 @@ That's worse than having no citation at all.
 
 ***
 
-# What Happens If Gemini Goes Down?
+## What Happens If Gemini Goes Down?
 
 A lot of AI systems have a strange failure mode.
 
@@ -865,7 +865,7 @@ And more importantly, it remains grounded in real content.
 
 ***
 
-# Circuit Breakers
+## Circuit Breakers
 
 Both the reranker and LLM are protected with circuit breakers.
 
@@ -904,7 +904,7 @@ But honestly, this project is also me experimenting with how I would approach th
 
 ***
 
-# The Frontend: Why There Is a Lego Piece on the Side
+## The Frontend: Why There Is a Lego Piece on the Side
 
 The chatbot is not just sitting in the middle of the page saying:
 
@@ -944,7 +944,7 @@ The goal was to make the AI feel like part of the portfolio rather than a third-
 
 ***
 
-# The CLI Tools I Built Alongside It
+## The CLI Tools I Built Alongside It
 
 I didn't want the RAG system to only be debuggable through the browser.
 
@@ -1013,7 +1013,7 @@ A single "chat endpoint" doesn't make debugging any of that fun.
 
 ***
 
-# How I Actually Tested It
+## How I Actually Tested It
 
 I created a small evaluation dataset containing 24 test cases.
 
@@ -1070,7 +1070,7 @@ But having an automated regression suite is already much better than asking thre
 
 ***
 
-# The Bugs I Found While Building It
+## The Bugs I Found While Building It
 
 This project has already gone through some architectural cleanup.
 
@@ -1148,7 +1148,7 @@ Much easier to reason about.
 
 ***
 
-# One Lesson: Don't Overengineer Just Because You Can
+## One Lesson: Don't Overengineer Just Because You Can
 
 This project is definitely more complicated than the minimum viable RAG implementation.
 
@@ -1180,21 +1180,21 @@ The best part is that the whole thing is connected to something real instead of 
 
 ***
 
-# What I Want to Improve Next
+## What I Want to Improve Next
 
 The current system works, but I don't consider it finished.
 
 Some things I'm considering:
 
-### Better evaluation datasets
+#### Better evaluation datasets
 
 Twenty-four test cases are useful, but the system needs more adversarial and edge-case queries.
 
-### More realistic load testing
+#### More realistic load testing
 
 I'd like to test concurrent users and measure how the singleflight mechanism behaves under actual bursts.
 
-### Smarter intent classification
+#### Smarter intent classification
 
 The current classifier is deliberately simple.
 
@@ -1202,7 +1202,7 @@ Eventually, I might experiment with a lightweight ML or embedding-based classifi
 
 But only if it actually improves results enough to justify the complexity.
 
-### Better observability
+#### Better observability
 
 The system already tracks reranker telemetry, but I'd like deeper tracing across the entire request lifecycle.
 
@@ -1220,7 +1220,7 @@ Generation: 700ms
 
 That would make performance bottlenecks much easier to identify.
 
-### More adversarial security testing
+#### More adversarial security testing
 
 Prompt injection is not a solved problem.
 
@@ -1228,7 +1228,7 @@ I'd like to keep expanding the test suite with new bypass techniques rather than
 
 ***
 
-# Try It Yourself
+## Try It Yourself
 
 The RAG system is live on my portfolio.
 
@@ -1254,7 +1254,7 @@ This is exactly why I put the code out there.
 
 ***
 
-# Key Takeaways
+## Key Takeaways
 
 * I built a custom RAG system directly into my portfolio website.
 * The system searches my real portfolio content instead of relying on the LLM's general knowledge.
@@ -1271,15 +1271,15 @@ This is exactly why I put the code out there.
 
 ***
 
-# Frequently Asked Questions
+## Frequently Asked Questions
 
-## Is this chatbot trained on your data?
+### Is this chatbot trained on your data?
 
 No. The system doesn't fine-tune a model on my portfolio.
 
 Instead, it retrieves relevant information from my knowledge base at query time and provides that context to the generation model.
 
-## Why use both vector search and keyword search?
+### Why use both vector search and keyword search?
 
 Because they solve slightly different problems.
 
@@ -1287,17 +1287,17 @@ Vector search is useful for semantic meaning, while keyword search can be better
 
 Combining them generally gives the retrieval system more signals to work with.
 
-## Why not just use a hosted vector database?
+### Why not just use a hosted vector database?
 
 I wanted tighter integration with PostgreSQL and didn't want another dedicated service for the current scale of the project.
 
 `pgvector` was sufficient for my use case.
 
-## What happens if the AI model is unavailable?
+### What happens if the AI model is unavailable?
 
 The system can fall back to returning retrieved, citation-backed chunks instead of failing completely.
 
-## Is the system perfect?
+### Is the system perfect?
 
 Definitely not.
 
@@ -1305,7 +1305,7 @@ The current benchmark is relatively small, prompt injection remains an evolving 
 
 ***
 
-# Final Thoughts
+## Final Thoughts
 
 This started as:
 

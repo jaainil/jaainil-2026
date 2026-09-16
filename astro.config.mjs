@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
-import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
+import sitemap from '@astrojs/sitemap';
 import node from '@astrojs/node';
 
 import writenex from '@imjp/writenex-astro';
@@ -106,33 +106,13 @@ export default defineConfig({
       },
     }),
     sitemap({
-      serialize(item) {
-        // Homepage — highest priority
-        if (item.url === 'https://jaainil.com/' || item.url === 'https://jaainil.com') {
-          item.changefreq = ChangeFreqEnum.DAILY;
-          item.priority = 1.0;
-          item.lastmod = new Date().toISOString();
-          return item;
-        }
-        // Articles catalog page
-        if (item.url === 'https://jaainil.com/articles' || item.url === 'https://jaainil.com/articles/') {
-          item.changefreq = ChangeFreqEnum.DAILY;
-          item.priority = 0.9;
-          item.lastmod = new Date().toISOString();
-          return item;
-        }
-        // Individual article deep dives
-        if (/jaainil\.com\/articles\/.+/.test(item.url)) {
-          item.changefreq = ChangeFreqEnum.MONTHLY;
-          item.priority = 0.8;
-          item.lastmod = new Date().toISOString();
-          return item;
-        }
-        // Static portfolio pages (about, legal, etc.)
-        item.changefreq = ChangeFreqEnum.MONTHLY;
-        item.priority = 0.5;
-        item.lastmod = new Date().toISOString();
-        return item;
+      // Include canonical content pages only. Omit lastmod when no verified
+      // content modification date is available; a build is not a content edit.
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        return path === '/' || path === '/about/' || path === '/pieces/' ||
+          path === '/articles/' || path.startsWith('/articles/') ||
+          path.startsWith('/legal/');
       },
     }),
     llms({
