@@ -13,10 +13,9 @@ export const POST: APIRoute = async ({ request }) => {
       || 'anonymous';
     const rate = await checkRateLimit(`chat:${ip}`, 20, 60);
     if (!rate.allowed) {
-      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again shortly.' }), {
+      return Response.json({ error: 'Rate limit exceeded. Try again shortly.' }, {
         status: 429,
         headers: {
-          'Content-Type': 'application/json',
           'Retry-After': String(Math.max(1, rate.reset - Math.floor(Date.now() / 1000))),
         },
       });
@@ -25,15 +24,13 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json().catch(() => null);
     const question = (body?.question ?? '').trim();
     if (!question) {
-      return new Response(JSON.stringify({ error: 'A question is required.' }), {
+      return Response.json({ error: 'A question is required.' }, {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
       });
     }
     if (question.length > 500) {
-      return new Response(JSON.stringify({ error: 'Question too long (500 chars max).' }), {
+      return Response.json({ error: 'Question too long (500 chars max).' }, {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -61,32 +58,28 @@ export const POST: APIRoute = async ({ request }) => {
 
     const result = await askRag(question, { useCache: true, history });
 
-    return new Response(
-      JSON.stringify({
-        answer: result.answer,
-        sources: result.sources,
-        confidence: result.confidence,
-        cached: result.cached,
-        model: result.model,
-        intent: result.intent,
-      }),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    return Response.json({
+      answer: result.answer,
+      sources: result.sources,
+      confidence: result.confidence,
+      cached: result.cached,
+      model: result.model,
+      intent: result.intent,
+    });
   } catch (err) {
     console.error('[api/rag/chat]', err);
-    return new Response(JSON.stringify({ error: 'RAG service unavailable.' }), {
+    return Response.json({ error: 'RAG service unavailable.' }, {
       status: 503,
-      headers: { 'Content-Type': 'application/json' },
     });
   }
 };
 
 export const GET: APIRoute = async () => {
-  return new Response(
-    JSON.stringify({ error: 'Method Not Allowed. Send a POST request with JSON body { question: string }.' }),
+  return Response.json(
+    { error: 'Method Not Allowed. Send a POST request with JSON body { question: string }.' },
     {
       status: 405,
-      headers: { 'Content-Type': 'application/json', 'Allow': 'POST' },
+      headers: { 'Allow': 'POST' },
     }
   );
 };

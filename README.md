@@ -37,18 +37,18 @@ At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-A
 
 * **Lego / Blueprint Aesthetic:** Custom retro-engineering design system featuring blueprint sky-blue pages, black keylines, stud-grid backgrounds, and tactile action buttons with complete dark mode support.
 * **Grounded AI Assistant (Jainil's RAG):** Interactive modal (`⌘K` / `Ctrl+K`) that answers questions exclusively from Jainil's verified resume, profile, and 25+ articles with 100% citation accuracy and zero hallucinations.
-* **Writenex CMS Integration:** Integrated with `@imjp/writenex-astro` (v1.9.1) — Jainil's open-source Astro CMS integration for MDX content management with colocated images and autosave.
+* **Writenex CMS Integration:** Integrated with `@imjp/writenex-astro` (v1.11.1) — Jainil's open-source Astro CMS integration for MDX content management with colocated images and autosave.
 * **25+ Technical Deep Dives:** Long-form engineering articles covering AI infrastructure, Linux kernel internals, telecommunications architecture (JioHotstar feature flagging), GPS systems (NavIC), geopolitics of compute, and web performance.
 * **Interactive Margin Notes (Giscus):** GitHub Discussions-backed commenting engine on every technical article with bespoke Primer themes (`public/giscus/theme-*.css`) matching the Lego/Blueprint design tokens, featuring real-time light/dark theme synchronization via `MutationObserver`.
-* **AI Engine Optimization (AEO) & WebMCP:** Built-in `llms.txt` generation via `astro-aeo`, structured JSON-LD schemas (`Person`, `BlogPosting`), and browser-native W3C Web Machine Learning Model Context Protocol (WebMCP) tool integration.
+* **AI Engine Optimization (AEO) & WebMCP:** Built-in `llms.txt` generation via `astro-llms-md`, structured JSON-LD schemas (`Person`, `BlogPosting`), and browser-native W3C Web Machine Learning Model Context Protocol (WebMCP) tool integration.
 * **Privacy & Cookie Governance:** Built-in privacy management and consent banner powered by `@openpolicy/sdk`.
-* **Zero-Tracker Analytics:** Self-hosted privacy-focused analytics using Umami (`@yeskunall/astro-umami`).
+* **Zero-Tracker Analytics:** Self-hosted privacy-focused analytics using Umami via a directly embedded tracking script.
 
 ---
 
 ## 🧠 Jainil's RAG — Architecture & Highlights
 
-Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine designed for strict factual accuracy. For full architectural details, schemas, and operational runbooks, see **[RAG.md](file:///home/jainil/Downloads/code/jaainil-2026/RAG.md)**.
+Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine designed for strict factual accuracy. For full architectural details, schemas, and operational runbooks, see **[RAG.md](RAG.md)**.
 
 ```text
                                         USER QUERY
@@ -181,7 +181,7 @@ Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine d
 
 ## 🎨 Design System & Frontend Architecture
 
-The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/code/jaainil-2026/DESIGN.md)** and implements a distinctive **Instruction Booklet / Toy Blueprint** aesthetic:
+The visual identity is defined in **[DESIGN.md](DESIGN.md)** and implements a distinctive **Instruction Booklet / Toy Blueprint** aesthetic:
 
 * **Color Palette:**
   * Page Sky: `#aee1ff` | Paper: `#ffffff` | Keyline: `#111111`
@@ -198,18 +198,18 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 
 | Layer | Technologies |
 |---|---|
-| **Framework & SSG** | [Astro 7](https://astro.build), [React 19](https://react.dev), [Vite](https://vitejs.dev), [@astrojs/vercel](https://www.npmjs.com/package/@astrojs/vercel) |
+| **Framework & SSG** | [Astro 7](https://astro.build), [React 19](https://react.dev), [Vite](https://vitejs.dev), `@astrojs/node` standalone adapter |
 | **Styling & Design** | [Tailwind CSS 4](https://tailwindcss.com), [@tailwindcss/vite](https://www.npmjs.com/package/@tailwindcss/vite), Lucide Icons |
-| **CMS Engine** | [@imjp/writenex-astro](https://www.npmjs.com/package/@imjp/writenex-astro) (v1.9.1) |
+| **CMS Engine** | [@imjp/writenex-astro](https://www.npmjs.com/package/@imjp/writenex-astro) (v1.11.1) |
 | **Comments & Community** | [Giscus](https://giscus.app) (GitHub Discussions comments with custom Primer CSS themes) |
 | **Vector Database** | [PostgreSQL 16](https://www.postgresql.org) + [pgvector](https://github.com/pgvector/pgvector) (1536-dim HNSW Cosine Index) |
 | **In-Memory Cache & Mutex**| [Dragonfly](https://www.dragonflydb.io) (Multi-threaded Redis-compatible engine on VPS) |
 | **Dense Embeddings** | OpenAI `text-embedding-3-small` (1536 dimensions via [OpenRouter SDK](https://openrouter.ai)) |
 | **Primary Generation LLM** | Google Gemini 2.5 Flash ([@google/genai](https://www.npmjs.com/package/@google/genai)) |
 | **Neural Reranker** | VoyageAI Rerank 2.5 Lite (`voyageai/rerank-2.5-lite` via OpenRouter) |
-| **SEO, AEO & Standards** | `astro-aeo`, `@astrojs/sitemap`, `astro-seo-schema`, W3C WebMCP API |
+| **SEO, AEO & Standards** | `astro-llms-md`, `@astrojs/sitemap`, `astro-seo-schema`, W3C WebMCP API |
 | **Privacy & Policy** | [@openpolicy/sdk](https://www.npmjs.com/package/@openpolicy/sdk), `@openpolicy/astro` |
-| **Analytics** | [Umami](https://umami.is) via `@yeskunall/astro-umami` |
+| **Analytics** | [Umami](https://umami.is) via a directly embedded tracking script |
 
 ---
 
@@ -249,7 +249,6 @@ The visual identity is defined in **[DESIGN.md](file:///home/jainil/Downloads/co
 │   │       ├── db.ts           # PostgreSQL pool, schema init & CRUD queries
 │   │       ├── embeddings.ts   # OpenRouter dense vector embedding generator
 │   │       ├── guardrails.ts   # Input injection/identity rails, normalization & output PII/exfil gate
-│   │       ├── index.ts        # RAG barrel export
 │   │       ├── ingest.ts       # Incremental ETL hasher & content indexer
 │   │       ├── intent.ts       # Zero-latency rule-based query intent classifier
 │   │       ├── rerank.ts       # VoyageAI Rerank 2.5 Lite integration & telemetry
@@ -297,7 +296,8 @@ All tasks are accessible through npm scripts configured in `package.json`:
 
 ```bash
 # ── Local Development ────────────────────────────────────────────────────────
-npm run dev               # Start Astro development server (with type stripping)
+npm run dev               # Start Astro development server (automatic type stripping disabled)
+npm run check             # Run Astro and TypeScript diagnostics
 npm run build             # Build production static site + SSR functions
 npm run preview           # Preview local production build
 npm run start             # Serve production build on port 3000
@@ -312,6 +312,8 @@ npm run rag:search "query"# Inspect raw vector similarity, FTS rank & RRF scores
 npm run rag:stats         # Check live PostgreSQL & Dragonfly VPS infrastructure health
 npx tsx scripts/rag/guardrails.test.ts # Run deterministic guardrails security test suite
 ```
+
+The pinned TypeScript 7.0.2 currently blocks `npm run check`. Astro's checker needs the programmatic API available in TypeScript 6.x. `bunx tsc --noEmit` checks TypeScript files but does not replace Astro template diagnostics. The production build and deterministic guardrail tests pass with the current installation.
 
 ---
 
@@ -410,7 +412,7 @@ Reranker Attempts:       3 (Success: 3, Timeouts: 0, Errors: 0)
 
 ## 🌐 SEO, AEO, WebMCP & Privacy Compliance
 
-* **Answer Engine Optimization (AEO):** Powered by `astro-aeo`, the site serves `/llms.txt` and `/llms-full.txt` optimized for AI web search agents and crawlers with custom `Content-Signal: ai-train=yes, search=yes, ai-input=yes` directives in `robots.txt`.
+* **Answer Engine Optimization (AEO):** Powered by `astro-llms-md`, the site serves `/llms.txt` and `/llms-full.txt` optimized for AI web search agents and crawlers with custom `Content-Signal: ai-train=yes, search=yes, ai-input=yes` directives in `robots.txt`.
 * **Structured Data (JSON-LD):** Implements Google Rich Snippets with `Person`, `BlogPosting`, and `BreadcrumbList` schemas via `astro-seo-schema`.
 * **W3C WebMCP Protocol:** The browser exposes machine-readable site tools (`getSiteInfo`, `searchArticles`) via the experimental `navigator.modelContext.provideContext()` API.
 * **Privacy Compliance:** Governed by `openpolicy.ts` with transparent data collection notices and automated legal routes (`/legal/privacy`, `/legal/terms`, `/legal/cookies`).

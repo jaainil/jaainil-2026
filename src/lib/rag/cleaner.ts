@@ -1,14 +1,3 @@
-export interface ParsedDocument {
-  title: string;
-  description: string;
-  category: string;
-  tags: string[];
-  publishedAt: string | null;
-  type: 'article' | 'page' | 'guide' | 'doc';
-  content: string;
-  rawFrontmatter: Record<string, any>;
-}
-
 /**
  * Extracts YAML frontmatter and cleaned markdown body from an MD/MDX file.
  */
@@ -115,31 +104,6 @@ export function cleanMarkdownContent(rawBody: string): string {
   text = text.replace(/\n{3,}/g, '\n\n');
 
   return text.trim();
-}
-
-/**
- * Parses full MDX article into a structured document object.
- */
-export function parseArticleMdx(rawSource: string, fallbackTitle = 'Untitled'): ParsedDocument {
-  const { frontmatter, body } = extractFrontmatterAndBody(rawSource);
-  const cleanedBody = cleanMarkdownContent(body);
-
-  const title = frontmatter.title || fallbackTitle;
-  const description = frontmatter.description || '';
-  const category = frontmatter.category || 'tech';
-  const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
-  const publishedAt = frontmatter.publishedAt ? new Date(frontmatter.publishedAt).toISOString() : null;
-
-  return {
-    title,
-    description,
-    category,
-    tags,
-    publishedAt,
-    type: 'article',
-    content: cleanedBody,
-    rawFrontmatter: frontmatter,
-  };
 }
 
 /**

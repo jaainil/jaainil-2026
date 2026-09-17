@@ -800,6 +800,7 @@ The output string undergoes final validation before delivery and caching:
 * Rate Limiting: 20 requests / 60 seconds per client IP via Dragonfly. Returns `429 Too Many Requests` with `Retry-After` header.
 * Payload Validation: Max 500 characters, non-empty question.
 * Conversation History: optional `history` array (last 10 turns max, 1000 chars per turn, role-validated). Assistant turns are cleaned of chat-UI artifacts before use — citation links `[[N]](url)` collapse to `[N]` and the auto-appended personal-life closer is stripped — so downstream retrieval rewriting and generation receive lean context. History is untrusted input, handled by the system prompt's injection rule.
+* Responses use `Response.json()`, preserving status codes and the `Retry-After` and `Allow` headers. `askRag()` returns a complete `Promise<RAGResponse>`; the HTTP endpoint sends one JSON response.
 * Returns JSON payload:
   ```json
   {
@@ -851,7 +852,7 @@ npm run rag:index
 # 3. Inspect Raw Hybrid Search Results & Candidate Scoring
 npm run rag:search "Dokploy templates PRs"
 
-# 4. Interactive Live Terminal Chat (REPL with streaming output)
+# 4. Interactive Live Terminal Chat (REPL with typewriter output)
 npm run rag:chat
 
 # 5. Single Question CLI Query
@@ -875,7 +876,7 @@ npm run rag:privacy
 * **`scripts/rag/index-content.ts`**: Runs `ingestAllArticles()`, hashes files, embeds new/modified documents, touches `last_seen_at` for scanned-but-unchanged docs, prunes deleted/draft documents at run end, rolls `KB_VERSION`, prints summary statistics.
 * **`scripts/rag/privacy-check.ts`**: End-to-end privacy audit: verifies `is_private` flags in SQL (self-healing backfill proof), probes a private-anchored question (must ground via `[BACKGROUND]` with zero citations), and a public question (citations must remain intact). Exit code reflects pass/fail.
 * **`scripts/rag/search-cli.ts`**: CLI search utility displaying vector similarity, FTS rank, RRF score, URL, heading, and text excerpts.
-* **`scripts/rag/chat-cli.ts`**: Terminal chat interface featuring a continuous REPL, typewriter token streaming (`streamWords()`), citation listings, and latency breakdowns.
+* **`scripts/rag/chat-cli.ts`**: Terminal chat interface featuring a continuous REPL, typewriter display of the completed answer (`streamWords()`), citation listings, and latency breakdowns.
 * **`scripts/rag/stats.ts`**: Connectivity and health diagnostic for PostgreSQL, pgvector version, table size, document counts by category, and Dragonfly server version.
 * **`scripts/rag/eval.ts`**: Automated benchmark runner that evaluates ground-truth queries against regression quality gates. Accepts an optional dataset path argument (e.g. `npm run rag:eval -- tests/rag/eval-adversarial.json`) and per-case `history` for conversation-follow-up testing.
 * **`scripts/rag/guardrails.test.ts`**: Automated security test suite verifying injection detection, identity handling, encoding bypasses (homoglyphs/leetspeak/zero-width), upstream `llm-prompt-guard`, output exfiltration, PII redaction, and gibberish detection.

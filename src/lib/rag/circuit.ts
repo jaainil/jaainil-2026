@@ -1,11 +1,9 @@
 export interface CircuitBreakerOptions {
-  name: string;
   failureThreshold: number; // number of consecutive failures to trip
   cooldownMs: number;       // time to wait before half-open probe
 }
 
 export class CircuitBreaker {
-  private name: string;
   private failureThreshold: number;
   private cooldownMs: number;
   private failureCount = 0;
@@ -14,7 +12,6 @@ export class CircuitBreaker {
   private halfOpenProbeInFlight = false;
 
   constructor(options: CircuitBreakerOptions) {
-    this.name = options.name;
     this.failureThreshold = options.failureThreshold;
     this.cooldownMs = options.cooldownMs;
   }
@@ -64,26 +61,15 @@ export class CircuitBreaker {
   public getState(): 'CLOSED' | 'OPEN' | 'HALF_OPEN' {
     return this.state;
   }
-
-  public getStats() {
-    return {
-      name: this.name,
-      state: this.state,
-      failureCount: this.failureCount,
-      lastFailureTime: this.lastFailureTime ? new Date(this.lastFailureTime).toISOString() : null,
-    };
-  }
 }
 
 // Global Singletons
 export const rerankerCircuit = new CircuitBreaker({
-  name: 'RerankerCircuit',
   failureThreshold: 3,
   cooldownMs: 45000,
 });
 
 export const primaryLlmCircuit = new CircuitBreaker({
-  name: 'PrimaryLlmCircuit',
   failureThreshold: 3,
   cooldownMs: 30000,
 });

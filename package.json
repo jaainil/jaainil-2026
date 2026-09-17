@@ -42,7 +42,6 @@
     "astro-seo": "^1.2.0",
     "astro-seo-meta": "^7.0.0",
     "astro-seo-schema": "^7.0.0",
-    "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
     "ioredis": "^6.0.0",
     "llm-prompt-guard": "^2.1.4",
@@ -54,7 +53,6 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "schema-dts": "^2.0.0",
-    "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

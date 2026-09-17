@@ -177,7 +177,6 @@ export async function askRag(
     enableRerank?: boolean;
     useCache?: boolean;
     history?: ChatHistoryTurn[];
-    onToken?: (token: string) => void;
   } = {}
 ): Promise<RAGResponse> {
   const startTime = Date.now();
@@ -237,7 +236,6 @@ export async function askRag(
         kbVersion,
       },
     };
-    if (options.onToken) options.onToken(railResponse.answer);
     return railResponse;
   }
 
@@ -248,7 +246,6 @@ export async function askRag(
   if (answerCacheKey) {
     const cached = await getCached<RAGResponse>(answerCacheKey);
     if (cached) {
-      if (options.onToken) options.onToken(cached.answer);
       return { ...cached, cached: true, executionTimeMs: Date.now() - startTime };
     }
   }
@@ -260,7 +257,6 @@ export async function askRag(
     if (!isLockHolder) {
       const coalescedAnswer = await waitForCachedAnswer<RAGResponse>(answerCacheKey, 3000, 150);
       if (coalescedAnswer) {
-        if (options.onToken) options.onToken(coalescedAnswer.answer);
         return { ...coalescedAnswer, cached: true, executionTimeMs: Date.now() - startTime };
       }
       // Re-try acquiring lock after wait
@@ -294,7 +290,6 @@ export async function askRag(
 
     if (!confidence.isConfident) {
       const refusal = "hmm i couldn't find anything solid about that in the knowledge base — try asking about Jainil's projects, resume, or published articles instead?";
-      if (options.onToken) options.onToken(refusal);
 
       const refusalTrace: RAGTrace = {
         requestId,
@@ -497,7 +492,6 @@ Personal-Life Persona Override (applies only to THIS question):
     const qualityGate = validateCitationIntegrityAndQuality(rawAnswer, sources);
     const finalAnswer = isPersonalLifeQuery ? qualityGate.formatted + PERSONAL_CLOSER : qualityGate.formatted;
 
-    if (options.onToken) options.onToken(finalAnswer);
 
     const totalMs = Date.now() - startTime;
 
