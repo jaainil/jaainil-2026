@@ -11,8 +11,8 @@ export default defineConfig({
         title: fields.text({ label: "Title", validation: { isRequired: true } }),
         category: fields.select({
           label: "Category",
-          options: ["Linux", "Tech", "AI", "Programming", "IoT", "Opinions"],
-          defaultValue: "Tech",
+          options: ["Linux", "tech", "ai", "Programming", "IoT", "Opinions", "political"],
+          defaultValue: "tech",
         }),
         publishedAt: fields.date({ label: "Published At", validation: { isRequired: true } }),
         imageUrl: fields.image({ label: "Cover Image" }),

@@ -11,7 +11,7 @@
 - **Website**: https://jaainil.com
 - **GitHub**: https://github.com/jaainil
 - **LinkedIn**: https://www.linkedin.com/in/jaainil/
-- **Current Position**: Full-Stack & DevOps Engineer at Aexaware Infotech Pvt. Ltd.
+- **Current Position**: Lead, Business Development, AI & Automation at Confianca Technologies LLP (Confianca Pharmazon), Ahmedabad
 
 ---
 

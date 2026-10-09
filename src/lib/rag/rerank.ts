@@ -49,7 +49,7 @@ export function getRerankerTelemetry(): RerankerStats {
   };
 }
 
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${label} timeout`)), ms)),
@@ -86,19 +86,20 @@ function applyRanking(
 /**
  * Single-stage reranker: voyageai/rerank-2.5-lite via the OpenRouter rerank endpoint.
  * Degrades gracefully to original RRF order on failure or circuit-open.
+ * `ok` is true only when the reranker actually ranked the candidates.
  */
-export async function rerankResults(
+export async function rerankWithStatus(
   query: string,
   candidates: SearchResult[],
   topK = 5
-): Promise<SearchResult[]> {
+): Promise<{ results: SearchResult[]; ok: boolean }> {
   if (candidates.length <= topK) {
-    return candidates;
+    return { results: candidates, ok: false };
   }
 
   // Circuit Breaker: skip if open, return RRF order immediately
   if (rerankerCircuit.isOpen()) {
-    return candidates.slice(0, topK);
+    return { results: candidates.slice(0, topK), ok: false };
   }
 
   totalAttempts++;
@@ -136,7 +137,7 @@ export async function rerankResults(
     rerankerCircuit.recordSuccess();
     rerankerLatencies.push(Date.now() - t0);
     if (rerankerLatencies.length > 500) rerankerLatencies.splice(0, rerankerLatencies.length - 500);
-    return applyRanking(candidatePool, ranked, topK);
+    return { results: applyRanking(candidatePool, ranked, topK), ok: true };
 
   } catch (err: any) {
     if (err?.message?.includes('timeout')) {
@@ -150,5 +151,10 @@ export async function rerankResults(
   // Graceful Degradation: return original RRF rank order
   rerankerLatencies.push(Date.now() - t0);
   if (rerankerLatencies.length > 500) rerankerLatencies.splice(0, rerankerLatencies.length - 500);
-  return candidates.slice(0, topK);
+  return { results: candidates.slice(0, topK), ok: false };
+}
+
+/** Thin wrapper for callers that only need the ranked list. */
+export async function rerankResults(query: string, candidates: SearchResult[], topK = 5): Promise<SearchResult[]> {
+  return (await rerankWithStatus(query, candidates, topK)).results;
 }

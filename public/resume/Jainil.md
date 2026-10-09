@@ -26,9 +26,19 @@ Full-Stack Developer & DevOps Engineer passionate about building scalable SaaS p
 
 ## Experience
 
-### Aexawareinfotech Pvt. Ltd. — Full Stack & DevOps Engineer (September 2025 - Present)
+### Confianca Pharmazon — Lead, Business Development, AI & Automation (September 2026 - Present)
 
-_Vadodara_
+_Ahmedabad, Gujarat, India · Onsite · Full-time_
+
+- Building technology for the pharmaceutical industry
+
+### Aexaware Infotech Pvt. Ltd. (August 2025 - September 2026)
+
+_Vadodara, Gujarat, India_
+
+**Full Stack Developer & DevOps Engineer** · Full-time · Hybrid · October 2025 - September 2026
+
+**DevOps Intern** · Internship · On-site · August 2025 - October 2025
 
 - Managed client communication and translated requirements into production-ready web applications
 - Built and shipped full-stack web applications using Next.js, Node.js, and Prisma under tight deadlines
@@ -61,14 +71,14 @@ Built an interactive Snapchat Lens using Snap AR Studio; explored 3D modeling an
 - Implemented **confidence-based routing** and early refusal for irrelevant queries.
 - Added **prompt-injection protection, PII redaction, circuit breakers, and fallback mechanisms**.
 - Built a citation pipeline ensuring responses remain **strictly grounded in retrieved sources**.
-- Achieved **100% Recall@3, 100% citation validity, and 100% refusal accuracy** across 24 evaluation cases.
+- Measured retrieval, citation validity, and refusal behavior with an automated evaluation suite.
 - Optimized cached responses to approximately **10–80ms latency**.
 
 [https://jaainil.com](https://jaainil.com)
 
 ### Writenex – Open Source CMS for Astro
 
-- Forked and revived an abandoned open-source CMS, growing it to 79+ commits, now published as v1.9.1
+- Created and open-sourced Writenex, growing it to 79+ commits, now published as v1.11.1
 - Built a TypeScript-first Fields API with 25+ field types, autocomplete inference, and validation rules
 - Implemented automatic shadow-copy version history and drag-and-drop image asset management
 - Automated releases using GitHub Actions and Vercel deployment pipelines

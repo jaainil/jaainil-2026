@@ -47,8 +47,27 @@ export function getKbVersion(): string {
   return currentKbVersion;
 }
 
-export function setKbVersion(version: string): void {
+// Ingest writes this key; the web server reads it per request (ingest and web are separate processes).
+const KB_VERSION_KEY = 'rag:kb_version';
+
+/** Re-reads the KB version from Redis; falls back to the last known/env value if Redis is unavailable. */
+export async function loadKbVersion(): Promise<string> {
+  const client = getRedisClient();
+  if (!client) return currentKbVersion;
+  try {
+    const v = await client.get(KB_VERSION_KEY);
+    if (v) currentKbVersion = v;
+  } catch {}
+  return currentKbVersion;
+}
+
+export async function setKbVersion(version: string): Promise<void> {
   currentKbVersion = version;
+  const client = getRedisClient();
+  if (!client) return;
+  try {
+    await client.set(KB_VERSION_KEY, version);
+  } catch {}
 }
 
 /**
@@ -154,6 +173,21 @@ export async function waitForCachedAnswer<T>(
   return null;
 }
 
+// ponytail: per-process counters; with several web instances, Redis is the shared count.
+const localWindows = new Map<string, { count: number; reset: number }>();
+
+function localRateLimit(identifier: string, limit: number, windowSeconds: number) {
+  const now = Math.floor(Date.now() / 1000);
+  let w = localWindows.get(identifier);
+  if (!w || w.reset <= now) {
+    if (localWindows.size > 10000) localWindows.clear(); // bound memory
+    w = { count: 0, reset: now + windowSeconds };
+    localWindows.set(identifier, w);
+  }
+  w.count++;
+  return { allowed: w.count <= limit, remaining: Math.max(0, limit - w.count), reset: w.reset };
+}
+
 export async function checkRateLimit(
   identifier: string,
   limit = 30,
@@ -162,9 +196,8 @@ export async function checkRateLimit(
   const client = getRedisClient();
   const now = Math.floor(Date.now() / 1000);
 
-  if (!client) {
-    return { allowed: true, remaining: limit, reset: now + windowSeconds };
-  }
+  // Never fail open: no Redis or a Redis error falls back to the in-memory window.
+  if (!client) return localRateLimit(identifier, limit, windowSeconds);
 
   const key = `rag:ratelimit:${identifier}`;
   try {
@@ -180,7 +213,7 @@ export async function checkRateLimit(
       reset: now + ttl,
     };
   } catch {
-    return { allowed: true, remaining: limit, reset: now + windowSeconds };
+    return localRateLimit(identifier, limit, windowSeconds);
   }
 }
 

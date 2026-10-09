@@ -1,23 +1,26 @@
 import { hybridSearch } from './search.js';
-import { rerankResults } from './rerank.js';
+import { rerankWithStatus, withTimeout } from './rerank.js';
 import {
   getCached,
   setCached,
   getAnswerCacheKey,
-  getKbVersion,
+  loadKbVersion,
   hashString,
+  normalizeQuery,
   acquireStampedeLock,
   releaseStampedeLock,
   waitForCachedAnswer,
 } from './cache.js';
 import { classifyQueryIntent } from './intent.js';
 import { estimateRetrievalConfidence } from './confidence.js';
-import { isIdentityQuestion, isInjectionAttempt, identityAnswer, INJECTION_ANSWER, sanitizeAnswer, isExfil } from './guardrails.js';
+import { isIdentityQuestion, isInjectionAttempt, identityAnswer, INJECTION_ANSWER, sanitizeAnswer, isExfil, redactPii } from './guardrails.js';
 import { primaryLlmCircuit } from './circuit.js';
 import { googleGenAI } from './clients.js';
 import type { RAGResponse, RAGSource, SearchResult, SearchOptions, RAGTrace } from './types.js';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+// Bounds a hung generateContent so a stuck HALF_OPEN probe records a failure instead of pinning the circuit.
+const GENERATION_TIMEOUT_MS = 15000;
 
 // Personal-life detection: a question counts as "about the relationship / private
 // life" when it matches these keywords AND actually pulls private background
@@ -39,7 +42,7 @@ export interface ChatHistoryTurn {
 /**
  * Multi-query expansion: generates 2 alternative phrasings using Gemini
  * to improve retrieval recall. Falls back to original query on failure.
- * Capped at 2s to avoid blocking the pipeline.
+ * Capped at 3.5s to avoid blocking the pipeline.
  * Conversation history is included so follow-ups ("what about its deploy?")
  * resolve into standalone queries instead of retrieving nothing.
  */
@@ -156,7 +159,7 @@ function validateCitationIntegrityAndQuality(
 
   // Cache the response if the formatted output is non-trivial and contains no error sentinel.
   // Phantom citations are already stripped above — they don't disqualify the response.
-  const isValid = formatted.trim().length > 20 && !formatted.includes('fallback-error');
+  const isValid = formatted.trim().length > 20;
 
   return {
     formatted: formatted.trim(),
@@ -183,7 +186,9 @@ export async function askRag(
   const cleanQuestion = question.trim();
   // Last 10 turns (5 exchanges) — same windowing approach as mainstream
   // chat assistants. Enough context without bloating the prompt/cost.
-  const history = (options.history || []).slice(-10);
+  const history = (options.history || []).slice(-10)
+    // Injection rail on every history turn: a poisoned earlier turn is dropped before it reaches expansion or generation.
+    .filter((t) => !isInjectionAttempt(t.content));
 
   if (!cleanQuestion) {
     return {
@@ -199,12 +204,13 @@ export async function askRag(
   }
 
   const intent = options.intent || classifyQueryIntent(cleanQuestion);
-  const kbVersion = getKbVersion();
+  const kbVersion = await loadKbVersion();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   // History is part of the identity of a follow-up: same words with a different
   // conversation behind them must not collide in cache or coalescing.
   const historyKey = history.map((t) => `${t.role}:${t.content}`).join('\n');
-  const queryHash = hashString(cleanQuestion + '\n' + historyKey);
+  // Same normalization as the answer cache key, so equivalent queries share one lock.
+  const queryHash = hashString(normalizeQuery(cleanQuestion + '\n' + historyKey));
 
   // 0. Guardrails: identity meta-questions and prompt-injection attempts never
   //    reach retrieval or the model. Deterministic, uncached, zero tokens.
@@ -315,7 +321,7 @@ export async function askRag(
         trace: refusalTrace,
       };
 
-      if (answerCacheKey) await setCached(answerCacheKey, refusalResponse, 3600);
+      if (answerCacheKey && (await loadKbVersion()) === kbVersion) await setCached(answerCacheKey, refusalResponse, 3600);
       return refusalResponse;
     }
 
@@ -326,9 +332,11 @@ export async function askRag(
     const shouldRerank = options.enableRerank !== false && matches.length > candidateLimit;
 
     if (shouldRerank) {
-      selectedPath = 'DEEP_PATH';
       const rerankStart = Date.now();
-      matches = await rerankResults(cleanQuestion, matches, candidateLimit);
+      const reranked = await rerankWithStatus(cleanQuestion, matches, candidateLimit);
+      matches = reranked.results;
+      // Label the path by what actually happened: a failed rerank silently serves RRF order.
+      selectedPath = reranked.ok ? 'DEEP_PATH' : 'FAST_PATH';
       rerankMs = Date.now() - rerankStart;
     } else {
       matches = matches.slice(0, candidateLimit);
@@ -372,7 +380,7 @@ export async function askRag(
 You should sound like Jainil thinking out loud — curious, casual, technically sharp, and conversational. Not a documentation bot. Not a corporate FAQ. You're a brainstorming partner who happens to know everything Jainil has written.
 
 Core Facts:
-- Jainil Prajapati is a Full-Stack & DevOps Engineer at Aexaware Infotech (Vadodara)
+- Jainil Prajapati is Lead, Business Development, AI & Automation at Confianca Pharmazon (Ahmedabad); previously a Full-Stack & DevOps Engineer at Aexaware Infotech (Vadodara)
 - Creator of Writenex CMS (@imjp/writenex-astro), contributor to Dokploy/templates (10+ merged PRs)
 - Contact: jainilprajapati9@gmail.com. His About page and his resume (PDF) are indexed here like any other document — refer to them by name ("the About page", "his resume") and cite them with [SOURCE: N]; never write file paths or URLs.
 
@@ -448,11 +456,15 @@ Personal-Life Persona Override (applies only to THIS question):
 
     if (tryGenerate) {
       try {
-        const res = await googleGenAI.models.generateContent({
-          model: GEMINI_MODEL,
-          contents: inputPrompt,
-          config: { temperature: 0.1 },
-        });
+        const res = await withTimeout(
+          googleGenAI.models.generateContent({
+            model: GEMINI_MODEL,
+            contents: inputPrompt,
+            config: { temperature: 0.1 },
+          }),
+          GENERATION_TIMEOUT_MS,
+          'generation'
+        );
         if (res.text) {
           rawAnswer = res.text.trim();
           primaryLlmCircuit.recordSuccess();
@@ -466,25 +478,34 @@ Personal-Life Persona Override (applies only to THIS question):
 
     const generationMs = Date.now() - genStart;
 
-    // Static fallback: surface raw chunks with inline source links if Gemini is unavailable
-    // or the output guardrails reject the answer as degenerate.
-    const staticFallbackAnswer =
+    // Static fallback: surface public citable chunks with inline source links if Gemini is unavailable
+    // or the output guardrails reject the answer. Private [BACKGROUND] chunks never leave the prompt,
+    // and the result is never cached.
+    let usedFallback = false;
+    const staticFallbackAnswer = redactPii(
       `Based on Jainil's RAG knowledge base:\n\n` +
-      [
-        ...citableMatches.map((m, i) => `- **${m.title}** (${m.heading || 'Overview'}) [SOURCE: ${i + 1}]:\n  ${m.content.slice(0, 250)}...`),
-        ...privateMatches.map((m) => `- **${m.title}** (${m.heading || 'Overview'}):\n  ${m.content.slice(0, 250)}...`),
-      ].join('\n\n');
+      citableMatches
+        .map((m, i) => `- **${m.title}** (${m.heading || 'Overview'}) [SOURCE: ${i + 1}]:\n  ${m.content.slice(0, 250)}...`)
+        .join('\n\n')
+    );
 
     if (!rawAnswer) {
       rawAnswer = staticFallbackAnswer;
+      usedFallback = true;
     } else {
       // 7.5 Output guardrails: reject prompt-echo / unauthorized-URL exfil,
       // redact PII/secrets, reject degenerate output.
       if (isExfil(rawAnswer, sources.map((s) => s.url))) {
         rawAnswer = staticFallbackAnswer;
+        usedFallback = true;
       } else {
         const sanitized = sanitizeAnswer(rawAnswer);
-        rawAnswer = sanitized.gibberish ? staticFallbackAnswer : sanitized.text;
+        if (sanitized.gibberish) {
+          rawAnswer = staticFallbackAnswer;
+          usedFallback = true;
+        } else {
+          rawAnswer = sanitized.text;
+        }
       }
     }
 
@@ -524,8 +545,9 @@ Personal-Life Persona Override (applies only to THIS question):
       trace,
     };
 
-    // 9. Cache Write — only on valid, non-trivial answers
-    if (answerCacheKey && qualityGate.isValid) {
+    // 9. Cache Write — only on valid, generated (non-fallback) answers, and only if the KB
+    //    did not roll over while this request was in flight.
+    if (answerCacheKey && qualityGate.isValid && !usedFallback && (await loadKbVersion()) === kbVersion) {
       await setCached(answerCacheKey, response, 7200);
     }
 

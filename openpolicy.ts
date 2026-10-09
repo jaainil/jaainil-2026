@@ -8,23 +8,23 @@ export default defineConfig({
     contact: { email: "jainilprajapati9@gmail.com" },
   },
   effectiveDate: "2026-01-01",
-  jurisdictions: ["sg"],
+  jurisdictions: ["eu", "uk", "us-ca"],
   data: {
     collected: {
-      "Account Information": ["Name", "Email address"],
+      "Contact Information": ["Name", "Email address", "Phone number", "Message content"],
       "Usage Data": ["Pages visited", "Browser type", "IP address"],
     },
     context: {
-      "Account Information": {
-        purpose: "Account management and communication",
+      "Contact Information": {
+        purpose: "Responding to inquiries, hiring, and contract correspondence",
         lawfulBasis: "legitimate_interests",
-        retention: "Until account deletion",
-        provision: Contractual("Required for account creation and service access"),
+        retention: "Duration of the inquiry or contract, plus up to 3 years",
+        provision: Contractual("Required to respond to your inquiry"),
       },
       "Usage Data": {
         purpose: "Understanding how visitors use our website",
         lawfulBasis: "legitimate_interests",
-        retention: "Until account deletion",
+        retention: "Aggregated, anonymized analytics; IP addresses are anonymized in memory and not stored",
         provision: Voluntary("Helps us improve our service"),
       },
     },

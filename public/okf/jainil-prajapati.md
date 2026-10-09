@@ -16,7 +16,8 @@ timestamp: 2026-09-08T00:00:00Z
 - **Full Name**: Jainil Prajapati
 - **Aliases**: Jainil, Jaainil, imjp
 - **Primary Website**: https://jaainil.com
-- **Current Employment**: Full-Stack Developer & DevOps Engineer at Aexaware Infotech Pvt. Ltd. (Vadodara)
+- **Current Employment**: Lead, Business Development, AI & Automation at Confianca Technologies LLP (Confianca Pharmazon), Ahmedabad
+- **Previous Employment**: Full-Stack Developer & DevOps Engineer at Aexaware Infotech Pvt. Ltd. (Vadodara), Aug 2025 – Sep 2026 (DevOps Intern Aug–Oct 2025, then Full Stack Developer & DevOps Engineer Oct 2025 – Sep 2026)
 - **Education**: B.E. in Information Technology from Sardar Vallabhbhai Patel Institute of Technology (SVIT)
 - **GitHub**: https://github.com/jaainil
 - **LinkedIn**: https://www.linkedin.com/in/jaainil/

@@ -6,12 +6,16 @@ import { askRag, PERSONAL_CLOSER } from '../../../lib/rag/chat.js';
 import { checkRateLimit } from '../../../lib/rag/cache.js';
 import type { APIRoute } from 'astro';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || request.headers.get('x-real-ip')
-      || 'anonymous';
-    const rate = await checkRateLimit(`chat:${ip}`, 20, 60);
+    if (!request.headers.get('content-type')?.includes('application/json')) {
+      return Response.json({ error: 'Content-Type must be application/json.' }, {
+        status: 415,
+      });
+    }
+
+    // Keyed on the socket address: X-Forwarded-For is client-controlled and would let callers rotate their bucket.
+    const rate = await checkRateLimit(`chat:${clientAddress}`, 20, 60);
     if (!rate.allowed) {
       return Response.json({ error: 'Rate limit exceeded. Try again shortly.' }, {
         status: 429,
@@ -22,7 +26,12 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const body = await request.json().catch(() => null);
-    const question = (body?.question ?? '').trim();
+    if (typeof body?.question !== 'string') {
+      return Response.json({ error: 'A question is required.' }, {
+        status: 400,
+      });
+    }
+    const question = body.question.trim();
     if (!question) {
       return Response.json({ error: 'A question is required.' }, {
         status: 400,

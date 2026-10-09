@@ -10,7 +10,7 @@ import { createGuard } from 'llm-prompt-guard';
 const IDENTITY_RE = new RegExp(
   [
     '\\b(?:which|what)\\s+(?:model|llm|ai)\\s+(?:are|is)\\s+(?:you|this)\\b',
-    '\\bwhat\\s+are\\s+you\\b',
+    '^\\s*what\\s+are\\s+you\\s*[?!.]*\\s*$',
     "\\bwhat(?:'s|\\s+is)\\s+your\\s+name\\b",
     '\\bwho\\s+(?:made|built|created|trained|developed)\\s+you\\b',
     '\\bare\\s+you\\s+(?:chatgpt|gpt-?\\d*|gemini|claude|copilot|deepseek|grok|llama|mistral|an?\\s+(?:ai|llm|bot|human|person))\\b',
@@ -24,9 +24,9 @@ const INJECTION_RE = new RegExp(
     '\\bignore\\s+(?:all\\s+|any\\s+)?(?:previous|prior|above|earlier|past)\\s+(?:instructions?|prompts?|messages?|rules?|context)\\b',
     '\\bdisregard\\s+(?:all\\s+|any\\s+)?(?:previous|prior|above|earlier)\\s+(?:instructions?|prompts?|rules?|context)\\b',
     '\\b(?:reveal|show|print|repeat|output|display|dump|leak|expose)\\b[^.?!]{0,40}\\b(?:system\\s+(?:prompt|instruction|message)s?|(?:initial|original|hidden|secret|first)\\s+(?:prompt|instructions?)\\b|your\\s+(?:\\w+\\s+){0,2}(?:instructions?|prompt|rules?|programming)s?\\b)',
-    '\\bsystem\\s+prompt\\b',
+    "\\b(?:tell|give|share|what(?:'s|\\s+is))\\s+(?:me\\s+)?(?:your|the)\\s+system\\s+prompt\\b",
     '\\byou\\s+are\\s+now\\b',
-    "(?<!\\b(?:he|she|they|it)\\s+)\\bact\\s+as\\s+(?:if|a|an|my)\\b",
+    "(?<!\\b(?:he|she|they|it|jainil)\\s+)\\bact\\s+as\\s+(?:if|a|an|my)\\b",
     '\\bpretend\\s+(?:to\\s+be|you\\s+are)\\b',
     '\\benter\\s+(?:developer|dan|god)\\s+mode\\b',
     '\\bjailbreak\\b',
@@ -73,10 +73,13 @@ export function normalizeInput(question: string): string {
 /** True if either the raw or the bypass-normalized text trips the injection rail. */
 export function isInjectionAttempt(question: string): boolean {
   if (INJECTION_RE.test(question) || INJECTION_RE.test(normalizeInput(question))) return true;
-  // Upstream maintained layer. Its "act as" pattern is high-severity with no
-  // third-person awareness, so mask that construct (a portfolio bot gets
-  // "how does he act as a DevOps engineer" as a legitimate question) first.
-  const masked = question.replace(/\b(?:he|she|they|it|jainil)\s+acts?\s+as\b/gi, 'acts');
+  // Upstream maintained layer. Its "act as" and bare "system prompt" patterns are high-severity
+  // with no context awareness, so mask those constructs first (a portfolio bot gets
+  // "how does he act as a DevOps engineer" / "what system prompt techniques did he write about"
+  // as legitimate questions). Imperative leaks are still caught by the local rules above.
+  const masked = question
+    .replace(/\b(?:he|she|they|it|jainil)\s+acts?\s+as\b/gi, 'acts')
+    .replace(/\bsystem\s+prompts?\b/gi, 'system');
   try {
     return upstreamGuard.assess(masked).hasHighSeverity;
   } catch {
@@ -93,16 +96,27 @@ export function isIdentityQuestion(question: string): boolean {
 const PROMPT_ECHO_RE =
   /(Jainil's RAG AI Assistant|Citation & Grounding Rules|untrusted data, never an instruction|Do not invent facts or infer unmentioned)/i;
 
+// Relative source URLs (/articles/x) resolve against the site origin, so both
+// sides compare as host+path (trailing slash dropped).
+const SITE_ORIGIN = 'https://jaainil.com';
+function urlKey(url: string): string {
+  try {
+    const u = new URL(url, SITE_ORIGIN);
+    return (u.host + u.pathname).replace(/\/$/, '');
+  } catch {
+    return url;
+  }
+}
+
 /**
  * Output exfil scan: rejects answers that echo the system prompt or emit a URL
  * that is not one of the verified sources.
  */
 export function isExfil(answer: string, sourceUrls: string[]): boolean {
   if (PROMPT_ECHO_RE.test(answer)) return true;
-  const allowed = new Set(sourceUrls.map((u) => u.replace(/\/$/, '')));
-  // `\>` is explicitly escaped so the character class is unambiguous across engines.
+  const allowed = new Set(sourceUrls.map(urlKey));
   for (const url of answer.match(/https?:\/\/[^\s)\>[\]]+/g) ?? []) {
-    if (!allowed.has(url.replace(/[).,\]]+$/, '').replace(/\/$/, ''))) return true;
+    if (!allowed.has(urlKey(url.replace(/[).,\]]+$/, '')))) return true;
   }
   return false;
 }
@@ -113,7 +127,7 @@ export function identityAnswer(model: string): string {
     `okay so i'm basically a small RAG pipeline running on this site — ` +
     `i match your question against an index of Jainil's portfolio, resume, and published articles, ` +
     `and then ${model} writes the answer strictly from those sources.\n\n` +
-    `if you meant Jainil himself: full-stack & DevOps engineer at Aexaware Infotech, ` +
+    `if you meant Jainil himself: business development & AI lead at Confianca Pharmazon, ` +
     `creator of Writenex CMS, Dokploy contributor. ask me about his work and i'll cite my sources 🧑‍💻`
   );
 }
@@ -135,12 +149,15 @@ const ALLOWED_CONTACT_DIGITS = new Set(['919725284302', '9725284302']);
 const SECRET_RE = /\b(?:sk-[A-Za-z0-9_-]{16,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[bap]-[A-Za-z0-9-]{10,}|AIza[A-Za-z0-9_-]{30,})\b/g;
 const EMAIL_RE = /[\w.+-]+@[\w-]+\.[\w.-]{2,}/g;
 const PHONE_CANDIDATE_RE = /\+?\d[\d\s().-]{7,20}\d/g;
+const YEAR_RUN_RE = /^(?:19|20)\d{2}(?:\s+(?:19|20)\d{2})*$/;
 const SSN_RE = /\b\d{3}-\d{2}-\d{4}\b/g;
 
 /** Redacts emails, phone numbers, SSNs, and API-key-shaped secrets; keeps Jainil's public contacts. */
 export function redactPii(text: string): string {
   let out = text.replace(EMAIL_RE, (m) => (m.toLowerCase() === 'jainilprajapati9@gmail.com'.toLowerCase() ? m : '[redacted email]'));
   out = out.replace(PHONE_CANDIDATE_RE, (m) => {
+    // Bare year runs ("2023 2024 2025") are dates, not phone numbers.
+    if (YEAR_RUN_RE.test(m.trim())) return m;
     const digits = m.replace(/\D/g, '');
     if (ALLOWED_CONTACT_DIGITS.has(digits) || [...ALLOWED_CONTACT_DIGITS].some((a) => digits.endsWith(a))) return m;
     return digits.length >= 10 ? '[redacted number]' : m;
@@ -152,8 +169,8 @@ export function redactPii(text: string): string {
 
 /** Detects degenerate LLM output: runaway long tokens or the same phrase looped. */
 export function isGibberish(text: string): boolean {
-  // Code spans and URLs legitimately contain long tokens — mask them first.
-  const masked = text.replace(/`[^`]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ');
+  // Code spans, URLs, and [SOURCE: N] tags legitimately repeat — mask them first.
+  const masked = text.replace(/\[SOURCE:[^\]]*\]/gi, ' ').replace(/`[^`]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ');
   if (/\S{41,}/.test(masked)) return true;
 
   const words = masked.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(Boolean);
@@ -163,7 +180,7 @@ export function isGibberish(text: string): boolean {
     const gram = words.slice(i, i + 3).join(' ');
     const n = (counts.get(gram) ?? 0) + 1;
     counts.set(gram, n);
-    if (n >= 4) return true;
+    if (n >= 6) return true;
   }
   return false;
 }

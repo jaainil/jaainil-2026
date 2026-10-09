@@ -37,10 +37,10 @@
     "category": "followup",
     "history": [
       { "role": "user", "content": "What does Jainil do for work?" },
-      { "role": "assistant", "content": "Jainil Prajapati is a Full-Stack & DevOps Engineer at Aexaware Infotech in Vadodara. He builds with Docker, Linux, and modern web tooling, and he's the creator of Writenex CMS." }
+      { "role": "assistant", "content": "Jainil Prajapati is Lead, Business Development, AI & Automation at Confianca Pharmazon (Ahmedabad), based in Anand. He previously worked at Aexaware (Vadodara), and he's the creator of Writenex CMS." }
     ],
     "expected_sources": ["/about"],
-    "expected_keywords": ["vadodara"],
+    "expected_keywords": ["anand"],
     "should_refuse": false
   },
   {

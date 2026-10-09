@@ -35,7 +35,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     !pathname.startsWith('/_astro/') &&
     !pathname.split('/').pop()?.includes('.')
   ) {
-    return context.redirect(`${pathname}/${search}`, 301);
+    // Collapse leading slashes so `//evil.com` cannot become a protocol-relative Location header
+    const clean = '/' + pathname.replace(/^\/+/, '');
+    return context.redirect(`${clean}/${search}`, 301);
   }
 
   return next();

@@ -33,7 +33,6 @@ export default defineConfig({
     react(),
     mdx(),
     writenex({
-      allowProduction: true,
       remoteCms: {
         enabled: true,
       },

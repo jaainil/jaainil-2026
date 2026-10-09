@@ -235,4 +235,7 @@ async function runEval() {
   }
 }
 
-runEval().catch(console.error);
+runEval().catch((err) => {
+  console.error(err);
+  process.exitCode = 1;
+});

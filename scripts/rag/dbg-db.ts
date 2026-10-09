@@ -4,11 +4,11 @@ import { closeDb } from '../../src/lib/rag/db.js';
 
 const pool = new pg.Pool({ connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL });
 
-const models = await pool.query(`SELECT embedding_model, embedding_dimension, count(*) FROM chunks GROUP BY 1,2`);
+const models = await pool.query(`SELECT embedding_model, embedding_dimension, count(*) FROM document_chunks GROUP BY 1,2`);
 console.log('chunk models:', JSON.stringify(models.rows));
 
 const doc = await pool.query(`SELECT c.embedding, c.embedding_model, c.embedding_dimension, left(c.content, 60) AS preview
-  FROM chunks c LIMIT 1`);
+  FROM document_chunks c LIMIT 1`);
 const row = doc.rows[0];
 console.log('sample doc:', row.embedding_model, 'dim', row.embedding_dimension, '|', row.preview);
 

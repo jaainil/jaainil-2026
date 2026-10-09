@@ -107,6 +107,7 @@
       } catch (e) {
         /* storage full or private mode */
       }
+      window.dispatchEvent(new CustomEvent('cookie-consent-change', { detail: choice }));
       hideBanner();
     }
 
@@ -147,9 +148,6 @@
 
     setupTriggers();
     updateTocOffset();
-    window.addEventListener('open-cookie-preferences', showBanner);
-    document.addEventListener('astro:after-swap', setupTriggers);
-    document.addEventListener('astro:after-swap', updateTocOffset);
   }
 
   if (document.readyState === 'loading') {
@@ -157,5 +155,4 @@
   } else {
     initCookieConsent();
   }
-  document.addEventListener('astro:after-swap', initCookieConsent);
 </script>

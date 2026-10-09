@@ -17,6 +17,8 @@ export function getDbPool(): pg.Pool {
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
     });
+    // Without this, an idle client error (e.g. server restart) is an unhandled 'error' event and crashes the process.
+    pool.on('error', (err) => console.warn('[rag/db] idle client error:', err.message));
   }
   return pool;
 }
@@ -77,6 +79,8 @@ export async function initSchema(): Promise<void> {
     if (colCheck.rows.length > 0 && fmt !== 'vector(1536)') {
       console.log(`🔄 Updating table with vector(1536) for OpenRouter Embeddings + HNSW index...`);
       await client.query('DROP TABLE IF EXISTS document_chunks CASCADE;');
+      // Chunks are gone, so the stored source hashes no longer describe indexed content — force re-embed.
+      await client.query('UPDATE documents SET source_hash = NULL;');
     }
 
     // 3. Document chunks table (includes content_hash and metadata JSONB)
@@ -149,17 +153,17 @@ export async function getDocumentByUrl(url: string): Promise<DocumentRecord | nu
 
 export async function upsertDocument(doc: DocumentRecord): Promise<number> {
   return withDb(async (client) => {
+    // source_hash is deliberately NOT written here: replaceDocumentChunks stores it once chunks are committed.
     const res = await client.query(
       `
-      INSERT INTO documents (url, title, type, category, description, tags, source_hash, published_at, indexed_at, last_seen_at, is_private)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now(), now(), $9)
+      INSERT INTO documents (url, title, type, category, description, tags, published_at, indexed_at, last_seen_at, is_private)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, now(), now(), $8)
       ON CONFLICT (url) DO UPDATE SET
         title = EXCLUDED.title,
         type = EXCLUDED.type,
         category = EXCLUDED.category,
         description = EXCLUDED.description,
         tags = EXCLUDED.tags,
-        source_hash = EXCLUDED.source_hash,
         published_at = EXCLUDED.published_at,
         indexed_at = now(),
         last_seen_at = now(),
@@ -173,7 +177,6 @@ export async function upsertDocument(doc: DocumentRecord): Promise<number> {
         doc.category || null,
         doc.description || null,
         doc.tags || [],
-        doc.sourceHash || null,
         doc.publishedAt || null,
         doc.isPrivate || false,
       ]
@@ -182,7 +185,7 @@ export async function upsertDocument(doc: DocumentRecord): Promise<number> {
   });
 }
 
-export async function replaceDocumentChunks(documentId: number, chunks: ChunkRecord[]): Promise<void> {
+export async function replaceDocumentChunks(documentId: number, chunks: ChunkRecord[], sourceHash: string): Promise<void> {
   return withDb(async (client) => {
     await client.query('BEGIN');
     try {
@@ -205,6 +208,8 @@ export async function replaceDocumentChunks(documentId: number, chunks: ChunkRec
           [documentId, chunk.heading, chunk.chunkIndex, chunk.content, chunk.contentHash || null, metaStr, vectorStr, model, dim]
         );
       }
+      // Same transaction as the chunks: the hash only lands if every chunk did, so a failed embed/insert retries next run.
+      await client.query('UPDATE documents SET source_hash = $2 WHERE id = $1', [documentId, sourceHash]);
       await client.query('COMMIT');
     } catch (e) {
       await client.query('ROLLBACK');

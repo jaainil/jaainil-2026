@@ -4,7 +4,7 @@
     "question": "Who is Jainil Prajapati?",
     "category": "profile",
     "expected_sources": ["/about", "/resume/Jainil.pdf"],
-    "expected_keywords": ["Full-Stack", "DevOps", "Aexaware"],
+    "expected_keywords": ["Confianca", "Aexaware"],
     "should_refuse": false
   },
   {
@@ -12,7 +12,7 @@
     "question": "Where is Jainil located and what is his educational background?",
     "category": "profile",
     "expected_sources": ["/about", "/resume/Jainil.pdf"],
-    "expected_keywords": ["Vadodara", "SVIT", "Gujarat"],
+    "expected_keywords": ["Anand", "SVIT", "Gujarat"],
     "should_refuse": false
   },
   {
@@ -52,7 +52,7 @@
     "question": "Where does Jainil work and what are his daily responsibilities?",
     "category": "experience",
     "expected_sources": ["/resume/Jainil.pdf", "/about"],
-    "expected_keywords": ["Aexaware Infotech", "Full-Stack", "DevOps"],
+    "expected_keywords": ["Confianca", "Aexaware Infotech"],
     "should_refuse": false
   },
   {

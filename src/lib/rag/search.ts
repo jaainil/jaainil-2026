@@ -1,6 +1,6 @@
 import { embedText, EMBEDDING_MODEL } from './embeddings.js';
 import { withDb } from './db.js';
-import { getCached, setCached, getSearchCacheKey, getKbVersion } from './cache.js';
+import { getCached, setCached, getSearchCacheKey, loadKbVersion } from './cache.js';
 import { classifyQueryIntent } from './intent.js';
 import type { SearchResult, SearchOptions } from './types.js';
 
@@ -39,8 +39,13 @@ export async function hybridSearch(
   } = options;
 
   const intent = options.intent || classifyQueryIntent(query);
+  // Every option that changes the result set belongs in the key (incl. includePrivate: private rows must never leak into a public-scoped entry).
   const cacheKey = useCache
-    ? getSearchCacheKey(query, JSON.stringify({ limit, threshold, category, type, intent }), getKbVersion())
+    ? getSearchCacheKey(
+        query,
+        JSON.stringify({ limit, threshold, category, type, intent, rrfK, vectorWeight, textWeight, includePrivate: !!options.includePrivate }),
+        await loadKbVersion()
+      )
     : null;
 
   if (cacheKey) {
@@ -128,7 +133,10 @@ export async function hybridSearch(
     const fetchLimit = limit * 3;
     const [vRes, tRes] = await Promise.all([
       client.query<RawDbRow>(vectorSql, [...queryParams, vectorStr, threshold, fetchLimit]),
-      client.query<RawDbRow>(textSql, [...queryParams, query, fetchLimit]).catch(() => ({ rows: [] as RawDbRow[] })),
+      client.query<RawDbRow>(textSql, [...queryParams, query, fetchLimit]).catch((err) => {
+        console.warn('[rag/search] FTS query failed, using vector results only:', err);
+        return { rows: [] as RawDbRow[] };
+      }),
     ]);
 
     return [vRes.rows, tRes.rows];
@@ -197,6 +205,11 @@ export async function hybridSearch(
     ...item,
     rank: idx + 1,
   }));
+
+  // Intent-scoped search (resume/profile) must not hide articles: if the scope is empty, search the whole KB.
+  if (finalResults.length === 0 && !type && (intent === 'resume' || intent === 'profile')) {
+    return hybridSearch(query, { ...options, intent: 'general' });
+  }
 
   if (cacheKey && finalResults.length > 0) {
     await setCached(cacheKey, finalResults, 3600);

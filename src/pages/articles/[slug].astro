@@ -49,7 +49,7 @@ const relatedArticles = (() => {
         score += commonTags.length * 10;
       }
 
-      if (a.data.category === currentCategory) {
+      if (a.data.category.toLowerCase() === currentCategory.toLowerCase()) {
         score += 5;
       }
 

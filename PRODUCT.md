@@ -26,7 +26,7 @@ Viewed mostly on desktop during work hours by busy evaluators; also opened from 
 
 - Static Astro build (Astro 7, Tailwind 4), deployed via Vercel with edge caching.
 - Existing routes to preserve: `/`, `/about`, `/articles`, `/articles/[slug]`, legal pages.
-- Real facts only: employer Aexaware Infotech (Vadodara), B.E. IT at SVIT (CGPA 7.03), Anand Gujarat base, contact jainilprajapati9@gmail.com / +91 97252 84302.
+- Real facts only: employer Confianca Pharmazon (Ahmedabad, Lead Business Development AI & Automation; previously Aexaware Infotech, Vadodara), B.E. IT at SVIT (CGPA 7.03), Anand Gujarat base, contact jainilprajapati9@gmail.com / +91 97252 84302.
 - Profile photo asset exists at /profile.png.
 - Dark mode toggle exists and should survive (site supports both themes).
 - User delegated content trimming decisions to design judgment.

@@ -84,8 +84,7 @@ const personSchema = {
   ],
   worksFor: {
     '@type': 'Organization',
-    name: 'Aexawareinfotech Pvt. Ltd.',
-    url: 'https://aexaware.com',
+    name: 'Confianca Technologies LLP',
   },
   alumniOf: {
     '@type': 'EducationalOrganization',
@@ -185,7 +184,8 @@ const articleSchema = articleData ? {
     <link rel="alternate" type="text/markdown" href={markdownUrl} />
     <script is:inline>
       (function() {
-        var stored = localStorage.getItem('theme');
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) { /* storage blocked: fall back to system theme */ }
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (stored === 'dark' || (!stored && prefersDark)) {
           document.documentElement.classList.add('dark');
@@ -330,7 +330,10 @@ const articleSchema = articleData ? {
                   try {
                     const res = await fetch('/llms.txt');
                     const text = await res.text();
-                    return { results: text, query: args?.query || '' };
+                    const q = (args?.query || '').trim().toLowerCase();
+                    if (!q) return { results: text, query: '' };
+                    const matches = text.split('\n').filter((line) => line.toLowerCase().includes(q));
+                    return { results: matches.join('\n'), query: args.query };
                   } catch (e) {
                     return { error: 'Could not retrieve articles index' };
                   }

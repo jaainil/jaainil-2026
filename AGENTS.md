@@ -26,7 +26,7 @@ The repository contains both `bun.lock` and `package.json`. You may use **`bun`*
 
 ### Development & Build Commands
 ```bash
-# Start local development server (with strip-types flag for Node compatibility)
+# Start local development server (runs with --no-experimental-strip-types via NODE_OPTIONS)
 bun run dev
 # or: npm run dev
 

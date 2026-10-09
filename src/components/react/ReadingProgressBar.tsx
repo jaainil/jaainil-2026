@@ -9,6 +9,10 @@ export default function ReadingProgressBar() {
     const handleScroll = () => {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight - windowHeight;
+      if (documentHeight <= 0) {
+        setProgress(0);
+        return;
+      }
       const scrolled = window.scrollY;
       const progress = (scrolled / documentHeight) * 100;
       setProgress(Math.min(100, Math.max(0, progress)));

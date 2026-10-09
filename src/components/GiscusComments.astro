@@ -25,8 +25,7 @@ const discussionsUrl = 'https://github.com/jaainil/jaainil-2026/discussions';
   <div class="px-2 sm:px-6 py-2 giscus-frame-host">
     <script
       is:inline
-      async
-      src="https://giscus.app/client.js"
+      type="text/plain"
       id="giscus-script"
       data-repo="jaainil/jaainil-2026"
       data-repo-id="R_kgDOT-bjLA"
@@ -50,9 +49,29 @@ const discussionsUrl = 'https://github.com/jaainil/jaainil-2026/discussions';
       function bookletTheme() {
         return document.documentElement.classList.contains('dark') ? DARK : LIGHT;
       }
-      // giscus reads data-theme when it boots (async + lazy), so correct it before that.
-      var script = document.getElementById('giscus-script');
-      if (script) script.setAttribute('data-theme', bookletTheme());
+      // giscus is a third-party embed: load it only after the visitor accepts all (cookie_consent_v1 === 'all').
+      // The placeholder above is type="text/plain" so the browser never executes it; we clone its attributes into a real script.
+      var placeholder = document.getElementById('giscus-script');
+      function loadGiscus() {
+        if (!placeholder || document.getElementById('giscus-client')) return;
+        var s = document.createElement('script');
+        for (var i = 0; i < placeholder.attributes.length; i++) {
+          var a = placeholder.attributes[i];
+          if (a.name !== 'type' && a.name !== 'id') s.setAttribute(a.name, a.value);
+        }
+        s.id = 'giscus-client';
+        s.async = true;
+        s.src = 'https://giscus.app/client.js';
+        // giscus reads data-theme when it boots, so set the booklet theme before insertion.
+        s.setAttribute('data-theme', bookletTheme());
+        placeholder.parentNode.appendChild(s);
+      }
+      var consent = null;
+      try { consent = localStorage.getItem('cookie_consent_v1'); } catch (e) {}
+      if (consent === 'all') loadGiscus();
+      window.addEventListener('cookie-consent-change', function (e) {
+        if (e.detail === 'all') loadGiscus();
+      });
       // Live sync: the site's dark toggle flips a class on <html>.
       new MutationObserver(function () {
         var frame = document.querySelector('iframe.giscus-frame');

@@ -22,12 +22,17 @@ const btnLeave = (e: React.MouseEvent<HTMLElement>) => {
 };
 
 export default function ArticleInteractive({ articleTitle }: Props) {
-  const [showToast, setShowToast] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setToast('Link copied');
+    } catch (err) {
+      console.warn('[ArticleInteractive] clipboard write failed:', err);
+      setToast('Copy failed');
+    }
+    setTimeout(() => setToast(null), 2000);
   };
 
   return (
@@ -78,7 +83,7 @@ export default function ArticleInteractive({ articleTitle }: Props) {
         </button>
       </div>
 
-      {showToast && (
+      {toast && (
         <div className="fixed bottom-6 right-6 z-9999">
           <div
             className="px-4 py-3 text-sm font-bold flex items-center gap-2.5"
@@ -93,7 +98,7 @@ export default function ArticleInteractive({ articleTitle }: Props) {
             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
-            <span>Link copied</span>
+            <span>{toast}</span>
           </div>
         </div>
       )}

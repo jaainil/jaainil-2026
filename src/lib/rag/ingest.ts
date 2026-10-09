@@ -58,7 +58,6 @@ export async function ingestProfilePages(): Promise<number> {
         category: 'Resume',
         description: 'Official verified resume covering Full-Stack, DevOps, Dokploy PRs, and Writenex CMS.',
         tags: ['resume', 'jainil', 'experience', 'skills', 'projects', 'devops', 'dokploy'],
-        sourceHash,
         publishedAt: new Date().toISOString(),
       });
 
@@ -76,7 +75,7 @@ export async function ingestProfilePages(): Promise<number> {
           metadata: { charCount: chunk.content.length, type: 'resume' },
         }));
 
-        await replaceDocumentChunks(docId, chunkRecords);
+        await replaceDocumentChunks(docId, chunkRecords, sourceHash);
         indexedChunksCount += chunkRecords.length;
         console.log(`✅ [Resume] Indexed ${chunkRecords.length} chunks.`);
       }
@@ -123,7 +122,6 @@ export async function ingestProfilePages(): Promise<number> {
         category: 'Profile',
         description: 'Personal about page detailing work experience, background, DevOps philosophy, and full-stack engineering.',
         tags: ['about', 'profile', 'experience', 'philosophy'],
-        sourceHash,
         publishedAt: new Date().toISOString(),
       });
 
@@ -141,7 +139,7 @@ export async function ingestProfilePages(): Promise<number> {
           metadata: { charCount: chunk.content.length, type: 'page' },
         }));
 
-        await replaceDocumentChunks(docId, chunkRecords);
+        await replaceDocumentChunks(docId, chunkRecords, sourceHash);
         indexedChunksCount += chunkRecords.length;
         console.log(`✅ [About Page] Indexed ${chunkRecords.length} chunks.`);
       }
@@ -199,7 +197,6 @@ export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; t
         category: frontmatter.category || 'Knowledge',
         description: frontmatter.description || title,
         tags: fmTags,
-        sourceHash,
         isPrivate,
         publishedAt: frontmatter.publishedAt ? new Date(frontmatter.publishedAt) : new Date(),
       });
@@ -225,7 +222,7 @@ export async function ingestKnowledgeDocs(): Promise<{ totalDocuments: number; t
         },
       }));
 
-      await replaceDocumentChunks(docId, chunkRecords);
+      await replaceDocumentChunks(docId, chunkRecords, sourceHash);
       totalChunks += chunkRecords.length;
       console.log(`✅ [Knowledge] Indexed "${title.slice(0, 38)}" (${chunkRecords.length} chunks)`);
     }
@@ -299,7 +296,6 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
       category: frontmatter.category,
       description: frontmatter.description,
       tags: frontmatter.tags || [],
-      sourceHash,
       isPrivate: frontmatter.private === true,
       publishedAt: frontmatter.publishedAt ? new Date(frontmatter.publishedAt) : null,
     });
@@ -324,7 +320,7 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
       },
     }));
 
-    await replaceDocumentChunks(docId, chunkRecords);
+    await replaceDocumentChunks(docId, chunkRecords, sourceHash);
     totalChunks += chunkRecords.length;
     console.log(`✅ [Article] Indexed "${articleTitle.slice(0, 38)}" (${chunkRecords.length} chunks)`);
   }
@@ -335,9 +331,9 @@ export async function ingestAllArticles(): Promise<{ totalDocuments: number; tot
     console.log(`🧹 Pruned ${prunedUrls.length} stale document(s) (source deleted or draft): ${prunedUrls.join(', ')}`);
   }
 
-  // Roll KB Version in Cache
+  // Roll KB Version (shared via Redis so the web server picks it up)
   const newVersion = `v_${Date.now()}`;
-  setKbVersion(newVersion);
+  await setKbVersion(newVersion);
 
   // Physically purge stale answer/search caches from every previous KB version
   const purgedCacheKeys = await purgeRagAnswerAndSearchCaches();

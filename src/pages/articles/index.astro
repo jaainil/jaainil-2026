@@ -26,8 +26,13 @@ const articles: Article[] = allArticles
     } as Article;
   });
 
-// Fixed category order
-const CATEGORIES = ['All', 'Linux', 'Tech', 'AI', 'IoT', 'Opinions', 'Programming'];
+// Filter buttons come from the data; case-insensitive dedupe so "ai"/"AI" share one button
+const categoryByKey = new Map<string, string>();
+for (const a of articles) {
+  const key = a.category.toLowerCase();
+  if (!categoryByKey.has(key)) categoryByKey.set(key, a.category);
+}
+const CATEGORIES = ['All', ...[...categoryByKey.values()].sort((x, y) => x.localeCompare(y))];
 
 const fmtDate = (iso: string) =>
   new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });

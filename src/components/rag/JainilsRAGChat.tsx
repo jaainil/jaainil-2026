@@ -153,6 +153,14 @@ const INITIAL_MESSAGES: Message[] = [
   },
 ];
 
+const GENERIC_ERROR =
+  "ugh, couldn't reach the knowledge base right now 😭 try again in a sec, or just email Jainil directly at jainilprajapati9@gmail.com";
+
+// Guards for untrusted data (localStorage and API responses).
+const isSource = (s: any): s is Source => !!s && typeof s.title === 'string' && typeof s.url === 'string';
+const isMessage = (m: any): m is Message =>
+  !!m && typeof m.id === 'string' && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string';
+
 export const JainilsRAGChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -162,8 +170,11 @@ export const JainilsRAGChat: React.FC = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const isInitialMessagesMount = useRef(true);
   const isInitialOpenMount = useRef(true);
+  // Bumped on every send and reset; responses from older requests are dropped.
+  const reqIdRef = useRef(0);
 
   // Restore messages and open state on client mount (across page navigation and refresh)
   useEffect(() => {
@@ -171,8 +182,11 @@ export const JainilsRAGChat: React.FC = () => {
       const savedMessages = localStorage.getItem(STORAGE_KEY_MESSAGES);
       if (savedMessages) {
         const parsed = JSON.parse(savedMessages);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
+        if (Array.isArray(parsed)) {
+          const valid = parsed
+            .filter(isMessage)
+            .map((m) => ({ ...m, sources: Array.isArray(m.sources) ? m.sources.filter(isSource) : undefined }));
+          if (valid.length > 0) setMessages(valid);
         }
       }
     } catch {
@@ -220,6 +234,8 @@ export const JainilsRAGChat: React.FC = () => {
   }, [isOpen]);
 
   const handleResetChat = () => {
+    reqIdRef.current++; // drop any in-flight response
+    setIsLoading(false);
     setMessages(INITIAL_MESSAGES);
     try {
       localStorage.removeItem(STORAGE_KEY_MESSAGES);
@@ -325,6 +341,35 @@ export const JainilsRAGChat: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  // Focus trap while the dialog is open; restore focus to the opener on close.
+  useEffect(() => {
+    if (!isOpen) return;
+    const returnTo = document.activeElement as HTMLElement | null;
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), a[href]'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleTab);
+    return () => {
+      window.removeEventListener('keydown', handleTab);
+      returnTo?.focus?.();
+    };
+  }, [isOpen]);
+
   const handleSend = async (questionText: string) => {
     const query = questionText.trim();
     if (!query || isLoading) return;
@@ -333,6 +378,9 @@ export const JainilsRAGChat: React.FC = () => {
     const ts = Date.now();
     const rnd = () => Math.random().toString(36).slice(2, 7);
     const assistantMsgId = `a-${ts}-${rnd()}`;
+    const reqId = ++reqIdRef.current;
+    const isStale = () => reqId !== reqIdRef.current;
+    let errorText = GENERIC_ERROR;
 
     setMessages((prev) => [
       ...prev,
@@ -354,12 +402,18 @@ export const JainilsRAGChat: React.FC = () => {
       });
 
       if (!res.ok) {
+        // 4xx bodies carry a user-facing message from the API; 5xx keeps the generic text.
+        if (res.status >= 400 && res.status < 500) {
+          const body = await res.json().catch(() => null);
+          if (typeof body?.error === 'string' && body.error) errorText = body.error;
+        }
         throw new Error(`Error: ${res.statusText}`);
       }
 
       const data = await res.json();
+      if (isStale()) return;
       const latencyMs = Date.now() - startTime;
-      const fullText = data.answer || 'No response received.';
+      const fullText = typeof data.answer === 'string' && data.answer ? data.answer : 'No response received.';
 
       setMessages((prev) => [
         ...prev,
@@ -367,22 +421,23 @@ export const JainilsRAGChat: React.FC = () => {
           id: assistantMsgId,
           role: 'assistant',
           content: fullText,
-          sources: data.sources || [],
+          sources: Array.isArray(data.sources) ? data.sources.filter(isSource) : [],
           latencyMs,
           cached: data.cached,
         },
       ]);
     } catch {
+      if (isStale()) return;
       setMessages((prev) => [
         ...prev,
         {
           id: assistantMsgId,
           role: 'assistant',
-          content: "ugh, couldn't reach the knowledge base right now 😭 try again in a sec, or just email Jainil directly at jainilprajapati9@gmail.com",
+          content: errorText,
         },
       ]);
     } finally {
-      setIsLoading(false);
+      if (!isStale()) setIsLoading(false);
     }
   };
 
@@ -468,6 +523,7 @@ export const JainilsRAGChat: React.FC = () => {
           }}
         >
           <div
+            ref={dialogRef}
             className="relative w-full max-w-2xl h-[85vh] max-h-[700px] flex flex-col rounded-2xl overflow-hidden overscroll-contain"
             style={{
               backgroundColor: 'var(--paper)',

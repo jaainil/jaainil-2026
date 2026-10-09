@@ -18,6 +18,7 @@ const latestArticles: Article[] = allArticles
       id: a.id,
       ...rest,
       imageUrl,
+      readTime: a.body ? `${Math.max(1, Math.ceil(a.body.split(/\s+/).filter(Boolean).length / 200))} min read` : undefined,
       publishedAt: publishedAt.toISOString().split('T')[0],
       authors: authors.map((slug: string) => {
         const author = authorMap.get(slug);
@@ -117,10 +118,17 @@ const steps = [
   },
   {
     n: '3',
-    years: 'Sep 2025 – now',
+    years: 'Aug 2025 – Sep 2026',
     title: 'Shipping client work at Aexaware Infotech',
-    body: 'Full-time in Vadodara. Full-stack apps on Next.js, Node and Prisma, delivered from schema to deployment. GitHub Actions pipelines, Docker Compose environments, Nginx and SSL on Debian servers, migrations with a rollback plan.',
+    body: 'Started as a DevOps intern on-site in Vadodara, then moved to full-time Full Stack Developer & DevOps Engineer on a hybrid role. Full-stack apps on Next.js, Node and Prisma, delivered from schema to deployment. GitHub Actions pipelines, Docker Compose environments, Nginx and SSL on Debian servers, migrations with a rollback plan.',
     added: ['Production delivery', 'CI/CD pipelines', 'Client communication'],
+  },
+  {
+    n: '4',
+    years: 'Sep 2026 – now',
+    title: 'Building technology for pharma at Confianca',
+    body: 'Lead, Business Development, AI & Automation at Confianca Pharmazon in Ahmedabad. Building technology for the pharmaceutical industry.',
+    added: ['Business development', 'AI & automation', 'Pharma technology'],
     current: true,
   },
 ];
@@ -136,7 +144,7 @@ const builds = [
       'Added shadow-copy version history and drag-and-drop media management.',
     ],
     pieces: ['Astro', 'TypeScript', 'MDX & Markdoc'],
-    callout: { value: 'v1.9', label: 'live on npm as @imjp/writenex-astro' },
+    callout: { value: 'v1.11', label: 'live on npm as @imjp/writenex-astro' },
     link: { href: 'https://writenex-writenex.vercel.app/astro', label: 'Open the docs' },
   },
   {
@@ -353,7 +361,7 @@ const faqSchema = {
           </a>
         </div>
         <p class="text-sm font-semibold" style="color: var(--color-text-muted);">
-          Full-stack & DevOps Engineer at Aexaware Infotech · Dokploy contributor · npm publisher
+          Lead, Business Development, AI & Automation at Confianca Pharmazon · Dokploy contributor · npm publisher
         </p>
       </div>
 
@@ -568,7 +576,7 @@ const faqSchema = {
           <span class="text-2xl font-black w-8 shrink-0" style="color: var(--piece);">{String(i + 1).padStart(2, '0')}</span>
           <span class="flex-1">
             <span class="block font-extrabold text-lg leading-snug" style="color: var(--ink);">{article.title}</span>
-            <span class="block text-sm mt-0.5" style="color: var(--color-text-muted);">{fmtDate(article.publishedAt)} · {article.category} · {article.readTime || '5 min read'}</span>
+            <span class="block text-sm mt-0.5" style="color: var(--color-text-muted);">{fmtDate(article.publishedAt)} · {article.category}{article.readTime && ` · ${article.readTime}`}</span>
           </span>
           <svg class="w-5 h-5 shrink-0 hidden sm:block" fill="none" stroke="var(--ink)" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
         </a>
