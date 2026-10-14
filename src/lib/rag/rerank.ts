@@ -50,10 +50,11 @@ export function getRerankerTelemetry(): RerankerStats {
 }
 
 export function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${label} timeout`)), ms)),
-  ]);
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timeout`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
 /**
@@ -67,10 +68,12 @@ function applyRanking(
 ): SearchResult[] {
   const reranked: SearchResult[] = [];
   for (const item of ranked) {
-    if (typeof item.index === 'number' && candidatePool[item.index]) {
+    if (Number.isInteger(item.index) && candidatePool[item.index] &&
+        Number.isFinite(item.score) && item.score >= 0 && item.score <= 1 &&
+        !reranked.some((r) => r.id === candidatePool[item.index].id)) {
       reranked.push({
         ...candidatePool[item.index],
-        rrfScore: item.score || candidatePool[item.index].rrfScore,
+        rrfScore: item.score,
       });
     }
   }
@@ -113,25 +116,32 @@ export async function rerankWithStatus(
     const apiKey = process.env.OPENROUTER_API_KEY || '';
     if (!apiKey) throw new Error('OPENROUTER_API_KEY not set');
 
-    const res = await withTimeout(
-      fetch('https://openrouter.ai/api/v1/rerank', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ model: RERANK_MODEL, query, documents: docs }),
-      }),
+    const data: any = await withTimeout(
+      (async () => {
+        const res = await fetch('https://openrouter.ai/api/v1/rerank', {
+          method: 'POST',
+          signal: AbortSignal.timeout(RERANK_TIMEOUT_MS),
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ model: RERANK_MODEL, query, documents: docs }),
+        });
+        if (!res.ok) throw new Error(`Rerank API ${res.status}`);
+        return res.json();
+      })(),
       RERANK_TIMEOUT_MS,
       RERANK_MODEL
     );
 
-    if (!res.ok) throw new Error(`Rerank API ${res.status}`);
-    const data: any = await res.json();
     const results = data?.results;
     if (!Array.isArray(results) || results.length === 0) throw new Error('Empty rerank response');
 
-    const ranked = results.map((r: any) => ({ index: r.index, score: r.relevance_score }));
+    const ranked = results
+      .filter((r: any) => r && Number.isInteger(r.index) && candidatePool[r.index] &&
+        Number.isFinite(r.relevance_score) && r.relevance_score >= 0 && r.relevance_score <= 1)
+      .map((r: any) => ({ index: r.index, score: r.relevance_score }));
+    if (!ranked.length) throw new Error('Invalid rerank response');
 
     totalSuccesses++;
     rerankerCircuit.recordSuccess();

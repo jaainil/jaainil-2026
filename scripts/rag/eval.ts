@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { passesEvaluation } from '../../src/lib/rag/evaluation.js';
 import { askRag } from '../../src/lib/rag/chat.js';
 import { getRerankerTelemetry } from '../../src/lib/rag/rerank.js';
 import { primaryLlmCircuit, rerankerCircuit } from '../../src/lib/rag/circuit.js';
@@ -18,7 +19,11 @@ interface EvalItem {
 }
 
 const MIN_RECALL_AT_3 = Number(process.env.RAG_MIN_RECALL_AT_3 || 85);
+const MIN_CITATION_VALIDITY = Number(process.env.RAG_MIN_CITATION_VALIDITY || 100);
+const MIN_CITATION_BACKED_ANSWERS = Number(process.env.RAG_MIN_CITATION_BACKED_ANSWERS || 85);
 const MIN_REFUSAL_ACCURACY = Number(process.env.RAG_MIN_REFUSAL_ACCURACY || 95);
+// Pace live suites when the provider account has a low request quota.
+const EVAL_DELAY_MS = Math.max(0, Number(process.env.RAG_EVAL_DELAY_MS || 0));
 
 function calculatePercentile(arr: number[], p: number): number {
   if (arr.length === 0) return 0;
@@ -49,6 +54,8 @@ async function runEval() {
   let fastPathCount = 0;
   let deepPathCount = 0;
   let earlyRefusalCount = 0;
+  let groundedRefusalCount = 0;
+  let fallbackCount = 0;
 
   let totalCitations = 0;
   let validCitations = 0;
@@ -68,6 +75,7 @@ async function runEval() {
   }> = [];
 
   for (let i = 0; i < dataset.length; i++) {
+    if (EVAL_DELAY_MS > 0) await new Promise((resolve) => setTimeout(resolve, EVAL_DELAY_MS));
     const test = dataset[i];
     if (!categoryStats[test.category]) {
       categoryStats[test.category] = { total: 0, passed: 0 };
@@ -78,6 +86,7 @@ async function runEval() {
 
     const res = await askRag(test.question, { useCache: false, history: test.history });
     allLatencies.push(res.executionTimeMs);
+    if (res.model === 'extractive-fallback') fallbackCount++;
 
     if (res.trace?.path === 'FAST_PATH') {
       fastPathCount++;
@@ -87,6 +96,8 @@ async function runEval() {
       deepPathLatencies.push(res.executionTimeMs);
     } else if (res.trace?.path === 'EARLY_REFUSAL') {
       earlyRefusalCount++;
+    } else if (res.trace?.path === 'GROUNDED_REFUSAL') {
+      groundedRefusalCount++;
     }
 
     if (test.should_refuse) {
@@ -141,11 +152,11 @@ async function runEval() {
       test.expected_keywords.forEach((kw) => {
         if (res.answer.toLowerCase().includes(kw.toLowerCase())) kwFound++;
       });
-      if (kwFound > 0 && hitAt3 && citationMatches.length > 0) {
+      if (res.model !== 'extractive-fallback' && kwFound > 0 && hitAt3 && citationMatches.length > 0) {
         citationBackedAnswers++;
       }
 
-      const pass = hitAt3;
+      const pass = hitAt3 && kwFound > 0 && citationMatches.length > 0 && res.model !== 'extractive-fallback';
       console.log(`${pass ? '✅ PASS' : '⚠️ WARN'} (${res.executionTimeMs}ms) [Path: ${res.trace?.path || 'N/A'}, Conf: ${res.confidence}]`);
     }
   }
@@ -154,7 +165,7 @@ async function runEval() {
   const r1Pct = positiveTotal > 0 ? Number(((recallAt1 / positiveTotal) * 100).toFixed(1)) : 100;
   const r3Pct = positiveTotal > 0 ? Number(((recallAt3 / positiveTotal) * 100).toFixed(1)) : 100;
   const refPct = refusalTotal > 0 ? Number(((refusalCorrect / refusalTotal) * 100).toFixed(1)) : 100;
-  const citationValPct = totalCitations > 0 ? Number(((validCitations / totalCitations) * 100).toFixed(1)) : 100;
+  const citationValPct = totalCitations > 0 ? Number(((validCitations / totalCitations) * 100).toFixed(1)) : (positiveTotal > 0 ? 0 : 100);
   const citationBackedPct = positiveTotal > 0 ? Number(((citationBackedAnswers / positiveTotal) * 100).toFixed(1)) : 100;
 
   const avgLatency = allLatencies.length > 0
@@ -179,7 +190,7 @@ async function runEval() {
   console.log('\n🧠 CITATIONS & RESPONSE QUALITY');
   console.log(`Citation Validity:            ${citationValPct}% (${validCitations}/${totalCitations} valid links)`);
   console.log(`Citation-Backed Answer Rate:  ${citationBackedPct}% (${citationBackedAnswers}/${positiveTotal})`);
-  console.log(`Invalid Cached Responses:     0`);
+  console.log(`Extractive Fallbacks:          ${fallbackCount} (excluded from generated-answer coverage)`);
 
   console.log('\n🛡️ REFUSAL');
   console.log(`Refusal Accuracy:       ${refPct}% (${refusalCorrect}/${refusalTotal})`);
@@ -188,10 +199,11 @@ async function runEval() {
   console.log(`⚡ Fast-Path:            ${fastPathCount}`);
   console.log(`🧠 Deep-Path:            ${deepPathCount}`);
   console.log(`🛡️ Early Refusals:       ${earlyRefusalCount}`);
-  console.log(`Total Handled:          ${fastPathCount + deepPathCount + earlyRefusalCount}/${dataset.length}`);
+  console.log(`Grounded Refusals:       ${groundedRefusalCount}`);
+  console.log(`Total Handled:          ${fastPathCount + deepPathCount + earlyRefusalCount + groundedRefusalCount}/${dataset.length}`);
 
   console.log('\n⏱️ PERFORMANCE');
-  console.log(`Answer Cache Hit:       ~10–80ms`);
+  console.log('Answer Cache Hit:       not measured (answer/search caches disabled)');
   console.log(`Fast-Path P50:          ${fastP50}ms`);
   console.log(`Deep-Path P50:          ${deepP50}ms`);
   console.log(`Overall P50:            ${overallP50}ms`);
@@ -221,7 +233,11 @@ async function runEval() {
 
   console.log('\n' + '─'.repeat(54));
 
-  const passedRegression = r3Pct >= MIN_RECALL_AT_3 && refPct >= MIN_REFUSAL_ACCURACY;
+  const passedRegression = passesEvaluation({
+    recallAt3: r3Pct, refusalAccuracy: refPct, citationValidity: citationValPct,
+    citationBackedAnswers: citationBackedPct,
+  }, { recallAt3: MIN_RECALL_AT_3, refusalAccuracy: MIN_REFUSAL_ACCURACY,
+    citationValidity: MIN_CITATION_VALIDITY, citationBackedAnswers: MIN_CITATION_BACKED_ANSWERS });
   if (passedRegression) {
     console.log('🎉 EVALUATION PASSED: All regression quality gates met!\n');
   } else {

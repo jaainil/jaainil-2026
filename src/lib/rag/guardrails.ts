@@ -102,10 +102,16 @@ const SITE_ORIGIN = 'https://jaainil.com';
 function urlKey(url: string): string {
   try {
     const u = new URL(url, SITE_ORIGIN);
-    return (u.host + u.pathname).replace(/\/$/, '');
+    if (!['http:', 'https:'].includes(u.protocol) || u.username || u.password) return '';
+    return u.origin + u.pathname.replace(/\/$/, '') + u.search + u.hash;
   } catch {
-    return url;
+    return '';
   }
+}
+
+/** Citation metadata must not produce executable links or markdown delimiters. */
+export function isSafeSourceUrl(url: string): boolean {
+  return !/[\s<>()[\]\\\u0000-\u001f\u007f]/u.test(url) && urlKey(url) !== '';
 }
 
 /**
@@ -115,6 +121,12 @@ function urlKey(url: string): string {
 export function isExfil(answer: string, sourceUrls: string[]): boolean {
   if (PROMPT_ECHO_RE.test(answer)) return true;
   const allowed = new Set(sourceUrls.map(urlKey));
+  allowed.delete('');
+  // Markdown can carry relative, protocol-relative, or executable URLs too.
+  for (const match of answer.matchAll(/\]\(\s*<?([^\s)>]+)/g)) {
+    const key = urlKey(match[1]);
+    if (!key || !allowed.has(key)) return true;
+  }
   for (const url of answer.match(/https?:\/\/[^\s)\>[\]]+/g) ?? []) {
     if (!allowed.has(urlKey(url.replace(/[).,\]]+$/, '')))) return true;
   }

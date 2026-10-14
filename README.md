@@ -14,7 +14,7 @@
 
 **Field Notes** is a high-performance personal engineering portfolio and technical publishing platform built with **Astro 7**, **React 19**, and **Tailwind CSS 4**. It showcases Jainil's verified work history, open-source contributions, DevOps infrastructure, and 25+ long-form deep-dive technical articles.
 
-At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-Augmented Generation AI system running on PostgreSQL (`pgvector`), Dragonfly in-memory cache, Google Gemini 2.5 Flash, and VoyageAI reranking.
+At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-Augmented Generation AI system running on PostgreSQL (`pgvector`), Dragonfly in-memory cache, Claude Haiku 5.5 via OpenRouter, and VoyageAI reranking.
 
 ---
 
@@ -36,7 +36,7 @@ At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-A
 ## ✨ Key Features & Capabilities
 
 * **Lego / Blueprint Aesthetic:** Custom retro-engineering design system featuring blueprint sky-blue pages, black keylines, stud-grid backgrounds, and tactile action buttons with complete dark mode support.
-* **Grounded AI Assistant (Jainil's RAG):** Interactive modal (`⌘K` / `Ctrl+K`) that answers questions exclusively from Jainil's verified resume, profile, and 25+ articles with 100% citation accuracy and zero hallucinations.
+* **Grounded AI Assistant (Jainil's RAG):** Interactive modal (`⌘K` / `Ctrl+K`) that answers questions exclusively from Jainil's verified resume, profile, and 25+ articles with source citations and output validation.
 * **Writenex CMS Integration:** Integrated with `@imjp/writenex-astro` (v1.11.1) — Jainil's open-source Astro CMS integration for MDX content management with colocated images and autosave.
 * **25+ Technical Deep Dives:** Long-form engineering articles covering AI infrastructure, Linux kernel internals, telecommunications architecture (JioHotstar feature flagging), GPS systems (NavIC), geopolitics of compute, and web performance.
 * **Interactive Margin Notes (Giscus):** GitHub Discussions-backed commenting engine on every technical article with bespoke Primer themes (`public/giscus/theme-*.css`) matching the Lego/Blueprint design tokens, featuring real-time light/dark theme synchronization via `MutationObserver`.
@@ -48,134 +48,54 @@ At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-A
 
 ## 🧠 Jainil's RAG — Architecture & Highlights
 
-Jainil's RAG is a sub-second, multi-tier retrieval-augmented generation engine designed for strict factual accuracy. For full architectural details, schemas, and operational runbooks, see **[RAG.md](RAG.md)**.
+Jainil's RAG is a multi-tier retrieval-augmented generation engine designed for strict factual accuracy. For full architectural details, schemas, and operational runbooks, see **[RAG.md](RAG.md)**.
 
-```text
-                                        USER QUERY
-                                            ➔ shipped with the last 10 conversation
-                                              turns (client-held chat history)
-                                            │
-                                           ▼
-                             ┌───────────────────────────┐
-                             │  Stage 0: Input Rails     │ ➔ Injection Rail (llm-prompt-guard + local rules)
-                             │(src/lib/rag/guardrails.ts)│ ➔ Identity Rail (meta-questions: model/author)
-                             └─────┬───────────┬─────────┘ ➔ Encoding Normalization (zero-width, leet, homoglyphs)
-                                   │           │
-                          Injection / Identity │ Clean Query
-                                   │           │
-                                   ▼           ▼
-                            🛡️ INSTANT DEFLECTION ┌───────────────────────────┐
-                            (0 LLM Tokens, <5ms)   │  Query Normalization &    │ ➔ Lowercase, trim, collapse spaces,
-                            - IDENTITY_RAIL        │     Intent Classifier     │   strip trailing punctuation.
-                            - INJECTION_RAIL       │  (src/lib/rag/intent.ts)  │ ➔ Tightened keywords: profile, skills,
-                                                   └─────────────┬─────────────┘   projects, experience, resume, article.
-                                                                 │
-                                                                 ▼
-                                                   ┌───────────────────────────┐
-                                                   │   Tier 1: Answer Cache    │─── HIT ───► Instant Return (~10–80ms)
-                                                   │   (Dragonfly on VPS)      │             (rag:answer:v2:<kb>:<hash>)
-                                                   └─────────────┬─────────────┘
-                                                                 │ MISS
-                                                                 ▼
-                                                   ┌───────────────────────────┐
-                                                   │ SINGLEFLIGHT / COALESCING │ ➔ Distributed Mutex: rag:lock:<hash>
-                                                   │ Lock acquired?            │   TTL: 15s | Max Poll: 3.0s (150ms interval)
-                                                   │   YES: Run Pipeline       │ ➔ If lock held by peer, wait for answer cache
-                                                   │   NO:  Wait/Poll Cache    │   and return immediately once populated.
-                                                   └─────────────┬─────────────┘
-                                                                 │ Lock Acquired / Executing
-                                                                 ▼
-                                                   ┌───────────────────────────┐
-                                                    │  Multi-Query Expansion    │ ➔ Gemini generates 2 alternative query
-                                                    │     (expandQueries)       │   phrasings (3.5s cap) for high recall;
-                                                    │                           │   history-aware rewrite resolves
-                                                    │                           │   follow-up pronouns ("it", "that");
-                                                    │                           │   on failure re-searches last user turn
-                                                   └─────────────┬─────────────┘
-                                                                 │ 3 Query Variants
-                                                                 ▼
-                                                   ┌───────────────────────────┐
-                                                   │  3× Parallel Hybrid Search│ ➔ pgvector HNSW (cos >= 0.25) +
-                                                   │  + Merge & Deduplicate    │   PostgreSQL FTS with RRF fusion
-                                                   │  (src/lib/rag/search.ts)  │ ➔ Merged by highest RRF score
-                                                   └─────────────┬─────────────┘
-                                                                 │
-                                                                 ▼
-                                                   ┌───────────────────────────┐
-                                                   │  Multi-Feature Confidence │ ➔ Checks vector similarity, margin,
-                                                   │         Estimator         │   FTS agreement, and intent match.
-                                                   │(src/lib/rag/confidence.ts)│
-                                                   └─────┬───────────┬─────────┘
-                                                         │           │
-                                                Out of Domain        Relevant Match
-                                                         │           │
-                                                         ▼           ▼
-                                                  🛡️ EARLY REFUSAL  ┌───────────────────────────┐
-                                                  (0 LLM Tokens,     │  Neural Reranker Pool     │ ➔ 12 candidate pool × 800 chars
-                                                   < 85ms return)    │(voyageai/rerank-2.5-lite) │ ➔ 4.5s Timeout / Circuit Breaker
-                                                                     └─────────────┬─────────────┘ ➔ On failure: fallback to RRF order
-                                                                                   │
-                                                                                   ▼
-                                                                     ┌───────────────────────────┐
-                                                                     │ Lost-in-the-Middle Reorder│ ➔ Top 6 candidates interleaved
-                                                                     │   (reorderForAttention)   │   [1, 3, 5, 6, 4, 2] for prime
-                                                                     └─────────────┬─────────────┘   start & end attention positions
-                                                                                   │
-                                                                                   ▼
-                                                                     ┌───────────────────────────┐
-                                                                     │   gemini-2.5-flash        │ ➔ 5-step Grounding Protocol
-                                                                     │   + Grounding Protocol    │ ➔ Temperature 0.1, strict citations
-                                                                     │   (PrimaryLlmCircuit)     │ ➔ Circuit Breaker (3 fails → OPEN 30s)
-                                                                     └─────────────┬─────────────┘
-                                                                                   │
-                                                                       ┌───────────┴───────────┐
-                                                                       │                       │
-                                                                    Success               Failure / Open
-                                                                       │                       │
-                                                                       ▼                       │
-                                                           ┌───────────────────────┐           │
-                                                           │ Stage 7.5: Output Gate│           │
-                                                           │- Exfil & Echo Scan    │           │
-                                                           │- PII & Secret Redact  │           │
-                                                           │- Gibberish Detector   │           │
-                                                           └───────────┬───────────┘           │
-                                                                       │                       │
-                                                                    Passes                  Trips
-                                                                       │                       │
-                                                                       │              Static chunk summary
-                                                                       │              (no LLM, raw text excerpts)
-                                                                       └───────────┬───────────┘
-                                                                                   │
-                                                                                   ▼
-                                                                       ┌───────────────────────┐
-                                                                       │  Citation Integrity & │ ➔ Convert [SOURCE: N] to [[N]](url)
-                                                                       │ Response Quality Gate │ ➔ Silently strip phantom citations
-                                                                       │ (src/lib/rag/chat.ts) │ ➔ Validate non-trivial response
-                                                                       └───────────┬───────────┘
-                                                                                   │
-                                                                                   ▼
-                                                                       ┌───────────────────────┐
-                                                                       │   Save Tier 1 Cache   │ ➔ TTL: 2 Hours (7200s)
-                                                                       │  (Validated Answers)  │   Release Singleflight Mutex
-                                                                       └───────────────────────┘
+```mermaid
+flowchart TD
+    Q[Question and bounded conversation history] --> R[Injection and identity rails]
+    R --> C[Versioned answer cache and coalescing]
+    C --> S[Original-query hybrid retrieval]
+    S --> D{Decisive standalone match?}
+    D -->|Yes| G[Grounded generation]
+    D -->|No, or follow-up| E[History-aware query expansion]
+    E --> H[Merge hybrid results and assess confidence]
+    H -->|Out of domain| N[Refusal]
+    H -->|Uncertain, excess candidates| V[Bounded neural reranking]
+    H -->|Decisive| G
+    V --> G
+    G --> O[Output safety and citation validation]
+    O -->|No direct evidence| N
+    O -->|Valid generated answer| A[Return answer and optionally cache]
+    O -->|Invalid or unavailable| F[Uncached, redacted public excerpts]
 ```
+
+Follow-ups resolve references before retrieval. If embeddings fail, retrieval uses PostgreSQL full-text search. Reranking failures retain the original retrieval order. Private background passages can inform answers under the existing publication policy, but never appear in source metadata or extractive fallbacks.
+
+
+### Answering and security fixes, 2026-10-15
+
+Generated public answers require valid source tags. Missing or phantom tags trigger an uncached extractive fallback. Grounding rules use a dedicated system message, and biography facts come from retrieved passages. Answer cache v3 includes conversation history, retrieval settings, and the generation model.
+
+The chat endpoint limits the actual body to 32 KiB, rejects browser requests with a different origin, and sends successful responses with `Cache-Control: no-store`. Output checks validate markdown links and complete URLs, including query strings and fragments. Source titles, headings, and snippets pass through redaction. Extractive fallbacks strip embedded markdown links, omit indexing labels, and return at most two excerpts made of complete sentences. They clearly state that a verified AI answer was unavailable.
+
+Query embeddings use up to two attempts, each bounded to four seconds, with a 250 ms retry delay. Permanent client errors do not retry. Embedding failures fall back to keyword retrieval without caching degraded search results. Rewrite and generation calls have abort signals, and timeout timers clear when calls settle.
 
 ### RAG Highlights:
 1. **Multi-Layer Guardrails (`src/lib/rag/guardrails.ts`):** Zero-token Stage 0 input deflection for prompt injections and identity meta-questions with encoding-bypass normalization (homoglyphs, leetspeak, zero-width joiners) and layered `llm-prompt-guard`. Stage 7.5 output safety filters scanning for prompt-echo exfiltration, redacting PII/secrets, and catching degenerate/gibberish output.
-2. **Multi-Query Parallel Hybrid Search:** Query expansion generates 2 alternative phrasings via Gemini (lossless, history-aware — resolves follow-up pronouns without inventing entities), executing 3 concurrent hybrid vector + FTS searches with noise-floor threshold `0.25`, merged and deduplicated by maximum RRF score ($k=60, w_v=0.65, w_t=0.35$).
-3. **Always-Rerank Precision Pool:** Every retrieval query with candidates routes through `voyageai/rerank-2.5-lite` evaluating up to 12 candidates with 800 characters of context each.
+2. **Adaptive retrieval:** Decisive standalone questions use the original query directly. Uncertain queries add two rewrites, and follow-ups resolve references against history before retrieval. Results merge by chunk ID and maximum RRF score.
+3. **Adaptive reranking:** Uncertain result sets with more than the requested number of candidates use VoyageAI, with a 4.5-second deadline covering response headers and body. Decisive matches skip reranking.
 4. **Lost-in-the-Middle Mitigation:** Context candidates are reordered `[1, 3, 5, 6, 4, 2]` so top-scoring chunks reside at the beginning and end where LLM attention is strongest.
 5. **5-Step Grounding Protocol:** Enforced in system instructions with a chain-of-thought verification procedure ensuring every claim traces to an explicit source excerpt.
 6. **Two-Tier Distributed Caching:** Dragonfly in-memory store on VPS hosting Tier 1 Answer Cache (2h TTL) and Tier 2 Vector Embedding Cache (7d TTL).
 7. **Safe Singleflight Mutex:** Tokenized distributed locks (`SET NX EX 15`) with atomic Lua release scripts prevent cache stampedes during concurrent traffic bursts.
-8. **Early Refusal Gate (Obvious Negatives Only):** Rejects only extreme out-of-domain queries (vector < 0.33 AND no FTS match) in <85ms without consuming any LLM tokens; ambiguous candidates flow through to the reranker and grounded generation instead of being rejected by weaker pre-rerank signals.
+8. **Refusals:** Low-confidence retrieval returns an early refusal. When retrieved passages do not answer the question, generation can return `[NO_ANSWER]`, which becomes a deterministic refusal with no source list.
 9. **Adaptive Context Pruning:** After reranking, chunks scoring below 45% of the leader are dropped (top 2 always kept) — context stays as small as possible while large enough to answer, so tail noise never dilutes grounding.
-10. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if Gemini experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
+10. **Circuit Breakers & Static Fallback:** Half-open probing isolates upstream API issues; if the text provider experiences an outage or output guards trip, the system immediately returns verified static excerpt summaries.
 11. **Document Lifecycle & Privacy Firewall (`src/lib/rag/db.ts`, `ingest.ts`):** Deleted or draft sources are auto-pruned from pgvector on the next ingest via `last_seen_at` tombstones; every ingest run also physically purges all stale answer/search caches; docs marked private (any `pvt/` folder or `private: true` frontmatter) ground answers as `[BACKGROUND]` context but are structurally uncitable — no `[SOURCE: N]` id exists; `hybridSearch` now enforces `AND d.is_private = false` at the SQL level by default, with `includePrivate: true` available exclusively to the chat pipeline so private grounding context still works; enforced and verified by `npm run rag:privacy`.
 12. **Automated Quality Gates:** `rag:eval` runs the ground-truth suite (`tests/rag/eval.json`) against regression thresholds (Recall@3, citation validity, refusal accuracy), plus an adversarial suite (`tests/rag/eval-adversarial.json`: out-of-domain, near-domain, and history-anchored follow-up/noise-injection cases). Follow-up cases carry `history`, exercising the conversation-aware pipeline end-to-end. `rag:privacy` audits private-document isolation end-to-end.
-13. **Persona Tuning (Default + Personal-Life):** Default answers use a casual, conversational "Jainil thinking out loud" voice — lowercase-leaning, tradeoff-aware, emoji-sparingly, with zero corporate AI filler — while still citing every fact. Questions about Jainil's relationship (keyword-gated against private context) additionally shift into a warm, emotionally expressive persona grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work. Detection matches the current question or recent conversation history, so indirect follow-ups stay in persona.
+13. **Persona Tuning (Default + Personal-Life):** Default answers use a casual, conversational "Jainil thinking out loud" voice — lowercase-leaning, tradeoff-aware, emoji-sparingly, with zero corporate AI filler — while still citing every fact. Questions about Jainil's relationship (keyword-gated against private context) additionally shift into a warm, emotionally expressive persona grounded strictly in `[BACKGROUND]` excerpts, with a fixed code-appended sign-off redirecting back to his work. Persona detection matches the current question and requires retrieved private context.
 14. **Conversational Follow-up Memory:** The client sends the last 10 messages with every request; the API sanitizes them (per-turn cap, role validation, citation links `[[N]](url)` collapsed to `[N]`, personal-life closer stripped via global regex), query rewriting resolves pronouns against them, and they are injected into the generation prompt. The answer cache key and singleflight lock hash include the history, so follow-ups never collide with first-ask cached answers. No server-side conversation storage — the chat stays stateless and anonymous.
-15. **Security Hardening (2026-08-30):** `expandQueries` Gemini call now has a dedicated `systemInstruction` treating history as data-not-instructions (with `<conversation_history>` boundary tags), preventing history-injection from hijacking retrieval queries. `clients.ts` validates API keys at startup and throws immediately on missing keys. DB-level `ALTER TABLE` migrations split into individual calls — `node-postgres` silently drops all-but-first in bundled strings. Batch embedding responses now validated per-vector before DB commit; symlink guard added to recursive file walker; `closeCache()` race condition on shutdown patched.
+15. **Security Hardening (2026-08-30):** `expandQueries` OpenRouter chat call now has a dedicated system message treating history as data-not-instructions (with `<conversation_history>` boundary tags), preventing history-injection from hijacking retrieval queries. `clients.ts` validates API keys at startup and throws immediately on missing keys. DB-level `ALTER TABLE` migrations split into individual calls — `node-postgres` silently drops all-but-first in bundled strings. Batch embedding responses now validated per-vector before DB commit; symlink guard added to recursive file walker; `closeCache()` race condition on shutdown patched.
 
 ---
 
@@ -205,7 +125,7 @@ The visual identity is defined in **[DESIGN.md](DESIGN.md)** and implements a di
 | **Vector Database** | [PostgreSQL 16](https://www.postgresql.org) + [pgvector](https://github.com/pgvector/pgvector) (1536-dim HNSW Cosine Index) |
 | **In-Memory Cache & Mutex**| [Dragonfly](https://www.dragonflydb.io) (Multi-threaded Redis-compatible engine on VPS) |
 | **Dense Embeddings** | OpenAI `text-embedding-3-small` (1536 dimensions via [OpenRouter SDK](https://openrouter.ai)) |
-| **Primary Generation LLM** | Google Gemini 2.5 Flash ([@google/genai](https://www.npmjs.com/package/@google/genai)) |
+| **Primary Generation LLM** | Claude Haiku 5.5 via OpenRouter ([@openrouter/sdk](https://www.npmjs.com/package/@openrouter/sdk)) |
 | **Neural Reranker** | VoyageAI Rerank 2.5 Lite (`voyageai/rerank-2.5-lite` via OpenRouter) |
 | **SEO, AEO & Standards** | `astro-llms-md`, `@astrojs/sitemap`, `astro-seo-schema`, W3C WebMCP API |
 | **Privacy & Policy** | [@openpolicy/sdk](https://www.npmjs.com/package/@openpolicy/sdk), `@openpolicy/astro` |
@@ -245,7 +165,8 @@ The visual identity is defined in **[DESIGN.md](DESIGN.md)** and implements a di
 │   │       ├── circuit.ts      # Circuit Breaker state machine (Closed/Open/Half-Open)
 │   │       ├── cleaner.ts      # MDX cleaner, YAML parser & HTML text extractor
 │   │       ├── clients.ts      # Google GenAI & OpenRouter SDK instances
-│   │       ├── confidence.ts   # Multi-signal confidence estimator & routing gates
+│   │       ├── generation.ts              # Bounded OpenRouter text generation
+│       ├── confidence.ts   # Multi-signal confidence estimator & routing gates
 │   │       ├── db.ts           # PostgreSQL pool, schema init & CRUD queries
 │   │       ├── embeddings.ts   # OpenRouter dense vector embedding generator
 │   │       ├── guardrails.ts   # Input injection/identity rails, normalization & output PII/exfil gate
@@ -327,9 +248,8 @@ cp .env.example .env
 
 ```env
 # ── LLM & AI Providers ───────────────────────────────────────────────────────
-GEMINI_API_KEY=your_google_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash
 
+RAG_MODEL=anthropic/claude-haiku-5.5
 OPENROUTER_API_KEY=your_openrouter_api_key
 EMBEDDING_PROVIDER=openrouter
 EMBEDDING_MODEL=text-embedding-3-small
@@ -348,6 +268,8 @@ KB_VERSION=20260825_1
 # ── RAG Evaluation Thresholds (Optional) ────────────────────────────────────
 RAG_MIN_RECALL_AT_3=85
 RAG_MIN_REFUSAL_ACCURACY=95
+RAG_MIN_CITATION_VALIDITY=100
+RAG_MIN_CITATION_BACKED_ANSWERS=85
 
 # ── Analytics ────────────────────────────────────────────────────────────────
 UMAMI_WEBSITE_ID=8169229f-6d5b-4ffc-ac38-9036661b5d94
@@ -359,54 +281,35 @@ UMAMI_WEBSITE_ID=8169229f-6d5b-4ffc-ac38-9036661b5d94
 
 Jainil's RAG includes a continuous regression evaluation suite (`scripts/rag/eval.ts`) testing 24 ground-truth queries across 6 categories, plus an adversarial suite (`tests/rag/eval-adversarial.json`) covering out-of-domain, near-domain, and conversation-follow-up cases (with injected-noise history). Run it via `npm run rag:eval -- tests/rag/eval-adversarial.json`. The harness passes each case's optional `history` through to the pipeline, so follow-up resolution is tested end-to-end:
 
-```text
-──────────────────────────────────────────────────────
-📊 JAINIL'S RAG EVALUATION REPORT
-──────────────────────────────────────────────────────
-Total Test Questions:   24
+Run the current suites instead of treating a historical report as a production guarantee:
 
-🔍 RETRIEVAL
-Recall@1:               94.7% (18/19)
-Recall@3:               100% (19/19)
-
-🧠 CITATIONS & RESPONSE QUALITY
-Citation Validity:            100% (128/128 valid links)
-Citation-Backed Answer Rate:  100% (19/19)
-Invalid Cached Responses:     0
-
-🛡️ REFUSAL
-Refusal Accuracy:       100% (5/5) [Zero hallucinations, rejected in < 85ms]
-
-⚡ ROUTING BREAKDOWN
-⚡ Fast-Path:            16
-🧠 Deep-Path:            3
-🛡️ Early Refusals:       5
-────────────────────────────────────
-Total Handled:          24/24
-
-⏱️ PERFORMANCE
-Answer Cache Hit:       ~10–80ms
-Fast-Path P50:          1388ms
-Deep-Path P50:          2382ms
-Overall P50:            1271ms
-Overall Average:        1153ms
-Overall P95:            2382ms
-
-🔌 CIRCUIT & RERANKER TELEMETRY
-Reranker Circuit State:  CLOSED
-Primary LLM Circuit:     CLOSED
-Reranker Attempts:       3 (Success: 3, Timeouts: 0, Errors: 0)
-
-📂 Category Performance:
-- profile     : 100% (3/3)
-- projects    : 100% (3/3)
-- experience  : 100% (1/1)
-- skills      : 100% (2/2)
-- article     : 100% (10/10)
-- negative    : 100% (5/5)
-──────────────────────────────────────────────────────
-🎉 EVALUATION PASSED: All regression quality gates met!
+```bash
+npm run test:rag
+npm run test:guardrails
+npm run rag:eval
+npm run rag:eval -- tests/rag/eval-adversarial.json
 ```
+
+The live evaluator disables answer/search caches, while query-embedding caching remains enabled. It measures retrieval recall, citation URL validity, keyword-backed generated answers, refusals, fallback counts, and latency. These checks do not prove that every factual claim follows from its citation. Extractive fallbacks are excluded from generated-answer coverage. Cache-hit latency is not measured by this command.
+
+Verification on 2026-10-15 with `anthropic/claude-haiku-5.5`, using the indexed corpus and configured OpenRouter account:
+
+| Metric | Standard suite |
+|---|---|
+| Cases | 24 |
+| Recall@1 / Recall@3 | 100%, 19/19 positive cases |
+| Citation URL validity | 100%, 149/149 links |
+| Citation-backed generated answers | 100%, 19/19 |
+| Refusal accuracy | 100%, 5/5 |
+| Extractive fallbacks | 0 |
+| Overall median / P95 | 4356 ms / 7543 ms |
+
+The seven-case adversarial suite also passed: Recall@3 3/3, citation-backed generated answers 3/3, citation URL validity 9/9, and refusals 4/4. Neither suite used extractive fallbacks. The 26 offline regression tests and live privacy audit passed. A separate repeated Claude Code query returned the cached answer in 115 ms; this single probe is not a cache-latency benchmark.
+
+These are results for this corpus and run, not a guarantee of factual accuracy on arbitrary questions. The VoidZero fixture was corrected to ask about JavaScript tooling: its article contains no Vite-specific claim.
+
+
+If the text provider returns HTTP 429 during a suite, pace the calls with `RAG_EVAL_DELAY_MS=6000 npm run rag:eval`. Provider quota failures produce uncached, clearly labeled excerpts and still fail the generated-answer coverage gate. They are not evidence of faster successful generation.
 
 ---
 

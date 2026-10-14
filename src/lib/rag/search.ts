@@ -54,8 +54,11 @@ export async function hybridSearch(
   }
 
   // 1. Generate query embedding (Tier 2 Dragonfly Cache)
-  const queryVector = await embedText(query, 'RETRIEVAL_QUERY');
-  const vectorStr = `[${queryVector.join(',')}]`;
+  const queryVector = await embedText(query, 'RETRIEVAL_QUERY').catch(() => {
+    console.warn('[rag/search] Embeddings unavailable; using keyword retrieval.');
+    return null;
+  });
+  const vectorStr = queryVector ? `[${queryVector.join(',')}]` : null;
 
   // 2. Parallel Database Execution
   const [vectorRows, textRows] = await withDb(async (client) => {
@@ -132,7 +135,9 @@ export async function hybridSearch(
 
     const fetchLimit = limit * 3;
     const [vRes, tRes] = await Promise.all([
-      client.query<RawDbRow>(vectorSql, [...queryParams, vectorStr, threshold, fetchLimit]),
+      vectorStr
+        ? client.query<RawDbRow>(vectorSql, [...queryParams, vectorStr, threshold, fetchLimit])
+        : Promise.resolve({ rows: [] as RawDbRow[] }),
       client.query<RawDbRow>(textSql, [...queryParams, query, fetchLimit]).catch((err) => {
         console.warn('[rag/search] FTS query failed, using vector results only:', err);
         return { rows: [] as RawDbRow[] };
@@ -211,7 +216,7 @@ export async function hybridSearch(
     return hybridSearch(query, { ...options, intent: 'general' });
   }
 
-  if (cacheKey && finalResults.length > 0) {
+  if (cacheKey && queryVector && finalResults.length > 0) {
     await setCached(cacheKey, finalResults, 3600);
   }
 

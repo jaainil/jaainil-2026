@@ -87,8 +87,8 @@ export function hashString(str: string): string {
 }
 
 // Versioned Cache Key Generators
-export function getAnswerCacheKey(query: string, kbVersion = currentKbVersion): string {
-  return `rag:answer:v2:${kbVersion}:${hashString(normalizeQuery(query))}`;
+export function getAnswerCacheKey(query: string, kbVersion = currentKbVersion, scope: Record<string, unknown> = {}): string {
+  return `rag:answer:v3:${kbVersion}:${hashString(JSON.stringify([normalizeQuery(query), scope]))}`;
 }
 
 export function getEmbeddingCacheKey(model: string, query: string): string {
@@ -229,7 +229,7 @@ export async function purgeRagAnswerAndSearchCaches(): Promise<number> {
   const client = getRedisClient();
   if (!client) return 0;
   let deleted = 0;
-  for (const pattern of ['rag:answer:v2:*', 'rag:search:v2:*']) {
+  for (const pattern of ['rag:answer:v2:*', 'rag:answer:v3:*', 'rag:search:v2:*']) {
     try {
       // SCAN (non-blocking) — never KEYS, which stalls the Dragonfly event loop
       const stream = client.scanStream({ match: pattern, count: 500 });

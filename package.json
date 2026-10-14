@@ -10,6 +10,7 @@
     "preview": "astro preview",
     "clean": "rm -rf dist",
     "check": "astro check",
+    "test:rag": "tsx --test scripts/rag/pipeline.test.ts",
     "test:guardrails": "tsx scripts/rag/guardrails.test.ts",
     "rag:init": "tsx --env-file=.env scripts/rag/init-db.ts",
     "rag:index": "tsx --env-file=.env scripts/rag/index-content.ts",

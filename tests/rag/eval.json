@@ -137,10 +137,10 @@
   },
   {
     "id": "article_09",
-    "question": "What is VoidZero and npmx building together for Vite?",
+    "question": "What are VoidZero and npmx building for JavaScript developers?",
     "category": "article",
     "expected_sources": ["/articles/web-frameworks-benchmark"],
-    "expected_keywords": ["VoidZero", "npmx", "Vite"],
+    "expected_keywords": ["VoidZero", "npmx", "bundling"],
     "should_refuse": false
   },
   {

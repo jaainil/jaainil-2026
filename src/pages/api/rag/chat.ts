@@ -4,10 +4,15 @@ export const prerender = false;
 
 import { askRag, PERSONAL_CLOSER } from '../../../lib/rag/chat.js';
 import { checkRateLimit } from '../../../lib/rag/cache.js';
+import { readChatBody, ChatBodyTooLarge } from '../../../lib/rag/request.js';
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
+    const origin = request.headers.get('origin');
+    if (origin && origin !== new URL(request.url).origin) {
+      return Response.json({ error: 'Cross-origin requests are not allowed.' }, { status: 403 });
+    }
     if (!request.headers.get('content-type')?.includes('application/json')) {
       return Response.json({ error: 'Content-Type must be application/json.' }, {
         status: 415,
@@ -25,7 +30,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    const body = await request.json().catch(() => null);
+    const body = await readChatBody(request) as Record<string, unknown> | null;
     if (typeof body?.question !== 'string') {
       return Response.json({ error: 'A question is required.' }, {
         status: 400,
@@ -74,8 +79,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       cached: result.cached,
       model: result.model,
       intent: result.intent,
-    });
+    }, { headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
   } catch (err) {
+    if (err instanceof ChatBodyTooLarge) {
+      return Response.json({ error: err.message }, { status: 413 });
+    }
     console.error('[api/rag/chat]', err);
     return Response.json({ error: 'RAG service unavailable.' }, {
       status: 503,

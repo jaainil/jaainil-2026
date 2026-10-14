@@ -1,4 +1,5 @@
 import { openrouter } from './clients.js';
+import { withTimeout } from './rerank.js';
 import { getCached, setCached, getEmbeddingCacheKey } from './cache.js';
 
 export const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'text-embedding-3-small';
@@ -29,20 +30,22 @@ export async function embedText(
     }
   }
 
+  const maxAttempts = taskType === 'RETRIEVAL_QUERY' ? 2 : 5;
+  const timeoutMs = taskType === 'RETRIEVAL_QUERY' ? 4000 : 15000;
   let attempts = 0;
-  while (attempts < 5) {
+  while (attempts < maxAttempts) {
     attempts++;
     try {
-      const res: any = await openrouter.embeddings.generate({
+      const res: any = await withTimeout(openrouter.embeddings.generate({
         requestBody: {
           model: EMBEDDING_MODEL,
           input: cleanText,
           dimensions: EMBEDDING_DIMENSION,
         },
-      });
+      }, { timeoutMs, retries: { strategy: 'none' } }), timeoutMs, 'embedding');
 
       const vector = res.data?.[0]?.embedding;
-      if (!vector || vector.length !== EMBEDDING_DIMENSION) {
+      if (!Array.isArray(vector) || vector.length !== EMBEDDING_DIMENSION || !vector.every(Number.isFinite)) {
         throw new Error('Invalid embedding vector dimension from OpenRouter SDK');
       }
 
@@ -53,8 +56,9 @@ export async function embedText(
 
       return vector;
     } catch (err: any) {
-      if (attempts >= 5) throw err;
-      const waitMs = Math.min(Math.pow(2, attempts) * 500, 6000);
+      const status = err?.statusCode ?? err?.status;
+      if (attempts >= maxAttempts || (status >= 400 && status < 500 && status !== 408 && status !== 429)) throw err;
+      const waitMs = taskType === 'RETRIEVAL_QUERY' ? 250 : Math.min(Math.pow(2, attempts) * 500, 6000);
       await new Promise((r) => setTimeout(r, waitMs));
     }
   }
