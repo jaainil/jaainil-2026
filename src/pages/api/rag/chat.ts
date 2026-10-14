@@ -7,10 +7,11 @@ import { checkRateLimit } from '../../../lib/rag/cache.js';
 import { readChatBody, ChatBodyTooLarge } from '../../../lib/rag/request.js';
 import type { APIRoute } from 'astro';
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request, clientAddress, site }) => {
   try {
     const origin = request.headers.get('origin');
-    if (origin && origin !== new URL(request.url).origin) {
+    const allowedOrigins = new Set([new URL(request.url).origin, site?.origin].filter(Boolean));
+    if (origin && !allowedOrigins.has(origin)) {
       return Response.json({ error: 'Cross-origin requests are not allowed.' }, { status: 403 });
     }
     if (!request.headers.get('content-type')?.includes('application/json')) {

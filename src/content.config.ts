@@ -28,6 +28,7 @@ const articles = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
+    seoTitle: z.string().optional(),
     category: z.string(),
     publishedAt: z.string().or(z.date()).transform((val) => new Date(val)),
     authors: z.array(z.string()).default(['jainil-prajapati']),

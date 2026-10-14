@@ -1,0 +1,461 @@
+---
+title: "I Almost Sold My First Vibe-Coded App to a Pharma Company. And It Wasn't Just Another AI Wrapper."
+seoTitle: "I Almost Sold My First Vibe-Coded App to a Pharma Company"
+category: engineering
+description: "My first vibe-coded app almost became enterprise software for a pharmaceutical company. Here's what I built, the tech stack, and what I learned."
+publishedAt: "2026-10-10T00:00:00.000Z"
+authors: [jainil-prajapati]
+tags: [Vibe Coding, AI, React, Supabase, PostgreSQL, TanStack Start, Software Engineering]
+---
+
+You know what's funny about vibe coding?
+
+One day, you're building random stuff with AI because it's fun. And then suddenly, you're discussing software that could potentially be used inside a pharmaceutical manufacturing facility.
+
+Yeah. That almost happened to me.
+
+I'm 23, I work in IT, and I almost sold my **first vibe-coded application to a pharmaceutical company in Ahmedabad, India.**
+
+It was a **Tray Management System**, or TMS, designed to track pharmaceutical vials through manufacturing operations, cold storage, visual inspection, and packaging.
+
+We're talking barcode scanners, database transactions, electronic signatures, audit trails, and rules designed around pharmaceutical manufacturing requirements.
+
+The kind of software where a small mistake isn't necessarily just a UI bug.
+
+Pretty crazy for a first vibe-coded project, right?
+
+I won't reveal the company's name or its confidential operational details, but I want to share what I built, the engineering behind it, and why this experience completely changed how I think about AI-assisted software development.
+
+And one clarification: **I almost sold it. I'm not claiming the deal closed or that the application was deployed as a validated production system.**
+
+That distinction matters, especially in this industry.
+
+## How my first vibe-coded app became a serious project
+
+Most people associate vibe coding with small projects.
+
+You describe an idea to an AI coding assistant, it generates code, you make adjustments, and eventually something works.
+
+And honestly, that's a pretty amazing experience.
+
+You can go from having an idea to interacting with a working application much faster than you could a few years ago.
+
+But there's a huge difference between building an app that works in a browser and building software that a real business can depend on.
+
+My project made that difference painfully clear.
+
+The application was intended to help manage trays containing pharmaceutical vials as they moved through different manufacturing stages.
+
+At first glance, that sounds like an inventory management problem.
+
+Create a tray. Scan a barcode. Update its location.
+
+Simple, right?
+
+Well, not exactly.
+
+These were pharmaceutical products moving through controlled manufacturing environments where temperature exposure, inspection results, accountability, and documentation can all matter.
+
+Suddenly, something as ordinary as clicking a button becomes a proper engineering problem.
+
+## Tracking pharmaceutical trays is more complicated than it sounds
+
+Here's a simplified example.
+
+Imagine a pharmaceutical facility manufacturing injectable medication.
+
+The medicine is filled into glass vials. Some products then undergo a process called **lyophilization**, commonly known as freeze-drying.
+
+After manufacturing, trays of vials may need to move between refrigerated storage areas, inspection stations, and packaging operations.
+
+Each tray can contain dozens or hundreds of vials.
+
+And the company needs reliable answers to some very basic questions:
+
+- Where is this tray right now?
+- How many vials have been inspected?
+- How many passed inspection?
+- How many were rejected or taken as quality-control samples?
+- How long has this tray been outside controlled storage?
+- Who performed and approved the operation?
+
+It sounds simple until you realize that different people might be scanning trays from different stations, multiple movements might happen close together, and a network request might fail at the worst possible time.
+
+Now imagine trying to reconstruct everything that happened to a particular tray during an audit.
+
+That's the kind of problem the software was designed to address.
+
+The point was to make important manufacturing movements traceable, consistent, and harder to record incorrectly.
+
+## How my Tray Management System worked
+
+*The core idea: give every tray a digital identity and follow it through its operational lifecycle.*
+
+I designed the application around a controlled sequence of states.
+
+In simplified form, the workflow looked like this:
+
+**Tray created → Manufacturing completed → Cold storage → Visual inspection → Post-inspection storage → Packaging completed**
+
+Each transition represents a physical operation that needs to be recorded.
+
+### Barcode-based tray tracking
+
+Every tray gets a unique identifier that can be represented as a Code 128 barcode.
+
+An operator scans that barcode at an appropriate workstation to initiate a movement.
+
+The system can then associate the recorded event with the tray, location, user, and timestamp.
+
+I wanted the workflow to be practical for operators, not just attractive to developers.
+
+Because there's a big difference between using an app at your desk and using it repeatedly on a busy manufacturing floor.
+
+Nobody wants to navigate five beautiful dropdown menus just to record that a tray entered cold storage.
+
+### Cold-storage and hold-time monitoring
+
+This is where things became more interesting.
+
+Certain pharmaceutical products have validated storage conditions and maximum allowable exposure times.
+
+For example, the engineering design included workflows involving refrigerated storage at **2°C–8°C**, with configurable limits on how long trays could remain outside that environment. These are product-specific design examples, not universal storage requirements.
+
+A tray leaving a cold room starts accumulating exposure time. When it returns, the corresponding interval is recorded.
+
+If the tray leaves again, the next exposure interval adds to the previous total.
+
+The important equation is:
+
+**Total exposure = Sum of all time intervals spent outside controlled storage.**
+
+If the configured limit is approaching, the system can display a warning.
+
+If it's exceeded, the application can flag an exception for investigation.
+
+One design decision was to calculate authoritative timestamps on the server rather than trusting the clock on an operator's computer.
+
+Because letting someone change their laptop's clock to affect a regulated hold-time calculation would be a pretty terrible design choice.
+
+Of course, software timestamps alone don't prove that a product remained within temperature specifications. That still depends on validated procedures, equipment, and environmental records.
+
+### Visual inspection and quantity reconciliation
+
+This was one of my favorite engineering challenges.
+
+During visual inspection, vials can be classified into different outcomes, such as acceptable units, rejected units, or quality-control samples. Some units may remain uninspected and return to storage.
+
+The system needed to account for every vial.
+
+Let's say a tray has 100 vials.
+
+An operator inspects 90, leaving 10 uninspected.
+
+Of those 90 inspected vials:
+
+- 85 pass.
+- 3 are rejected.
+- 2 become QC samples.
+
+The mathematics must reconcile:
+
+**90 inspected + 10 uninspected = 100 vials**
+
+And:
+
+**85 good + 3 rejected + 2 QC samples = 90 inspected**
+
+If those figures don't match, the operation should not be committed as a valid reconciliation.
+
+The engineering design enforced these rules at the database transaction level.
+
+Why not just validate the numbers in React?
+
+Because frontend validation is for user experience.
+
+**Backend validation is for protecting the data.**
+
+Anyone can bypass a browser's validation with a direct API request or a buggy integration.
+
+The database should still reject an impossible transaction.
+
+That's a lesson worth remembering for almost any serious application, not just pharmaceutical software.
+
+## The tech stack behind my first vibe-coded app
+
+I didn't build the application using a traditional enterprise stack such as Java Spring Boot or .NET.
+
+The architecture was based on a modern TypeScript and React ecosystem.
+
+Here's the main stack from the project's engineering documentation:
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 19 |
+| Full-stack framework | TanStack Start |
+| Routing | TanStack Router |
+| Styling | Tailwind CSS v4 |
+| Backend runtime | Node.js / Nitro |
+| Database | PostgreSQL / Supabase |
+| ORM | Drizzle ORM |
+| Authentication | Supabase Auth |
+| Barcode generation | JsBarcode |
+| Camera scanning | ZXing |
+| PDF generation | pdf-lib |
+| Testing | Vitest and Playwright |
+
+I particularly liked the combination of [TanStack Start](https://tanstack.com/start/latest), React, and [PostgreSQL](https://www.postgresql.org/docs/) for a workflow-heavy application. [Supabase](https://supabase.com/docs) provided database and authentication services.
+
+But I also learned that choosing a modern framework doesn't automatically make software enterprise-ready.
+
+The framework handles routing and rendering.
+
+It doesn't decide whether a pharmaceutical tray should be allowed to move into the next manufacturing stage.
+
+That logic has to be designed carefully.
+
+And this is where the project went beyond the usual vibe-coded prototype.
+
+## The engineering challenges that made this project interesting
+
+### What if two operators scan the same tray?
+
+Imagine two workstations trying to update the same tray at nearly the same time.
+
+Both might initially see the same state.
+
+If the application accepts both changes without proper concurrency handling, the recorded workflow could become inconsistent.
+
+The architecture therefore used version-based optimistic concurrency concepts.
+
+Each tray has a version number. A movement is expected to apply only when the underlying record is still at the version the operator originally read.
+
+A robust implementation needs to enforce that comparison atomically in the database, rather than checking a version and then blindly updating the row.
+
+It's a small technical distinction with enormous consequences.
+
+### What if the same barcode is scanned twice?
+
+Industrial barcode scanners can behave like keyboards, sending characters rapidly and ending with an Enter key.
+
+Double scans are a real possibility.
+
+The application design included a short duplicate-scan prevention window.
+
+But frontend protection isn't enough. Network retries can create duplicates even when an operator only scans once.
+
+That's why the backend also needed **idempotency**.
+
+Each movement request gets a unique request identifier.
+
+If a previously completed request arrives again, the system should recognize it rather than record the movement twice.
+
+Ideally, database uniqueness constraints and transactional logic make this guarantee reliable even under simultaneous retries.
+
+This is the sort of detail that's easy to overlook when an AI-generated demo looks perfectly functional.
+
+### What if someone modifies an old record?
+
+For ordinary applications, updating a database record is normal.
+
+For regulated manufacturing records, silently replacing historical information can create serious data-integrity problems.
+
+The application architecture used append-only event records and database triggers intended to prevent updates or deletion of historical movement, audit, and signature entries through normal application operations.
+
+That means corrections should be recorded as additional events rather than rewriting history.
+
+I found this concept interesting.
+
+Most applications are designed around asking, "What's the latest value?"
+
+But audit-oriented systems also need to answer:
+
+**"How did we get here, who changed what, and what did the system know at that moment?"**
+
+That's a completely different way of thinking about data.
+
+### Electronic signatures require more than a submit button
+
+The application also incorporated electronic-signature workflows inspired by FDA 21 CFR Part 11 requirements.
+
+The design involved re-authenticating users for certain actions, associating identity with the exact operation being authorized, and recording signature evidence.
+
+A short-lived authorization proof was intended to prevent a signature approval from being reused for a different transaction.
+
+That's much more meaningful than adding a checkbox labeled "I approve."
+
+Still, implementing signature controls doesn't automatically establish regulatory compliance. Identity policies, validation, documentation, access management, and operational procedures all need to be evaluated.
+
+### Generating reports people can actually audit
+
+Another part of the architecture involved creating PDF reports for manufacturing records.
+
+Instead of relying on browser print layouts, I used the `pdf-lib` approach documented in the project to generate structured PDF output.
+
+The design included barcodes, recorded events, signature information, and integrity-related hashes.
+
+The goal was deterministic document generation and easier record review.
+
+Adding a SHA-256 hash to a report isn't the same as digitally signing the PDF. Real document authenticity requires an appropriate verification and trust model.
+
+That distinction matters whenever people describe reports as tamper-proof.
+
+## Why pharmaceutical software is a different beast
+
+When you're building a personal project, a bug might mean the dashboard doesn't load.
+
+You fix it, push another commit, and move on.
+
+But pharmaceutical manufacturing systems exist in a much more controlled environment.
+
+Depending on their intended use, they may be subject to regulatory expectations involving electronic records, computer-system validation, auditability, access control, data integrity, and change management.
+
+Some of the references relevant to my design included:
+
+- [FDA 21 CFR Part 11](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-A/part-11), covering electronic records and electronic signatures. The FDA also publishes [guidance on its scope and application](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/part-11-electronic-records-electronic-signatures-scope-and-application).
+- EU GMP Annex 11, covering computerised systems used in GMP-regulated activities.
+- EU GMP Annex 1, covering manufacture of sterile medicinal products. Both annexes are available through the [European Commission's EudraLex Volume 4](https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en).
+
+Here's the important part, though.
+
+**Building features inspired by these requirements does not mean the software is validated or compliant.**
+
+A real production deployment can require documented risk assessments, validation evidence, security review, infrastructure qualification, standard operating procedures, training, backup and recovery controls, and change management.
+
+My engineering documentation also describes automated testing for areas such as quantity reconciliation, state transitions, database controls, signatures, scanning, and PDF generation.
+
+That's a meaningful engineering foundation.
+
+But having tests in a repository isn't the same as having a completed validation package or independent acceptance evidence.
+
+I think this is where the conversation around vibe coding needs a little more maturity.
+
+Generating code has become dramatically easier.
+
+**Proving that the generated system is trustworthy remains hard.**
+
+And sometimes, that second part is most of the actual work.
+
+## What vibe coding taught me about building real software
+
+I'm not going to pretend AI can magically transform someone into an expert pharmaceutical software engineer.
+
+It can't.
+
+But I'm also not going to dismiss what AI-assisted development makes possible.
+
+For someone who enjoys building things, being able to explore a full-stack product without manually writing every line from scratch is exciting.
+
+The challenge is knowing what you can safely delegate and what you must understand yourself.
+
+AI can help generate components, suggest database schemas, propose transaction logic, create tests, and explain unfamiliar APIs.
+
+But it can also produce code that looks correct while containing race conditions, authorization mistakes, weak assumptions, or missing failure handling.
+
+And some of those problems won't show up during a five-minute demo.
+
+My biggest takeaway was this:
+
+**Vibe coding can help you produce software quickly. It doesn't remove your responsibility for how that software behaves.**
+
+If your application affects money, sensitive data, manufacturing operations, or people's safety, you need to understand the actual system.
+
+You can't just say, "Well, the AI wrote it."
+
+That explanation won't help when a database transaction fails or an audit reveals inconsistent records.
+
+And honestly, I think that's a good thing.
+
+It means engineering judgment still matters.
+
+## So, did I actually sell the application?
+
+Not quite.
+
+That's why the title says **almost sold**.
+
+I got close enough to a real commercial opportunity that my first vibe-coded project stopped feeling like just another experiment.
+
+But I don't want to turn a near-sale into a fictional success story about signing a huge enterprise contract.
+
+A serious buyer evaluating software is one milestone.
+
+A signed agreement is another.
+
+And a validated, deployed manufacturing system is something else entirely.
+
+Those milestones shouldn't be confused.
+
+Even without calling this a completed sale, the experience changed my perspective.
+
+I started thinking about software in terms of real-world operational problems rather than just frameworks, UI libraries, and GitHub projects.
+
+It's easy to get excited about how fast AI lets you create a beautiful interface.
+
+It's much harder, and much more valuable, to understand an industry well enough to design meaningful software for it.
+
+## Your first vibe-coded app doesn't have to be a toy
+
+A lot of people make fun of vibe coding.
+
+Sometimes, fairly.
+
+The internet is full of AI-generated products that look polished until someone clicks the wrong button.
+
+But I don't think the answer is to dismiss the entire approach.
+
+The more interesting question is:
+
+**What happens when AI-assisted development is combined with actual domain knowledge, careful engineering, and a real business problem?**
+
+My first vibe-coded application nearly becoming a commercial product for a pharmaceutical manufacturer gave me a small glimpse of that possibility.
+
+An impressive demo still needs security reviews, validation, and real-world testing. And I wouldn't claim this project revolutionized pharmaceutical manufacturing or that AI did all the engineering.
+
+But going from experimenting with AI-generated code to designing a system around barcode scanners, cold-storage tracking, database integrity, and manufacturing records?
+
+That was a pretty surreal experience.
+
+And for me, it made building software even more interesting.
+
+Maybe the real opportunity is finding those boring, complicated problems that businesses deal with every day and building something useful.
+
+Anyway, that's the story of how I almost sold my first vibe-coded application to a pharma company.
+
+Not bad for a first project, I guess. :)
+
+For another angle on AI-assisted work, I've also written about [what happens when AI prompts start consuming your attention](/articles/tokens-are-cheap-thinking-isnt/).
+
+**Have you ever built something as a side project that unexpectedly turned into a real business opportunity? Or do you think vibe-coded applications still have a long way to go before enterprises can trust them?**
+
+I'd love to hear your experience.
+
+## Key takeaways
+
+- My first vibe-coded application was designed for pharmaceutical tray tracking and almost became a commercial sale.
+- The application combined React, TanStack Start, PostgreSQL, barcode scanning, and audit-oriented workflow controls.
+- Some of the hardest problems were concurrency, quantity reconciliation, idempotency, and maintaining reliable historical records.
+- Regulatory-oriented functionality is not a substitute for formal validation.
+- AI can accelerate development, but the responsibility for security, correctness, and production readiness remains with the developer.
+
+## Frequently asked questions
+
+### What is vibe coding?
+
+Vibe coding generally means building software by describing requirements in natural language to AI tools and iteratively guiding the generated implementation. Developers may still review, test, modify, and maintain the resulting code.
+
+### Can vibe-coded applications be used by enterprises?
+
+Potentially, yes. What matters is the quality of the resulting software and the evidence supporting its reliability, regardless of whether a human or AI initially wrote particular lines of code.
+
+### Which technologies did you use?
+
+The project used a React and TypeScript stack, including TanStack Start, Tailwind CSS, PostgreSQL, Supabase, Drizzle ORM, barcode libraries, PDF generation tools, and automated testing frameworks.
+
+### Was your application FDA-compliant?
+
+I designed functionality with relevant regulatory expectations in mind, but I wouldn't describe the system as formally compliant or validated without the necessary documented assessment and evidence.
+
+### Did you actually sell the software?
+
+No completed sale is being claimed here. The story is about a near-sale and the engineering experience behind the application.
