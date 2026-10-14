@@ -1,5 +1,6 @@
 ---
 export const prerender = true;
+import { articleImagePath } from '../lib/og/paths';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
@@ -53,16 +54,16 @@ const featuredArticles = allArticles
           class="group flex flex-col h-full rounded-2xl overflow-hidden transition-transform hover:-translate-y-1"
           style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);"
         >
-          {article.data.imageUrl && (
-            <div class="aspect-video overflow-hidden" style="border-bottom: 2px solid var(--keyline); background-color: var(--color-image-bg);">
+          {(
+            <div class="aspect-[1200/630] overflow-hidden" style="border-bottom: 2px solid var(--keyline); background-color: var(--color-image-bg);">
               <img
-                src={article.data.imageUrl.src}
+                src={articleImagePath(article.id)}
                 alt={article.data.title}
                 class="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
                 width="400"
-                height="225"
+                height="210"
               />
             </div>
           )}

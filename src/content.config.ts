@@ -26,13 +26,11 @@ const articles = defineCollection({
     pattern: '**/index.mdx', 
     base: './src/content/articles',
   }),
-  schema: ({ image }) => z.object({
+  schema: z.object({
     title: z.string(),
     category: z.string(),
     publishedAt: z.string().or(z.date()).transform((val) => new Date(val)),
     authors: z.array(z.string()).default(['jainil-prajapati']),
-    imageUrl: image().optional(),
-    imageAlt: z.string().optional(),
     description: z.string(),
     tags: z.array(z.string()).optional(),
     updatedAt: z.string().or(z.date()).transform((val) => new Date(val)).optional(),

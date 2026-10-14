@@ -13,11 +13,10 @@ const latestArticles: Article[] = allArticles
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
   .slice(0, 3)
   .map((a) => {
-    const { imageUrl, publishedAt, authors, ...rest } = a.data;
+    const { publishedAt, authors, ...rest } = a.data;
     return {
       id: a.id,
       ...rest,
-      imageUrl,
       readTime: a.body ? `${Math.max(1, Math.ceil(a.body.split(/\s+/).filter(Boolean).length / 200))} min read` : undefined,
       publishedAt: publishedAt.toISOString().split('T')[0],
       authors: authors.map((slug: string) => {

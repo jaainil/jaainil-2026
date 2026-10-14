@@ -4,7 +4,6 @@ export interface Author {
   avatarUrl: string;
 }
 
-import type { ImageMetadata } from 'astro';
 
 export interface Article {
   id: string;
@@ -12,9 +11,7 @@ export interface Article {
   category: string;
   publishedAt: string;
   authors: Author[];
-  imageUrl?: ImageMetadata;
   readTime?: string;
-  imageAlt?: string;
   description?: string;
   tags?: string[];
 }

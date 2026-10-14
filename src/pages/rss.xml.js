@@ -1,4 +1,5 @@
 export const prerender = true;
+import { articleImagePath } from '../lib/og/paths';
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { marked } from 'marked';
@@ -14,55 +15,6 @@ function escapeXml(unsafe) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
-}
-
-function getArticleImageInfo(imageField, siteUrl) {
-  if (!imageField) return null;
-
-  let src = '';
-  let format = '';
-
-  if (typeof imageField === 'string') {
-    src = imageField;
-  } else if (typeof imageField === 'object' && imageField !== null) {
-    if ('src' in imageField && typeof imageField.src === 'string') {
-      src = imageField.src;
-    }
-    if ('format' in imageField && typeof imageField.format === 'string') {
-      format = imageField.format.toLowerCase();
-    }
-  }
-
-  if (!src) return null;
-
-  const absoluteUrl = src.startsWith('http://') || src.startsWith('https://')
-    ? src
-    : new URL(src, siteUrl).toString();
-
-  if (!format) {
-    const cleanUrl = absoluteUrl.split('?')[0].toLowerCase();
-    if (cleanUrl.endsWith('.png')) format = 'png';
-    else if (cleanUrl.endsWith('.jpg') || cleanUrl.endsWith('.jpeg')) format = 'jpeg';
-    else if (cleanUrl.endsWith('.webp')) format = 'webp';
-    else if (cleanUrl.endsWith('.gif')) format = 'gif';
-    else if (cleanUrl.endsWith('.svg')) format = 'svg';
-    else if (cleanUrl.endsWith('.avif')) format = 'avif';
-  }
-
-  const mimeType = {
-    png: 'image/png',
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    webp: 'image/webp',
-    gif: 'image/gif',
-    svg: 'image/svg+xml',
-    avif: 'image/avif',
-  }[format] || 'image/jpeg';
-
-  return {
-    url: absoluteUrl,
-    type: mimeType,
-  };
 }
 
 function makeUrlsAbsolute(html, articlePath, siteUrl) {
@@ -134,7 +86,7 @@ export async function GET(context) {
   const items = await Promise.all(
     sortedArticles.map(async (article) => {
       const articleLink = `/articles/${article.id}/`;
-      const imageInfo = getArticleImageInfo(article.data.imageUrl, siteUrl);
+      const imageInfo = { url: new URL(articleImagePath(article.id), siteUrl).href, type: 'image/png' };
 
       // Get author name and format RFC 822 compliant author string (email (Name))
       const authorName = (article.data.authors || [])
@@ -158,7 +110,7 @@ export async function GET(context) {
 
       // Prepend hero cover image to content body if available
       const coverImageHtml = imageInfo
-        ? `<p><img src="${imageInfo.url}" alt="${escapeXml(article.data.imageAlt || article.data.title)}" /></p>\n`
+        ? `<p><img src="${imageInfo.url}" alt="${escapeXml(article.data.title)}" /></p>\n`
         : '';
 
       const fullContent = coverImageHtml + contentHtml;
