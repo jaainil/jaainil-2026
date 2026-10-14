@@ -16,5 +16,5 @@ This directory represents the site content of jaainil.com as an Open Knowledge F
 - [Jainil Prajapati (Jaainil)](./jainil-prajapati.md): Entity identity, aliases, roles, and verified credentials.
 - [Writenex CMS](./writenex-cms.md): Open-source visual CMS integration for Astro content collections published on npm.
 - [Dokploy Templates](./dokploy-templates.md): Upstream open-source PaaS blueprints and validation contributions.
-- [Shravonix Publication](./shravonix.md): Technical publication focusing on Linux internals, DevOps, and cloud systems.
+- [Field Notes](./field-notes.md): Technical publication focusing on Linux internals, DevOps, and cloud systems.
 - [Technical Stack & Infrastructure](./tech-stack.md): Detailed full-stack web and infrastructure capabilities.

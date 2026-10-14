@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#e8e2d9",
+        "createdAt": "2026-10-14T21:44:51.369Z",
+        "reason": "Agent selected a warm neutral cover canvas to satisfy the requested separation from the sky-blue page."
+      }
+    ]
+  }
+}

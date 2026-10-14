@@ -41,7 +41,7 @@
   },
   {
     "id": "projects_03",
-    "question": "Tell me about Blog Maker and Shravonix.",
+    "question": "Tell me about Blog Maker and Field Notes.",
     "category": "projects",
     "expected_sources": ["/resume/Jainil.pdf", "/about"],
     "expected_keywords": ["Blog Maker", "Astro", "Tailwind"],

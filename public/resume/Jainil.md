@@ -6,7 +6,7 @@ jainilprajapati9@gmail.com · +91 9725284302 · Anand, Gujarat, India · [https:
 
 ## Summary
 
-Full-Stack Developer & DevOps Engineer passionate about building scalable SaaS platforms and cloud infrastructure. Built and maintain **Writenex CMS** (npm published), run **Shravonix** (5K+ monthly readers, 90+ PageSpeed), and actively contribute to **Dokploy's** open-source templates. Experienced in delivering production-ready solutions with real client impact.
+Full-Stack Developer & DevOps Engineer passionate about building scalable SaaS platforms and cloud infrastructure. Built and maintain **Writenex CMS** (npm published), run **Field Notes** (5K+ monthly readers, 90+ PageSpeed), and actively contribute to **Dokploy's** open-source templates. Experienced in delivering production-ready solutions with real client impact.
 
 ## Profiles
 
@@ -106,7 +106,7 @@ Built an interactive Snapchat Lens using Snap AR Studio; explored 3D modeling an
 
 [https://remix-llm-resoures.vercel.app/](https://remix-llm-resoures.vercel.app/)
 
-### Shravonix — AI Tech Blog (Recently acquired by Eagle Pressure Systems)
+### Field Notes — AI Tech Blog (Recently acquired by Eagle Pressure Systems)
 
 - Built the entire site from scratch using **Astro** focused on performance and SEO
 - Achieved **90+ PageSpeed score across all pages** with optimized Core Web Vitals

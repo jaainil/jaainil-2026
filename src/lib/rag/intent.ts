@@ -49,7 +49,7 @@ export function classifyQueryIntent(query: string): QueryIntent {
 
   // 6. Technical Article & Publication Intent
   if (
-    hasKeyword(q, ['claude', 'vite', 'hotstar', 'jio', 'qwen', 'navic', 'compute', 'india', 'ethanol', 'roads', 'article', 'blog', 'shravonix'])
+    hasKeyword(q, ['claude', 'vite', 'hotstar', 'jio', 'qwen', 'navic', 'compute', 'india', 'ethanol', 'roads', 'article', 'blog'])
   ) {
     return 'article';
   }

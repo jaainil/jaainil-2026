@@ -1,15 +1,15 @@
 ---
 type: Periodical
-title: Shravonix Technical Publication
+title: Field Notes
 description: Independent technical writing archive covering Linux systems, cloud infrastructure, AI models, and web performance.
 resource: https://jaainil.com/articles
-tags: [shravonix, publication, technical-writing, linux, devops]
+tags: [field-notes, publication, technical-writing, linux, devops]
 timestamp: 2026-09-08T00:00:00Z
 ---
 
-# Shravonix Technical Publication
+# Field Notes
 
-Shravonix is an independent technical publication founded by [Jainil Prajapati (Jaainil)](./jainil-prajapati.md) in 2024.
+Field Notes is an independent technical publication founded by [Jainil Prajapati (Jaainil)](./jainil-prajapati.md) in 2024.
 
 ## Overview
 

@@ -12,7 +12,7 @@ Hiring managers and engineering managers evaluating Jainil Prajapati for full-st
 
 ## Product Purpose
 
-Personal portfolio + technical publication. It exists to earn interviews: prove shipping ability (real repos, merged PRs, an npm package), prove operational depth (Linux, Docker, CI/CD, self-hosting), and show communication skill through the Shravonix article archive (~25 published pieces, 5K monthly readers at peak). Success = a hiring manager emails or calls.
+Personal portfolio + technical publication. It exists to earn interviews: prove shipping ability (real repos, merged PRs, an npm package), prove operational depth (Linux, Docker, CI/CD, self-hosting), and show communication skill through the Field Notes article archive (~25 published pieces, 5K monthly readers at peak). Success = a hiring manager emails or calls.
 
 ## Positioning
 
@@ -20,7 +20,7 @@ Not a bootcamp-grad portfolio. The verifiable differentiators: 10+ merged PRs in
 
 ## Operating Context
 
-Viewed mostly on desktop during work hours by busy evaluators; also opened from phones after career fairs or meetups. Lives alongside a live production blog (Shravonix) on the same domain family; the portfolio homepage must coexist with /articles routes that keep their own layout.
+Viewed mostly on desktop during work hours by busy evaluators; also opened from phones after career fairs or meetups. Lives alongside a live production blog (Field Notes) on the same domain family; the portfolio homepage must coexist with /articles routes that keep their own layout.
 
 ## Capabilities and Constraints
 

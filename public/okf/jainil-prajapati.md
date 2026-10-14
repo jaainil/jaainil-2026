@@ -28,5 +28,5 @@ timestamp: 2026-09-08T00:00:00Z
 
 1. Author and maintainer of [Writenex CMS](./writenex-cms.md) (`@imjp/writenex-astro`).
 2. Contributor of 10+ merged deployment blueprints to [Dokploy Templates](./dokploy-templates.md).
-3. Founder of [Shravonix](./shravonix.md), an independent engineering publication with 25+ deep dives.
+3. Founder of [Field Notes](./field-notes.md), an independent engineering publication with 25+ deep dives.
 4. Moderator of the r/AI_India community, scaling it from 1,000 to 21,000 members.

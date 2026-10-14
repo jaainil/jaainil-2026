@@ -23,9 +23,9 @@ export const GET: APIRoute = async ({ props }) => {
   const fontSize = title.length > 140 ? 48 : title.length > 100 ? 56 : title.length > 65 ? 64 : 76;
   const row = { display: 'flex', alignItems: 'center' } as const;
   return new ImageResponse(
-    h('div', { style: { display: 'flex', flexDirection: 'column', width: '100%', height: '100%', background: '#aee1ff', color: '#10151b', padding: 42, fontFamily: 'Rubik Variable', fontWeight: 800 } },
+    h('div', { style: { display: 'flex', flexDirection: 'column', width: '100%', height: '100%', background: '#e8e2d9', color: '#10151b', padding: 42, fontFamily: 'Rubik Variable', fontWeight: 800 } },
       h('div', { style: { ...row, justifyContent: 'space-between', fontSize: 25, marginBottom: 26 } },
-        h('span', null, 'Shravonix'),
+        h('span', null, 'Field notes'),
         h('span', { style: { background: '#ffcd00', border: '2px solid #111111', borderRadius: 8, padding: '8px 16px', fontSize: 20 } }, props.category)),
       h('div', { style: { display: 'flex', flex: 1, alignItems: 'center', background: '#ffffff', border: '2px solid #111111', borderRadius: 14, boxShadow: '0 6px 0 #111111', padding: '30px 38px' } },
         h('div', { style: { fontSize, lineHeight: 1.12, letterSpacing: '-0.025em' } }, title)),

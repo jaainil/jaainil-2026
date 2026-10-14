@@ -9,7 +9,7 @@
 
 ## 1. Introduction and Scope
 
-This Privacy Policy explains how Jainil Prajapati ("we", "us", "our") collects, uses, processes, stores, and protects information when you visit [jaainil.com](https://jaainil.com), read our technical articles (formerly published under the Shravonix imprint), utilize the on-site AI assistant ("Ask Jainil's AI"), or communicate with us for software engineering, DevOps consulting, or hiring opportunities.
+This Privacy Policy explains how Jainil Prajapati ("we", "us", "our") collects, uses, processes, stores, and protects information when you visit [jaainil.com](https://jaainil.com), read our technical articles, utilize the on-site AI assistant ("Ask Jainil's AI"), or communicate with us for software engineering, DevOps consulting, or hiring opportunities.
 
 We are committed to strict **data minimization**. We do not run commercial ad trackers, we do not build cross-site behavioral profiles, and we never sell or rent your personal data to third parties.
 

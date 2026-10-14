@@ -1,6 +1,6 @@
 # 🧠 Jainil's RAG — Complete Architecture, System Design & Operational Manual
 
-> **Comprehensive Technical Documentation for Jainil's RAG** — a multi-tiered, sub-second, grounded Retrieval-Augmented Generation system powering **[jaainil.com](https://jaainil.com)** and **Shravonix**.
+> **Comprehensive Technical Documentation for Jainil's RAG** — a multi-tiered, sub-second, grounded Retrieval-Augmented Generation system powering **[jaainil.com](https://jaainil.com)** and **Field Notes**.
 >
 > **Last Updated:** 2026-08-30  
 > **Production Status:** Fully Operational (PostgreSQL + pgvector and Dragonfly both hosted on the production VPS — see `.env` for connection details)  
@@ -489,7 +489,7 @@ export type QueryIntent = 'profile' | 'skills' | 'experience' | 'projects' | 're
 | `experience`| `experience`, `work experience`, `work history`, `job`, `aexaware`, `role`, `company`, `career` | None (Unrestricted) |
 | `skills` | `skill`, `tech stack`, `technology`, `technologies`, `languages`, `tools`, `docker`, `linux`, `devops`, `proxmox`, `homelab`, `networking` | None (Unrestricted) |
 | `profile` | `who is`, `about jainil`, `education`, `college`, `svit`, `gujarat`, `anand` | `d.type = 'page' OR d.type = 'resume'` |
-| `article` | `claude`, `vite`, `hotstar`, `jio`, `qwen`, `navic`, `compute`, `india`, `ethanol`, `roads`, `article`, `blog`, `shravonix` | None (Unrestricted) |
+| `article` | `claude`, `vite`, `hotstar`, `jio`, `qwen`, `navic`, `compute`, `india`, `ethanol`, `roads`, `article`, `blog` | None (Unrestricted) |
 | `general` | Default fallback | None (Unrestricted) |
 
 ### 6.2 Multi-Query Parallel Hybrid Search (`chat.ts`, `search.ts`)
@@ -1110,4 +1110,4 @@ tests/
 ```
 
 ---
-*Maintained with precision for **[jaainil.com](https://jaainil.com)** and **Shravonix**.*
+*Maintained with precision for **[jaainil.com](https://jaainil.com)** and **Field Notes**.*

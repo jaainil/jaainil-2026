@@ -30,7 +30,7 @@
 
 ### 3. Open-Source Ecosystems & Technical Writing
 - **NPM Package**: Maintainer of `@imjp/writenex-astro` — zero-config visual editor for Astro content collections.
-- **Technical Publication**: Founder of Shravonix (5,000+ monthly peak readers) with 25+ published deep dives on Linux internals, DNS caching optimizations, AI systems, and cloud architecture.
+- **Technical Publication**: Founder of an independent tech publication (5,000+ monthly peak readers) with 25+ published deep dives on Linux internals, DNS caching optimizations, AI systems, and cloud architecture.
 - **Community**: Grew r/AI_India from 1,000 to 21,000 members as community moderator.
 
 ---

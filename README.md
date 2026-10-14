@@ -1,7 +1,7 @@
-# ⚡ Jainil Prajapati — Personal Engineering Platform & Shravonix
+# ⚡ Jainil Prajapati — Personal Engineering Platform & Field Notes
 
-> **Live Website:** [jaainil.com](https://jaainil.com) & [shravonix.com](https://shravonix.com)  
-> **Author:** Jainil Prajapati (Full-Stack & DevOps Engineer, Creator of [Writenex CMS](https://github.com/imjp9/writenex-astro), Contributor to [Dokploy/templates](https://github.com/Dokploy/templates))  
+> **Live Website:** [jaainil.com](https://jaainil.com)
+> **Author:** Jainil Prajapati (Full-Stack & DevOps Engineer, Creator of [Writenex CMS](https://github.com/imjp9/writenex-astro), Contributor to [Dokploy/templates](https://github.com/Dokploy/templates))
 > **Contact:** [jainilprajapati9@gmail.com](mailto:jainilprajapati9@gmail.com) • [LinkedIn](https://www.linkedin.com/in/jaainil/) • [GitHub](https://github.com/jaainil) • [npm](https://www.npmjs.com/~imjp)
 
 <div align="center">
@@ -12,7 +12,7 @@
 
 ## 🌟 Overview
 
-**Shravonix** is a high-performance personal engineering portfolio and technical publishing platform built with **Astro 7**, **React 19**, and **Tailwind CSS 4**. It showcases Jainil's verified work history, open-source contributions, DevOps infrastructure, and 25+ long-form deep-dive technical articles.
+**Field Notes** is a high-performance personal engineering portfolio and technical publishing platform built with **Astro 7**, **React 19**, and **Tailwind CSS 4**. It showcases Jainil's verified work history, open-source contributions, DevOps infrastructure, and 25+ long-form deep-dive technical articles.
 
 At its core is **Jainil's RAG** — a production-grade, multi-tiered Retrieval-Augmented Generation AI system running on PostgreSQL (`pgvector`), Dragonfly in-memory cache, Google Gemini 2.5 Flash, and VoyageAI reranking.
 
@@ -425,4 +425,4 @@ Reranker Attempts:       3 (Success: 3, Timeouts: 0, Errors: 0)
 * **Articles & Written Content:** All technical articles, analysis, and field notes are original works written by Jainil Prajapati under standard publication copyright.
 
 ---
-*Crafted with precision for **[jaainil.com](https://jaainil.com)** and **Shravonix**.*
+*Crafted with precision for **[jaainil.com](https://jaainil.com)** and **Field Notes**.*

@@ -120,7 +120,7 @@ const breadcrumbSchema = {
     <div class="max-w-4xl mx-auto rounded-2xl overflow-hidden" style="background: var(--paper); border: 2px solid var(--keyline); box-shadow: 0 4px 0 var(--keyline);">
 
       <!-- Sheet header -->
-      <div class="p-6 sm:p-10 lg:p-12 pb-0">
+      <div class="px-6 pt-6 sm:px-10 sm:pt-10 lg:px-12 lg:pt-12">
         <div class="flex flex-wrap items-center gap-3 mb-5">
           <span class="px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wide" style="border: 2px solid var(--keyline); background: var(--marker); color: #10151b;">
             {article.data.category}
@@ -131,23 +131,8 @@ const breadcrumbSchema = {
           {article.data.title}
         </h1>
 
-        {(
-          <div class="mt-8 rounded-xl overflow-hidden aspect-[1200/630]" style="border: 2px solid var(--keyline); background-color: var(--color-image-bg);">
-            <img
-              src={articleImagePath(article.id)}
-              alt={article.data.title}
-              class="w-full h-full object-cover"
-              width={1200}
-              height={630}
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-            />
-          </div>
-        )}
-
         <!-- Author strip -->
-        <div class="mt-8 pt-6 flex flex-wrap items-center justify-between gap-4" style="border-top: 2px dashed var(--color-border-soft);">
+        <div class="mt-6 pt-4 flex flex-wrap items-center justify-between gap-4" style="border-top: 2px dashed var(--color-border-soft);">
           <div class="flex items-center gap-3">
             <div class="flex gap-1.5">
               {resolvedAuthors.map((author) => (
@@ -178,9 +163,9 @@ const breadcrumbSchema = {
       </div>
 
       <!-- Body -->
-      <div class="py-10 lg:py-12 px-6 sm:px-10 lg:px-12">
+      <div class="pt-6 sm:pt-8 pb-10 lg:pb-12 px-6 sm:px-10 lg:px-12">
         <div class="max-w-[72ch] mx-auto">
-          <div class="prose prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-img:rounded-xl prose-img:border-2" style="border-color: var(--keyline);">
+          <div class="article-body prose prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-img:rounded-xl prose-img:border-2" style="border-color: var(--keyline);">
             <Content />
           </div>
         </div>
@@ -256,6 +241,7 @@ const breadcrumbSchema = {
 </BaseLayout>
 
 <style is:global>
+  .article-body > :first-child { margin-top: 0; }
   /* ponytail: scrollable tables instead of layout shift on mobile */
   .prose table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .prose thead, .prose tbody, .prose tr { display: table; width: 100%; }
