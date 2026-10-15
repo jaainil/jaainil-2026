@@ -1,0 +1,32 @@
+<button
+  id="back-to-top"
+  type="button"
+  hidden
+  class="fixed right-4 bottom-36 md:right-6 md:bottom-6 z-30 w-12 h-12 items-center justify-center transition-transform hover:-translate-y-1 cursor-pointer"
+  style="background: var(--color-btn-primary-bg); color: var(--color-btn-primary-text); border: 2px solid var(--keyline); box-shadow: 0 3px 0 var(--keyline); border-radius: 12px;"
+  aria-label="Back to top"
+>
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+  </svg>
+</button>
+
+<style>
+  #back-to-top:not([hidden]) { display: flex; }
+</style>
+
+<script is:inline>
+  (() => {
+    const button = document.getElementById('back-to-top');
+    if (!button) return;
+    const updateVisibility = () => { button.hidden = window.scrollY <= 320; };
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    window.addEventListener('pageshow', updateVisibility);
+    window.addEventListener('resize', updateVisibility);
+    updateVisibility();
+    button.addEventListener('click', () => {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'instant' : 'smooth' });
+    });
+  })();
+</script>
