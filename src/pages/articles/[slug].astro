@@ -156,7 +156,7 @@ const breadcrumbSchema = {
               ))}
             </p>
           </div>
-          <ArticleInteractive client:only="react" articleTitle={article.data.title} />
+          <ArticleInteractive client:load articleTitle={article.data.title} articleUrl={new URL(`/articles/${article.id}/`, Astro.site).href} />
         </div>
       </div>
 
